@@ -1529,18 +1529,6 @@ function TrustBadges({creator}) {
   </div>;
 }
 
-function SocialProof({work}) {
-  const viewers = Math.floor(Math.random()*8)+2;
-  const purchases = (work?.sales||0);
-  return <div style={{display:"flex",gap:12,alignItems:"center",marginBottom:10}}>
-    <div style={{display:"flex",alignItems:"center",gap:4}}>
-      <div style={{width:6,height:6,borderRadius:3,background:T.red,animation:"pulse 2s infinite"}}/>
-      <span style={{fontFamily:"system-ui",fontSize:11,color:T.textSub}}>{viewers} хүн үзэж байна</span>
-    </div>
-    {purchases>0&&<span style={{fontFamily:"system-ui",fontSize:11,color:T.green}}>{purchases} хүн худалдаж авсан</span>}
-    <style>{"@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}"}</style>
-  </div>;
-}
 
 function ResponseBadge({hours=2}) {
   return <div style={{display:"inline-flex",alignItems:"center",gap:4,background:T.greenSub,border:`1px solid ${T.green}30`,borderRadius:8,padding:"4px 10px"}}>
@@ -2456,7 +2444,6 @@ function WorkDetail({nav, refresh, workId}) {
         <video src={w.video} controls style={{width:"100%",maxHeight:200,objectFit:"cover",display:"block",background:T.s2}}/>
       </div>}
       <div style={{padding:"18px 20px 0"}}>
-        <SocialProof work={w}/>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
           <div style={{fontFamily:"system-ui",fontSize:22,fontWeight:800,color:T.textH,flex:1,lineHeight:1.2}}>{w.title}</div>
           <div style={{fontFamily:"system-ui",fontSize:22,fontWeight:800,color:T.accent,marginLeft:12,flexShrink:0}}>{fmtP(w)}</div>
