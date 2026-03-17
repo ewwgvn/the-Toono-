@@ -306,15 +306,6 @@ const DB = {
     await supabase.from("conversations").update({ last_message: text || "Зураг", last_at: new Date().toISOString() }).eq("id", conversationId);
   },
 
-  // File upload
-  async uploadFile(bucket, path, file) {
-    if (!isSupabaseReady()) return null;
-    const { data, error } = await supabase.storage.from(bucket).upload(path, file, { upsert: true });
-    if (error) return null;
-    const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(path);
-    return urlData?.publicUrl;
-  },
-
   // Realtime subscriptions
   subscribeToMessages(conversationId, callback) {
     if (!isSupabaseReady()) return null;
@@ -332,6 +323,19 @@ const DB = {
 
   unsubscribe(channel) {
     if (channel && isSupabaseReady()) supabase.removeChannel(channel);
+  },
+
+  async getOrCreateConversation(userA, userB) {
+    if (!isSupabaseReady()) return null;
+    try {
+      const { data } = await supabase.from("conversations").select("*")
+        .or(`and(user_a.eq.${userA},user_b.eq.${userB}),and(user_a.eq.${userB},user_b.eq.${userA})`)
+        .maybeSingle();
+      if (data) return data;
+      const { data: created } = await supabase.from("conversations")
+        .insert({ user_a: userA, user_b: userB }).select().single();
+      return created;
+    } catch(e) { return null; }
   },
 
   // Upload file to Supabase Storage, return public URL (or null on failure)
@@ -1989,9 +1993,18 @@ function ProfileSetup({nav, refresh, goBack}) {
       GS.user.field = field.trim();
       GS.user.bio = bio.trim();
       GS.user.tags = tags;
-      if(photo) GS.user.photo = photo;
       GS.user.commOpen = isCreator;
       GS.needsProfileSetup = false;
+      // Upload photo to Storage, get URL
+      let photoUrl = GS.user.photo || null;
+      if (photo && photo.startsWith("data:") && isSupabaseReady() && GS.user.id) {
+        const uploaded = await DB.uploadFile("avatars", `${GS.user.id}/avatar.jpg`, photo);
+        if (uploaded) photoUrl = uploaded;
+        else photoUrl = null; // don't store base64 in DB
+      } else if (photo && !photo.startsWith("data:")) {
+        photoUrl = photo;
+      }
+      if (photoUrl) GS.user.photo = photoUrl;
       // Sync to Supabase
       if (isSupabaseReady() && GS.user.id) {
         await DB.updateProfile(GS.user.id, {
@@ -1999,7 +2012,7 @@ function ProfileSetup({nav, refresh, goBack}) {
           field: field.trim(),
           bio: bio.trim(),
           tags: tags,
-          photo: photo || null,
+          photo: photoUrl,
           role: GS.currentRole,
           comm_open: isCreator,
         });
@@ -2099,8 +2112,8 @@ function Home({nav, refresh}) {
   const cats=["all","Загвар","Нэхмэл","Урлаг","График"];
   const allW=getAllWorks();
   const filtered=cat==="all"?allW:allW.filter(w=>w.cat===cat);
-  const tLike=id=>{GS.liked.has(id)?GS.liked.delete(id):GS.liked.add(id);refresh();};
-  const tSave=id=>{GS.saved.has(id)?GS.saved.delete(id):GS.saved.add(id);refresh();};
+  const tLike=id=>{GS.liked.has(id)?GS.liked.delete(id):GS.liked.add(id);refresh();if(GS.user.id)DB.toggleLike(GS.user.id,id);};
+  const tSave=id=>{GS.saved.has(id)?GS.saved.delete(id):GS.saved.add(id);refresh();if(GS.user.id)DB.toggleSave(GS.user.id,id);};
 
   return <div style={{height:"100%",display:"flex",flexDirection:"column",background:T.bg}}>
     
@@ -2307,9 +2320,9 @@ function Explore({nav, refresh}) {
     if(price==="over300"&&w.price<300000)return false;
     return true;
   });
-  const tFollow=id=>{GS.following.has(id)?GS.following.delete(id):GS.following.add(id);refresh();};
-  const tLike=id=>{GS.liked.has(id)?GS.liked.delete(id):GS.liked.add(id);refresh();};
-  const tSave=id=>{GS.saved.has(id)?GS.saved.delete(id):GS.saved.add(id);refresh();};
+  const tFollow=id=>{GS.following.has(id)?GS.following.delete(id):GS.following.add(id);refresh();if(GS.user.id)DB.toggleFollow(GS.user.id,id);};
+  const tLike=id=>{GS.liked.has(id)?GS.liked.delete(id):GS.liked.add(id);refresh();if(GS.user.id)DB.toggleLike(GS.user.id,id);};
+  const tSave=id=>{GS.saved.has(id)?GS.saved.delete(id):GS.saved.add(id);refresh();if(GS.user.id)DB.toggleSave(GS.user.id,id);};
 
   return <div style={{height:"100%",display:"flex",flexDirection:"column",background:T.bg,position:"relative"}}>
     <div style={{padding:"20px 20px 12px",flexShrink:0}}>
@@ -2419,8 +2432,8 @@ function WorkDetail({nav, refresh, workId}) {
   const [liked,setLiked]=useState(GS.liked.has(w.id));
   const [saved,setSaved]=useState(GS.saved.has(w.id));
   const [imgIdx,setImgIdx]=useState(0);
-  const tLike=()=>{const v=!liked;if(v)GS.liked.add(w.id);else GS.liked.delete(w.id);setLiked(v);refresh();};
-  const tSave=()=>{const v=!saved;if(v)GS.saved.add(w.id);else GS.saved.delete(w.id);setSaved(v);refresh();};
+  const tLike=()=>{const v=!liked;if(v)GS.liked.add(w.id);else GS.liked.delete(w.id);setLiked(v);refresh();if(GS.user.id)DB.toggleLike(GS.user.id,w.id);};
+  const tSave=()=>{const v=!saved;if(v)GS.saved.add(w.id);else GS.saved.delete(w.id);setSaved(v);refresh();if(GS.user.id)DB.toggleSave(GS.user.id,w.id);};
 
   return <div style={{height:"100%",display:"flex",flexDirection:"column",background:T.bg}}>
     <div style={{padding:"20px 20px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
@@ -2556,9 +2569,13 @@ function WorkDetail({nav, refresh, workId}) {
       </div>
     </div>
     <div style={{padding:"12px 20px 32px",background:T.bg,borderTop:`1px solid ${T.border}`,display:"flex",gap:8,alignItems:"center"}}>
-      <button onClick={()=>{
+      <button onClick={async ()=>{
         let convo = GS.conversations.find(cv=>cv.name===(w.creator||GS.user.name));
         if(!convo){convo={id:Date.now(),name:w.creator||"Бүтээлч",accent:w.accent||T.accent,online:false,unread:0,msgs:[]};GS.conversations.unshift(convo);}
+        if(isSupabaseReady()&&GS.user.id&&w.creator_id&&GS.user.id!==w.creator_id){
+          const dbConvo=await DB.getOrCreateConversation(GS.user.id,w.creator_id);
+          if(dbConvo)convo.dbId=dbConvo.id;
+        }
         GS.activeChatId=convo.id;refresh();nav("chatroom");
       }} style={{width:44,height:44,background:T.accentSub,border:`1px solid ${T.accentGlow}`,borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",flexShrink:0,color:T.accent}}><IcMsg/></button>
       {w.price>0&&<button onClick={()=>setOfferOpen(true)} style={{width:44,height:44,background:T.s1,border:`1px solid ${T.border}`,borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",flexShrink:0,color:T.yellow,fontFamily:"system-ui",fontSize:11,fontWeight:700}}>₮?</button>}
@@ -2606,7 +2623,7 @@ function CreatorProfile({nav, refresh, creatorId}) {
   },[creatorId]);
   const c=creator;
   const following=GS.following.has(c.id);
-  const tFollow=()=>{following?GS.following.delete(c.id):GS.following.add(c.id);saveGS();refresh();};
+  const tFollow=()=>{following?GS.following.delete(c.id):GS.following.add(c.id);saveGS();refresh();if(GS.user.id&&c.id)DB.toggleFollow(GS.user.id,c.id);};
 
   return <div style={{height:"100%",display:"flex",flexDirection:"column",background:T.bg}}>
     <div style={{padding:"20px 20px 0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
@@ -2629,12 +2646,12 @@ function CreatorProfile({nav, refresh, creatorId}) {
             <TrustBadges creator={c}/>
           </div>
           <div style={{display:"flex",gap:8}}>
-            <button onClick={()=>{
-              // Find or create conversation with this creator
+            <button onClick={async ()=>{
               let convo = GS.conversations.find(cv=>cv.name===c.name);
-              if(!convo){
-                convo = {id:Date.now(),name:c.name,accent:c.accent||T.accent,online:false,unread:0,msgs:[]};
-                GS.conversations.unshift(convo);
+              if(!convo){convo={id:Date.now(),name:c.name,accent:c.accent||T.accent,online:false,unread:0,msgs:[]};GS.conversations.unshift(convo);}
+              if(isSupabaseReady()&&GS.user.id&&c.id&&GS.user.id!==c.id){
+                const dbConvo=await DB.getOrCreateConversation(GS.user.id,c.id);
+                if(dbConvo)convo.dbId=dbConvo.id;
               }
               GS.activeChatId=convo.id;refresh();nav("chatroom");
             }} style={{background:T.s1,border:`1px solid ${T.border}`,borderRadius:10,padding:"8px 12px",fontFamily:"system-ui",fontSize:13,fontWeight:600,color:T.textSub,cursor:"pointer"}}><IcMsg/></button>
@@ -2704,7 +2721,7 @@ function CreatorProfile({nav, refresh, creatorId}) {
 }
 
 // ── COMMISSION ──
-function CommissionScreen({nav, goBack}) {
+function CommissionScreen({nav, goBack, creatorId}) {
   const [step,setStep]=useState(0);
   const [form,setForm]=useState({type:"",budget:"",desc:"",date:""});
   const [loading,setLoading]=useState(false);
@@ -2718,29 +2735,36 @@ function CommissionScreen({nav, goBack}) {
     if(step===1&&!form.budget){toast("Төсвийг сонгоно уу","error");return;}
     if(step===2&&form.desc.length<10){toast("Захиалгын тайлбарыг 10-аас дээш тэмдэгтээр бичнэ үү","error");return;}
     if(step<3){setStep(step+1);}
-    else{setLoading(true);setTimeout(()=>{
-      const newComm = {
-        id: Date.now(),
-        buyer: GS.user.name,
-        type: form.type || "—",
-        budget: form.budget || "—",
-        date: new Date().toISOString().slice(0,10).replace(/-/g,"."),
-        deliveryDate: form.date || "—",
-        msg: form.desc,
-        status: "pending",
-      };
-      GS.myCommissions.unshift(newComm);
-      GS.notifications.unshift({
-        id: Date.now()+1,
-        icon: "comm",
-        title: "Захиалга илгээгдлээ",
-        desc: `${form.type||"Загварын дизайн"} захиалга амжилттай илгээгдлээ.`,
-        time: "Сая",
-        read: true,
-        to: "comm-manage",
-      });
-      saveGS();setLoading(false);nav("me");toast("Захиалга илгээгдлээ","success");
-    },1400);}
+    else{setLoading(true);(async()=>{
+      try{
+        const newComm = {
+          id: Date.now(),
+          buyer: GS.user.name,
+          type: form.type || "—",
+          budget: form.budget || "—",
+          date: new Date().toISOString().slice(0,10).replace(/-/g,"."),
+          deliveryDate: form.date || "—",
+          msg: form.desc,
+          status: "pending",
+        };
+        if (isSupabaseReady() && GS.user.id && creatorId) {
+          const saved = await DB.createCommission({
+            buyer_id: GS.user.id,
+            seller_id: creatorId,
+            type: form.type || "",
+            budget: form.budget || "",
+            delivery_date: form.date || "",
+            description: form.desc || "",
+            status: "pending",
+          });
+          if (saved) newComm.id = saved.id;
+        }
+        GS.myCommissions.unshift(newComm);
+        GS.notifications.unshift({id:Date.now()+1,icon:"comm",title:"Захиалга илгээгдлээ",desc:`${form.type||"Загварын дизайн"} захиалга амжилттай илгээгдлээ.`,time:"Сая",read:true,to:"comm-manage"});
+        saveGS();nav("me");toast("Захиалга илгээгдлээ","success");
+      }catch(e){toast("Алдаа гарлаа","error");}
+      finally{setLoading(false);}
+    })();}
   };
 
   return <div style={{height:"100%",display:"flex",flexDirection:"column",background:T.bg}}>
@@ -2965,26 +2989,38 @@ function ChatRoom({nav, refresh, goBack}) {
     if(scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   },[msgs]);
 
+  // Load messages from Supabase on open
+  useEffect(()=>{
+    if(!convo?.dbId||!isSupabaseReady()) return;
+    DB.getMessages(convo.dbId).then(dbMsgs=>{
+      if(!dbMsgs.length) return;
+      const mapped = dbMsgs.map(m=>({
+        id:m.id, mine:m.sender_id===GS.user.id,
+        text:m.text, img:!!m.image, imgSrc:m.image||null,
+        time:new Date(m.created_at).getHours()+":"+String(new Date(m.created_at).getMinutes()).padStart(2,"0"),
+        status:"read",
+      }));
+      setMsgs(mapped);
+      if(convo) convo.msgs = mapped;
+    });
+  },[convo?.dbId]);
+
   const send=()=>{
     if(!msg.trim())return;
-    const newMsg = {id:Date.now(),mine:true,text:msg,time:new Date().getHours()+":"+String(new Date().getMinutes()).padStart(2,"0"),status:"sent"};
+    const now = new Date();
+    const time = now.getHours()+":"+String(now.getMinutes()).padStart(2,"0");
+    const newMsg = {id:Date.now(),mine:true,text:msg,time,status:"sent"};
     const updated = [...msgs, newMsg];
     setMsgs(updated);
     if(convo) convo.msgs = updated;
     setMsg("");
-    // Simulate delivery + read
-    timersRef.current.push(setTimeout(()=>{
-      newMsg.status = "delivered";
-      setMsgs(m=>[...m]);
-    }, 600));
-    // Simulate reply
-    timersRef.current.push(setTimeout(()=>{
-      newMsg.status = "read";
-      const reply = {id:Date.now()+1,mine:false,text:["Тийм, шалгалаа!","Сайн байна!","Ойлголоо, баярлалаа.","За, мэдэгдэл өгнө!"][Math.floor(Math.random()*4)],time:new Date().getHours()+":"+String(new Date().getMinutes()).padStart(2,"0"),read:true};
-      const next = [...msgs, newMsg, reply];
-      setMsgs(next);
-      if(convo) convo.msgs = next;
-    }, 1800));
+    // Save to Supabase
+    if(isSupabaseReady()&&GS.user.id&&convo?.dbId){
+      DB.sendMessage(convo.dbId, GS.user.id, msg.trim()).then(()=>{
+        newMsg.status="delivered";
+        setMsgs(m=>[...m]);
+      });
+    }
   };
 
   const ReadReceipt = ({status}) => {
@@ -3366,21 +3402,42 @@ function EditProfile({nav, refresh, goBack}) {
     reader.readAsDataURL(f);
   };
 
-  const save = () => {
+  const save = async () => {
     if(!name.trim()) { toast("Нэр оруулна уу","error"); return; }
     setLoading(true);
-    setTimeout(() => {
-      // Update GS.user
+    try {
+      // Upload photo to Storage if new base64 photo selected
+      let photoUrl = GS.user.photo || null;
+      if (photo && photo.startsWith("data:") && isSupabaseReady() && GS.user.id) {
+        const uploaded = await DB.uploadFile("avatars", `${GS.user.id}/avatar.jpg`, photo);
+        if (uploaded) photoUrl = uploaded;
+      } else if (photo && !photo.startsWith("data:")) {
+        photoUrl = photo;
+      }
       GS.user.name  = name.trim();
       GS.user.field = field.trim();
       GS.user.bio   = bio.trim();
       GS.user.tags  = tags.filter(t => t.length > 0);
-      if(photo) GS.user.photo = photo;
-      setLoading(false);
-      refresh();          // Force re-render
+      if (photoUrl) GS.user.photo = photoUrl;
+      if (isSupabaseReady() && GS.user.id) {
+        await DB.updateProfile(GS.user.id, {
+          name: GS.user.name,
+          field: GS.user.field,
+          bio: GS.user.bio,
+          tags: GS.user.tags,
+          photo: photoUrl,
+          comm_open: GS.user.commOpen,
+        });
+      }
+      saveGS();
+      refresh();
       nav("me");
       toast("Профайл хадгалагдлаа","success");
-    }, 600);
+    } catch(e) {
+      toast("Хадгалах үед алдаа гарлаа","error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return <div style={{height:"100%",display:"flex",flexDirection:"column",background:T.bg}}>
@@ -3689,7 +3746,7 @@ function FollowList({nav, refresh}) {
   const followingList=getCreators().filter(c=>GS.following.has(c.id));
   const followerList=[]; // Populated when other users follow you
   const list=tab==="following"?followingList:followerList;
-  const tFollow=id=>{GS.following.has(id)?GS.following.delete(id):GS.following.add(id);refresh();};
+  const tFollow=id=>{GS.following.has(id)?GS.following.delete(id):GS.following.add(id);refresh();if(GS.user.id)DB.toggleFollow(GS.user.id,id);};
 
   return <Simple nav={nav} title="Холболт" back="me">
     <div style={{display:"flex",marginBottom:8,borderBottom:`1px solid ${T.border}`}}>
@@ -3890,13 +3947,13 @@ function Checkout({nav, workId, refresh, goBack}) {
       <div style={{height:20}}/>
     </div>
     <div style={{padding:"12px 20px 32px",borderTop:`1px solid ${T.border}`}}>
-      <PBtn full loading={loading} onClick={()=>{
+      <PBtn full loading={loading} onClick={async ()=>{
         if(step===0 && (!addr.name||!addr.phone)) { toast("Нэр, утасны дугаар оруулна уу","error"); return; }
         if(step<2){setStep(step+1);}
         else{
           setLoading(true);
-          setTimeout(()=>{
-            try{
+          try{
+            const sellerId = items[0]?.creator_id || null;
             const newOrder = {
               id: Date.now(),
               title: items.length===1 ? items[0].title : items.length+" бүтээл",
@@ -3910,25 +3967,29 @@ function Checkout({nav, workId, refresh, goBack}) {
               canReview: false,
               tracking: null,
             };
+            // Save to Supabase
+            if (isSupabaseReady() && GS.user.id && sellerId) {
+              const saved = await DB.createOrder({
+                buyer_id: GS.user.id,
+                seller_id: sellerId,
+                items: newOrder.items,
+                total_price: total,
+                shipping_fee: shipping,
+                payment_method: method,
+                address: addr,
+                status: "pending",
+              });
+              if (saved) newOrder.id = saved.id;
+            }
             GS.orders.unshift(newOrder);
-            // Clear cart / direct buy
             if(directItem) GS.directBuyItem = null;
             else GS.cart = [];
-            GS.notifications.unshift({
-              id: Date.now(),
-              icon: "sale",
-              title: "Захиалга баталгаажлаа",
-              desc: `"${w.title}" захиалга амжилттай.`,
-              time: "Сая",
-              read: false,
-              to: "order-detail",
-            });
+            GS.notifications.unshift({id:Date.now(),icon:"sale",title:"Захиалга баталгаажлаа",desc:`"${w.title}" захиалга амжилттай.`,time:"Сая",read:false,to:"order-detail"});
             GS.unreadNotif++;
             setLoading(false);
             nav("order-detail");
             saveGS();toast("Төлбөр дууслаа!","success");
-            }catch(e){toast("Төлбөр амжилтгүй. Дахин оролдоно уу","error");setLoading(false);}
-          },1500);
+          }catch(e){toast("Төлбөр амжилтгүй. Дахин оролдоно уу","error");setLoading(false);}
         }
       }}>{step===2?"₮"+total.toLocaleString()+" Төлөх":"Дараах"}</PBtn>
       {/* Trust signals */}
@@ -4514,9 +4575,9 @@ function App() {
     if(screen==="profile-setup") return <ProfileSetup nav={nav} refresh={refresh} goBack={goBack}/>;
     if(screen==="work")         return <WorkDetail {...p} workId={selectedWorkId}/>;
     if(screen==="profile")      return <CreatorProfile {...p} creatorId={selectedCreatorId}/>;
-    if(screen==="commission")   return <CommissionScreen nav={nav} goBack={goBack}/>;
+    if(screen==="commission")   return <CommissionScreen nav={nav} goBack={goBack} creatorId={selectedCreatorId}/>;
     if(screen==="checkout")     return <Checkout nav={nav} refresh={refresh} goBack={goBack} workId={selectedWorkId}/>;
-    if(screen==="chatroom")     return <ChatRoom nav={nav} refresh={refresh}/>;
+    if(screen==="chatroom")     return <ChatRoom nav={nav} refresh={refresh} goBack={goBack}/>;
     if(screen==="order-detail") return <OrderDetail {...p}/>;
     if(screen==="order-list")   return <OrderList nav={nav} refresh={refresh} goBack={goBack}/>;
     if(screen==="notifications")return <Notifications {...p}/>;
@@ -4933,8 +4994,8 @@ function ReferralScreen({nav}) {
 
 // ── FOLLOWING FEED ──
 function FeedScreen({nav, refresh}) {
-  const tLike=id=>{GS.liked.has(id)?GS.liked.delete(id):GS.liked.add(id);refresh();};
-  const tSave=id=>{GS.saved.has(id)?GS.saved.delete(id):GS.saved.add(id);refresh();};
+  const tLike=id=>{GS.liked.has(id)?GS.liked.delete(id):GS.liked.add(id);refresh();if(GS.user.id)DB.toggleLike(GS.user.id,id);};
+  const tSave=id=>{GS.saved.has(id)?GS.saved.delete(id):GS.saved.add(id);refresh();if(GS.user.id)DB.toggleSave(GS.user.id,id);};
   const feedPosts=[
     ...(GS.myWorks.length>0?[{id:"f1",creator:GS.user.name,accent:"#5B8FE8",time:"Сая",type:"upload",creatorId:1,work:GS.myWorks[0],caption:GS.myWorks[0].title+" — шинэ бүтээл байршлаа"}]:[]),(false?null:null),
     
