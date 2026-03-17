@@ -2462,7 +2462,7 @@ function WorkDetail({nav, refresh, workId}) {
           <div style={{fontFamily:"system-ui",fontSize:22,fontWeight:800,color:T.accent,marginLeft:12,flexShrink:0}}>{fmtP(w)}</div>
         </div>
         <div style={{display:"flex",gap:6,marginBottom:16,flexWrap:"wrap"}}>
-          {[w.cat,"Монгол","Гараар хийсэн"].map(t=><Pill key={t}>{t}</Pill>)}
+          {[w.cat,...(w.tags||[])].filter(Boolean).map(t=><Pill key={t}>{t}</Pill>)}
         </div>
         <Crd onClick={()=>nav("profile",{creatorId:w.cid})} style={{padding:"14px 16px",display:"flex",alignItems:"center",gap:12,marginBottom:18}}>
           <Avt size={44} color={w.accent||T.accent}/>
@@ -2480,10 +2480,18 @@ function WorkDetail({nav, refresh, workId}) {
         <div style={{height:1,background:T.border}}/>
         <div style={{padding:"16px 0"}}>
           <div style={{fontFamily:"system-ui",fontSize:16,fontWeight:700,color:T.textH,marginBottom:12}}>Барааны мэдээлэл</div>
-          {[["Материал","Тэмээний ноос 60% · Хонины ноос 40%"],["Хэмжээ","S / M / L / XL"],["Хийх хугацаа","Захиалгын дараа 3~4 долоо хоног"],["Дугаарлалт","10 ширхэг хязгаарлагдмал"],["Хүргэлт","Дотоод · Гадаад боломжтой"]].map(r=><div key={r[0]} style={{display:"flex",justifyContent:"space-between",padding:"9px 0",borderBottom:`1px solid ${T.border}`}}>
-            <span style={{fontFamily:"system-ui",fontSize:13,color:T.textSub}}>{r[0]}</span>
-            <span style={{fontFamily:"system-ui",fontSize:13,fontWeight:500,color:T.textH}}>{r[1]}</span>
-          </div>)}
+          {(()=>{
+            const rows=[];
+            if(w.medium&&w.medium!=="—") rows.push(["Материал",w.medium]);
+            if(w.sizes?.length>0) rows.push(["Хэмжээ",w.sizes.join(" / ")]);
+            if(w.duration) rows.push(["Хийх хугацаа",w.duration]);
+            if(w.stock>0) rows.push(["Дугаарлалт",w.stock+"ш"]);
+            if(rows.length===0) return <div style={{fontFamily:"system-ui",fontSize:13,color:T.textSub,padding:"12px 0"}}>Бүтээлч мэдээлэл оруулаагүй байна</div>;
+            return rows.map(r=><div key={r[0]} style={{display:"flex",justifyContent:"space-between",padding:"9px 0",borderBottom:`1px solid ${T.border}`}}>
+              <span style={{fontFamily:"system-ui",fontSize:13,color:T.textSub}}>{r[0]}</span>
+              <span style={{fontFamily:"system-ui",fontSize:13,fontWeight:500,color:T.textH}}>{r[1]}</span>
+            </div>);
+          })()}
         </div>
         <div style={{marginTop:4}}>
           <div style={{fontFamily:"system-ui",fontSize:16,fontWeight:700,color:T.textH,marginBottom:12}}>Мөн бүтээлчийн Бүтээл</div>
@@ -2602,18 +2610,18 @@ function CreatorProfile({nav, refresh, creatorId}) {
         </div>
         {c.comm&&<div style={{display:"inline-flex",alignItems:"center",gap:6,background:T.greenSub,border:`1px solid ${T.green}40`,borderRadius:10,padding:"5px 12px",marginBottom:12}}>
           <div style={{width:7,height:7,borderRadius:"50%",background:T.green}}/>
-          <span style={{fontFamily:"system-ui",fontSize:12,fontWeight:600,color:T.green}}>Захиалга Авч байна · 2~3 долоо хоног хүргэлт</span>
+          <span style={{fontFamily:"system-ui",fontSize:12,fontWeight:600,color:T.green}}>Захиалга Авч байна</span>
         </div>}
-        <div style={{display:"flex",gap:6,marginBottom:16,flexWrap:"wrap"}}>
-          {["Тэнгэрийн шашин","Бөө мөргөл","Апокалипсийн дараах"].map(t=><Pill key={t}>{t}</Pill>)}
-        </div>
+        {(c.tags||GS.user.tags||[]).length>0&&<div style={{display:"flex",gap:6,marginBottom:16,flexWrap:"wrap"}}>
+          {(c.tags||GS.user.tags||[]).map(t=><Pill key={t}>{t}</Pill>)}
+        </div>}
         <Crd style={{display:"flex",marginBottom:16}}>
           {[[String(c.works||GS.myWorks.length),"Бүтээл"],[c.followers||GS.user.followers||"0","Дагагч"],[String(GS.receivedCommissions.length),"Захиалга"],[c.rating>0?c.rating.toString():"—","Үнэлгээ"]].map((s,i)=><div key={s[1]} onClick={()=>s[1]==="Дагагч"&&nav("follows")} style={{flex:1,textAlign:"center",padding:"13px 0",borderRight:i<3?`1px solid ${T.border}`:"none",cursor:s[1]==="Дагагч"?"pointer":"default"}}>
             <div style={{fontFamily:"system-ui",fontSize:17,fontWeight:700,color:i===3?T.yellow:T.textH}}>{s[0]}</div>
             <div style={{fontFamily:"system-ui",fontSize:10,color:T.textSub,marginTop:1}}>{s[1]}</div>
           </div>)}
         </Crd>
-        <div style={{fontFamily:"system-ui",fontSize:14,color:T.textB,lineHeight:1.8,marginBottom:16}}>Талын салхи, өвгөдийн санах ойгоор хувцас хийдэг. Бөөгийн хэлийг орчин үеийн хэлбэрт хөрвүүлэх нь миний ажлын гол мөн чанар юм.</div>
+        {(c.bio||GS.user.bio)&&<div style={{fontFamily:"system-ui",fontSize:14,color:T.textB,lineHeight:1.8,marginBottom:16}}>{c.bio||GS.user.bio}</div>}
       </div>
       <div style={{height:1,background:T.border}}/>
       <div style={{display:"flex",borderBottom:`1px solid ${T.border}`}}>
@@ -4099,6 +4107,7 @@ function Upload({nav}) {
               sizes: [],
               colors: [],
               stock: Number(stock) || 1,
+              duration: duration || "",
               creator: GS.user.name,
               cid: 1,
               images: mediaFiles.map(f=>f.url),
@@ -4128,6 +4137,7 @@ function Upload({nav}) {
                 video: newWork.video || null,
                 digital: newWork.digital || false,
                 stock: newWork.stock || 1,
+                duration: newWork.duration || "",
                 badge: newWork.badge || null,
                 status: newWork.status || "published",
                 accent: newWork.accent || "#5B8FE8",
