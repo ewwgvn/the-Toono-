@@ -334,6 +334,19 @@ const DB = {
     if (channel && isSupabaseReady()) supabase.removeChannel(channel);
   },
 
+  // Upload file to Supabase Storage, return public URL (or null on failure)
+  async uploadFile(bucket, path, base64Url) {
+    if (!isSupabaseReady()) return null;
+    try {
+      const res = await fetch(base64Url);
+      const blob = await res.blob();
+      const { error } = await supabase.storage.from(bucket).upload(path, blob, { upsert: true, contentType: blob.type });
+      if (error) return null;
+      const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+      return data.publicUrl;
+    } catch(e) { return null; }
+  },
+
   // Creators list
   async getCreators(filters = {}) {
     if (!isSupabaseReady()) return [];
@@ -4109,84 +4122,84 @@ function Upload({nav}) {
           </div>
         </div>
 
-        <PBtn full loading={loading} onClick={()=>{
+        <PBtn full loading={loading} onClick={async ()=>{
           if(saleType==="sale"&&!price){alert("Үнэ оруулна уу");return;}
           setLoading(true);
-          setTimeout(()=>{
+          try {
+            // Upload images to Supabase Storage (get real URLs instead of base64)
+            let imageUrls = mediaFiles.map(f=>f.url);
+            let videoUrl = videoFile ? videoFile.url : null;
+            if (isSupabaseReady() && GS.user.id) {
+              const prefix = `${GS.user.id}/${Date.now()}`;
+              const uploaded = await Promise.all(
+                mediaFiles.map((f,i) => DB.uploadFile('works', `${prefix}_${i}.jpg`, f.url))
+              );
+              imageUrls = uploaded.map((url,i) => url || mediaFiles[i].url);
+              if (videoFile) {
+                const vUrl = await DB.uploadFile('works', `${prefix}_video.mp4`, videoFile.url);
+                if (vUrl) videoUrl = vUrl;
+              }
+            }
+            const accent = ["#3A6FD8","#8850D4","#3A9A60","#D45A30","#1A7AB0","#C05090"][Math.floor(Math.random()*6)];
+            const tagList = tags ? tags.split(",").map(t=>t.trim()).filter(Boolean) : [];
             const newWork = {
               id: Date.now(),
-              title: title,
-              cat: cat,
+              title, cat,
               year: new Date().getFullYear(),
               status: "published",
               price: saleType==="sale" ? Number(price) : 0,
-              sales: 0,
-              views: 0,
-              likes: 0,
+              sales: 0, views: 0, likes: 0,
               digital: saleType==="sale" && !stock,
-              medium: material || "—",
-              dims: "—",
-              tags: tags ? tags.split(",").map(t=>t.trim()).filter(Boolean) : [],
-              accent: ["#3A6FD8","#8850D4","#3A9A60","#D45A30","#1A7AB0","#C05090"][Math.floor(Math.random()*6)],
-              desc: desc,
-              badge: saleType==="sale" ? null : saleType==="sample" ? "Захиалга" : null,
-              sizes: [],
-              colors: [],
+              medium: material || "",
+              material: material || "",
+              dims: "",
+              tags: tagList,
+              accent,
+              desc,
+              badge: saleType==="sample" ? "Захиалга" : null,
+              sizes: [], colors: [],
               stock: Number(stock) || 1,
               duration: duration || "",
               creator: GS.user.name,
+              creator_id: GS.user.id,
               cid: 1,
-              images: mediaFiles.map(f=>f.url),
-              video: videoFile ? videoFile.url : null,
+              images: imageUrls,
+              video: videoUrl,
             };
-            newWork.creator = GS.user.name;
-            newWork.cid = 1;
-            newWork.material = newWork.medium || "—";
-            newWork.sales = 0;
-            newWork.views = 0;
-            newWork.likes = 0;
-            // Save to Supabase if connected
+            // Save to Supabase
             if (isSupabaseReady() && GS.user.id) {
-              DB.createWork({
+              const saved = await DB.createWork({
                 creator_id: GS.user.id,
                 title: newWork.title,
                 description: newWork.desc || "",
                 category: newWork.cat || "",
                 price: newWork.price || 0,
-                material: newWork.material,
+                material: newWork.material || "",
                 medium: newWork.medium || "",
-                dimensions: newWork.dims || "",
+                dimensions: newWork.duration || "",
                 tags: newWork.tags || [],
-                sizes: newWork.sizes || [],
-                colors: newWork.colors || [],
+                sizes: [], colors: [],
                 images: newWork.images || [],
                 video: newWork.video || null,
                 digital: newWork.digital || false,
                 stock: newWork.stock || 1,
-                duration: newWork.duration || "",
                 badge: newWork.badge || null,
-                status: newWork.status || "published",
+                status: "published",
                 accent: newWork.accent || "#5B8FE8",
-              }).then(saved => {
-                if (saved) newWork.id = saved.id;
               });
+              if (saved) newWork.id = saved.id;
             }
             GS.myWorks.unshift(newWork);
             WORKS.unshift(newWork);
             GS.user.works = GS.myWorks.length;
-            GS.notifications.unshift({
-              id: Date.now(),
-              icon: "upload",
-              title: "Бүтээл байршлаа",
-              desc: `"${title}" амжилттай нийтлэгдлээ.`,
-              time: "Сая",
-              read: true,
-              to: "portfolio",
-            });
-            setLoading(false);
-            saveGS();toast("Бүтээл амжилттай байршлаа","success");
+            GS.notifications.unshift({id:Date.now(),icon:"upload",title:"Бүтээл байршлаа",desc:`"${title}" амжилттай нийтлэгдлээ.`,time:"Сая",read:true,to:"portfolio"});
+            saveGS(); toast("Бүтээл амжилттай байршлаа","success");
             nav("me");
-          },1800);
+          } catch(e) {
+            toast("Алдаа гарлаа. Дахин оролдоно уу","error");
+          } finally {
+            setLoading(false);
+          }
         }}>Бүтээл байршуулах</PBtn>
       </>}
 

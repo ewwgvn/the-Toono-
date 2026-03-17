@@ -247,6 +247,11 @@ create policy "Buyers create offers" on public.offers for insert with check (buy
 create policy "Own cart" on public.cart_items for all using (user_id = auth.uid());
 
 -- ══════════════════════════════════════
+-- MIGRATIONS (run if tables already exist)
+-- ══════════════════════════════════════
+-- alter table public.works add column if not exists duration text default '';
+
+-- ══════════════════════════════════════
 -- INDEXES
 -- ══════════════════════════════════════
 create index idx_works_creator on public.works(creator_id);
