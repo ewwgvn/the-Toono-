@@ -382,8 +382,9 @@ async function syncFromSupabase() {
     };
     
     // Load user data in parallel
-    const [myWorks, orders, likes, saves, follows, notifs, comms, receivedComms] = await Promise.all([
+    const [myWorks, allWorks, orders, likes, saves, follows, notifs, comms, receivedComms] = await Promise.all([
       DB.getMyWorks(user.id),
+      DB.getWorks(),
       DB.getMyOrders(user.id),
       DB.getMyLikes(user.id),
       DB.getMySaves(user.id),
@@ -392,6 +393,13 @@ async function syncFromSupabase() {
       DB.getMyCommissions(user.id),
       DB.getReceivedCommissions(user.id),
     ]);
+    // Populate global WORKS array with all published works from Supabase
+    WORKS.length = 0;
+    allWorks.forEach(w => WORKS.push({
+      ...w,
+      creator: w.profiles?.name || w.creator || "—",
+      comm: w.profiles?.comm_open || false,
+    }));
     
     GS.myWorks = myWorks;
     GS.user.works = myWorks.length;
@@ -1544,11 +1552,19 @@ const MATERIALS = ["Бүгд","Тэмээний ноос","Хонины ноос
 // Dynamic data arrays — populated by user actions, persisted via GS
 const CREATORS = [];
 function getCreators() {
-  // Build from logged-in user (if creator) + any followed/known creators stored in GS
   const list = [];
+  // Add logged-in user if creator
   if(GS.isLoggedIn && GS.currentRole==="creator") {
-    list.push({id:1,name:GS.user.name,field:GS.user.field||"Бүтээлч",followers:GS.user.followers||"0",works:GS.myWorks.length,comm:GS.user.commOpen,rating:GS.trustMetrics?.avgRating||0,accent:"#5B8FE8",level:GS.trustMetrics?.avgRating>=4.8?"top":"verified"});
+    list.push({id:GS.user.id||1,name:GS.user.name,field:GS.user.field||"Бүтээлч",followers:GS.user.followers||"0",works:GS.myWorks.length,comm:GS.user.commOpen,rating:GS.trustMetrics?.avgRating||0,accent:"#5B8FE8",level:GS.trustMetrics?.avgRating>=4.8?"top":"verified",bio:GS.user.bio,tags:GS.user.tags});
   }
+  // Add other creators from WORKS (deduplicate by creator_id)
+  const seen = new Set(list.map(c=>c.id));
+  WORKS.forEach(w => {
+    if(w.creator_id && !seen.has(w.creator_id)) {
+      seen.add(w.creator_id);
+      list.push({id:w.creator_id,name:w.creator||"—",field:w.profiles?.field||"Бүтээлч",followers:"0",works:0,comm:w.profiles?.comm_open||false,rating:w.profiles?.rating||0,accent:w.accent||"#5B8FE8",bio:w.profiles?.bio||"",tags:w.profiles?.tags||[]});
+    }
+  });
   return list;
 }
 const WORKS = [];
