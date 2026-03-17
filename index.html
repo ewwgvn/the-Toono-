@@ -2568,8 +2568,29 @@ function WorkDetail({nav, refresh, workId}) {
 
 // ── CREATOR PROFILE ──
 function CreatorProfile({nav, refresh, creatorId}) {
-  const creator = getCreators().find(x=>x.id===creatorId)||getCreators()[0]||{id:1,name:GS.user.name,field:GS.user.field||"Бүтээлч",followers:GS.user.followers||"0",works:GS.myWorks.length,comm:GS.user.commOpen,rating:0,accent:"#5B8FE8"};
+  const localCreator = getCreators().find(x=>x.id===creatorId)||null;
+  const [creator, setCreator] = useState(localCreator || {id:creatorId,name:"...",field:"",followers:"0",works:0,comm:false,rating:0,accent:"#5B8FE8",bio:"",tags:[]});
+  const [creatorWorks, setCreatorWorks] = useState(null);
   const [tab,setTab]=useState("works");
+  React.useEffect(()=>{
+    if(!creatorId) return;
+    // If it's the current user's own profile
+    if(creatorId===GS.user.id||creatorId===1) {
+      setCreator({id:GS.user.id||1,name:GS.user.name,field:GS.user.field||"Бүтээлч",followers:GS.user.followers||"0",works:GS.myWorks.length,comm:GS.user.commOpen,rating:GS.trustMetrics?.avgRating||0,accent:"#5B8FE8",bio:GS.user.bio,tags:GS.user.tags||[]});
+      setCreatorWorks(GS.myWorks);
+      return;
+    }
+    // Fetch from Supabase
+    if(isSupabaseReady()) {
+      DB.getProfile(creatorId).then(p=>{
+        if(p) setCreator({id:p.id,name:p.name||"—",field:p.field||"Бүтээлч",followers:String(p.followers_count||0),works:0,comm:p.comm_open||false,rating:p.rating||0,accent:"#5B8FE8",bio:p.bio||"",tags:p.tags||[]});
+      });
+      DB.getWorks({creator_id:creatorId}).then(ws=>{
+        setCreatorWorks(ws.map(w=>({...w,creator:w.profiles?.name||w.creator||"—"})));
+        setCreator(prev=>({...prev,works:ws.length}));
+      });
+    }
+  },[creatorId]);
   const c=creator;
   const following=GS.following.has(c.id);
   const tFollow=()=>{following?GS.following.delete(c.id):GS.following.add(c.id);saveGS();refresh();};
@@ -2632,13 +2653,15 @@ function CreatorProfile({nav, refresh, creatorId}) {
       </div>
       {tab==="works"&&<div style={{padding:"14px 20px 0"}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-        <div style={{fontFamily:"system-ui",fontSize:12,color:T.textSub}}>{c.works||GS.myWorks.length} бүтээл</div>
-        <button onClick={()=>nav("portfolio")} style={{background:"none",border:"none",fontFamily:"system-ui",fontSize:12,fontWeight:600,color:T.accent,cursor:"pointer"}}>Бүгдийг харах →</button>
+        <div style={{fontFamily:"system-ui",fontSize:12,color:T.textSub}}>{c.works||0} бүтээл</div>
+        {(c.id===GS.user.id||c.id===1)&&<button onClick={()=>nav("portfolio")} style={{background:"none",border:"none",fontFamily:"system-ui",fontSize:12,fontWeight:600,color:T.accent,cursor:"pointer"}}>Бүгдийг харах →</button>}
       </div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
-        {(c.id===1?GS.myWorks:getAllWorks().filter(w=>w.cid===c.id)).slice(0,6).map((w,i)=><div key={w.id||i} onClick={()=>nav("work",{workId:w.id})} style={{aspectRatio:"1",borderRadius:14,background:(w.accent||T.accent)+"18",border:`1px solid ${(w.accent||T.accent)}25`,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",overflow:"hidden"}}>
-          {w.images?.[0] ? <img src={w.images[0]} alt="" loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover"}}/> : <Toono size={36} color={w.accent}/>}
-        </div>)}
+        {creatorWorks===null
+          ?<div style={{gridColumn:"span 3",padding:"20px 0",textAlign:"center",fontFamily:"system-ui",fontSize:12,color:T.textSub}}>Уншиж байна...</div>
+          :(creatorWorks).slice(0,6).map((w,i)=><div key={w.id||i} onClick={()=>nav("work",{workId:w.id})} style={{aspectRatio:"1",borderRadius:14,background:(w.accent||T.accent)+"18",border:`1px solid ${(w.accent||T.accent)}25`,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",overflow:"hidden"}}>
+            {w.images?.[0] ? <img src={w.images[0]} alt="" loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover"}}/> : <Toono size={36} color={w.accent}/>}
+          </div>)}
       </div></div>}
       {tab==="commission"&&<div style={{padding:"14px 20px 0"}}>
         {(c.comm?[["Захиалга өгөх","Бүтээлчтэй шууд холбогдож нөхцлийг тохирно",""]]:[]
