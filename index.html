@@ -4281,7 +4281,7 @@ function ReviewWrite({nav}) {
       GS.notifications.unshift({id:Date.now(),icon:"like",title:"Үнэлгээ нэмэгдлээ",desc:rating+"★ "+text.slice(0,30)+"...",time:"Сая",read:true,to:"me"});
       GS.unreadNotif++;
       nav("me");toast("Үнэлгээ нэмэгдлээ. Баярлалаа!","success");
-    }}  disabled={rating===0}>Үнэлгээ нэмэх</PBtn>
+    }}>Үнэлгээ нэмэх</PBtn>
   </Simple>;
 }
 
