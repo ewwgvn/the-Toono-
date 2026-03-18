@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html lang="mn"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0,user-scalable=yes"/><meta name="theme-color" content="#08090E"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="description" content="The TOONO — Монгол бүтээлчдийн дижитал зах"/><title>The TOONO — Бүтээлчдийн Зах</title>
-<style>*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body,#root{height:100%;width:100%;overflow:hidden;background:#08090E}html{height:-webkit-fill-available}body{min-height:-webkit-fill-available}body{font-family:'DM Sans',system-ui,-apple-system,sans-serif}input,textarea,button,select{font-family:inherit}</style></head><body><div id="root"></div>
+<html lang="mn"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0,user-scalable=yes,viewport-fit=cover"/><meta name="theme-color" content="#08090E"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="description" content="The TOONO — Монгол бүтээлчдийн дижитал зах"/><title>The TOONO — Бүтээлчдийн Зах</title>
+<style>*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body,#root{height:100%;width:100%;overflow:hidden;background:#08090E}html{height:-webkit-fill-available}body{min-height:-webkit-fill-available;-webkit-text-size-adjust:100%;text-size-adjust:100%}body{font-family:'DM Sans',system-ui,-apple-system,sans-serif}input,textarea,button,select{font-family:inherit}#root{height:100dvh;height:100vh;}</style></head><body><div id="root"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
 <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
@@ -352,11 +352,11 @@ const DB = {
     try {
       const res = await fetch(base64Url);
       const blob = await res.blob();
-      const { error } = await supabase.storage.from(bucket).upload(path, blob, { upsert: true, contentType: blob.type });
-      if (error) return null;
+      const { error } = await supabase.storage.from(bucket).upload(path, blob, { upsert: true, contentType: blob.type || "image/jpeg" });
+      if (error) { console.error(`[Storage] ${bucket}/${path}:`, error.message); return null; }
       const { data } = supabase.storage.from(bucket).getPublicUrl(path);
       return data.publicUrl;
-    } catch(e) { return null; }
+    } catch(e) { console.error("[Storage] uploadFile exception:", e.message); return null; }
   },
 
   // Creators list
@@ -499,9 +499,10 @@ async function syncFromSupabase() {
     // Flush any pending writes from previous sessions
     setTimeout(()=>SQ.flush(), 2000);
 
+    console.log(`[Sync] ✓ works=${WORKS.length} creators=${CREATORS.length} myWorks=${GS.myWorks.length} orders=${orders.length}`);
     return true;
   } catch(e) {
-    console.error("Supabase sync error:", e);
+    console.error("[Sync] ✗ Supabase sync error:", e);
     return false;
   }
 }
@@ -1754,6 +1755,29 @@ function getAllWorks() {
 }
 const fmtP = (w) => w.price>0 ? "₮"+w.price.toLocaleString() : "Захиалга";
 
+// ── IMAGE COMPRESSION — shrinks photo to max 1200px, ~100-200KB JPEG ──
+async function compressImage(dataUrl, maxPx = 1200, quality = 0.82) {
+  return new Promise(resolve => {
+    try {
+      const img = new Image();
+      img.onload = () => {
+        let w = img.width, h = img.height;
+        if (w > maxPx || h > maxPx) {
+          if (w > h) { h = Math.round(h * maxPx / w); w = maxPx; }
+          else { w = Math.round(w * maxPx / h); h = maxPx; }
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL("image/jpeg", quality));
+      };
+      img.onerror = () => resolve(dataUrl);
+      img.src = dataUrl;
+    } catch(e) { resolve(dataUrl); }
+  });
+}
+
 // ── WORK CARD ──
 function WorkCard({work:w, onClick, onToggleLike, onToggleSave, horizontal}) {
   const liked=GS.liked.has(w.id), saved=GS.saved.has(w.id);
@@ -1942,6 +1966,7 @@ function Login({nav}) {
         toast("Бүртгэл амжилтгүй","error");
         return;
       }
+      // Set basic state immediately
       GS.isLoggedIn = true;
       GS.currentRole = role || "buyer";
       GS.user.name = name.trim();
@@ -1949,6 +1974,8 @@ function Login({nav}) {
       GS.user.id = user?.id;
       GS.needsProfileSetup = true;
       saveGS();
+      // Full sync so WORKS + CREATORS populate from Supabase
+      syncFromSupabase().catch(()=>{});
       nav("profile-setup");
       toast(`Тавтай морил, ${name.split(" ")[0]}!`,"success");
     } else {
@@ -2284,7 +2311,7 @@ function Home({nav, refresh}) {
     
 
     {/* Header — mobile only (desktop has top nav) */}
-    <div className="toono-mobile-nav" style={{padding:"10px 20px 12px",justifyContent:"space-between",alignItems:"center"}}>
+    <div className="toono-mobile-nav" style={{padding:"10px 20px 12px",justifyContent:"space-between",alignItems:"center",background:T.bg,flexShrink:0,zIndex:10,paddingTop:"max(10px, env(safe-area-inset-top, 10px))"}}>
       <div style={{display:"flex",alignItems:"center",gap:9}}>
         <Toono size={28} color={T.accent}/>
         <div style={{fontFamily:"Georgia,serif",fontSize:21,fontWeight:600,color:T.textH,letterSpacing:".03em"}}>The TOONO</div>
@@ -4253,13 +4280,16 @@ function Upload({nav, goBack}) {
   const cats=["Загвар","Нэхмэл","Урлаг","Орон зай","График","3D","Гэрэл зураг","Зурагт"];
   const stepL=["Зураг/Видео","Мэдээлэл","Үнэ·Борлуулалт"];
 
-  // Image picker
+  // Image picker — compress to ≤1200px / ~150KB before storing
   const handleImagePick = (e) => {
     const files = Array.from(e.target.files||[]);
     const valid = files.filter(f=>f.type.startsWith("image/")).slice(0, 10-mediaFiles.length);
     valid.forEach(f=>{
       const reader = new FileReader();
-      reader.onload = ev => setMediaFiles(prev=>[...prev,{type:"image",url:ev.target.result,name:f.name}]);
+      reader.onload = async ev => {
+        const compressed = await compressImage(ev.target.result, 1200, 0.82);
+        setMediaFiles(prev=>[...prev,{type:"image",url:compressed,name:f.name}]);
+      };
       reader.readAsDataURL(f);
     });
   };
@@ -4426,6 +4456,10 @@ function Upload({nav, goBack}) {
               const uploaded = await Promise.all(
                 mediaFiles.map((f,i) => DB.uploadFile('works', `${prefix}_${i}.jpg`, f.url))
               );
+              const storageOk = uploaded.some(u=>u!==null);
+              if (!storageOk && uploaded.length > 0) {
+                console.warn('[Upload] Storage failed for all images — using compressed base64 fallback. Check that the "works" bucket exists in Supabase Storage.');
+              }
               imageUrls = uploaded.map((url,i) => url || mediaFiles[i].url);
               if (videoFile) {
                 const vUrl = await DB.uploadFile('works', `${prefix}_video.mp4`, videoFile.url);
@@ -4903,6 +4937,14 @@ function App() {
       .toono-grid-2 { grid-template-columns: 1fr 1fr !important; }
       .toono-desktop-only { display:none !important; }
       .toono-mobile-only { display:flex; }
+      /* iOS momentum scrolling for all scroll containers */
+      [style*="overflow-y: auto"], [style*="overflowY:auto"], [style*="overflowY: auto"] { -webkit-overflow-scrolling: touch; }
+      /* Prevent iOS input zoom */
+      input, textarea, select { font-size: 16px !important; -webkit-appearance: none; appearance: none; }
+      /* Better tap feedback */
+      button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+      /* Prevent text selection on tap */
+      .toono-mobile-nav button { user-select: none; -webkit-user-select: none; }
 
       /* ── TABLET (768px+) ── */
       @media (min-width: 768px) {
@@ -4912,6 +4954,7 @@ function App() {
         .toono-grid-2 { grid-template-columns: repeat(3, 1fr) !important; }
         .toono-desktop-only { display:flex !important; }
         .toono-mobile-only { display:none !important; }
+        input, textarea, select { font-size: 14px !important; }
       }
 
       /* ── DESKTOP (1024px+) ── */
@@ -4974,25 +5017,25 @@ function App() {
     </div>
 
     {/* ── MOBILE BOTTOM NAV ── */}
-    {isMain&&<div className="toono-mobile-nav" style={{background:T.nav,borderTop:`1px solid ${T.border}`,padding:"8px 4px env(safe-area-inset-bottom, 16px)",justifyContent:"space-around",alignItems:"center",flexShrink:0}}>
+    {isMain&&<div className="toono-mobile-nav" style={{background:T.nav,borderTop:`1px solid ${T.border}`,paddingTop:6,paddingLeft:4,paddingRight:4,paddingBottom:"calc(6px + env(safe-area-inset-bottom, 0px))",justifyContent:"space-around",alignItems:"center",flexShrink:0,position:"relative",zIndex:50,boxShadow:"0 -4px 20px rgba(0,0,0,0.3)"}}>
       {navItems.map(item=>{
         const active=tab===item.id&&isMain;
-        return <button key={item.id} onClick={()=>nav(item.id)} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3,cursor:"pointer",background:"none",border:"none",padding:"4px 10px",minWidth:52,position:"relative"}}>
+        return <button key={item.id} onClick={()=>nav(item.id)} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3,cursor:"pointer",background:"none",border:"none",padding:"4px 8px",minWidth:48,minHeight:44,justifyContent:"center",position:"relative"}}>
           {item.id==="upload"
-            ?<div style={{width:52,height:52,borderRadius:"50%",background:T.accent,display:"flex",alignItems:"center",justifyContent:"center",marginTop:-22,boxShadow:`0 6px 24px ${T.accentGlow}`}}><IcPlus/></div>
+            ?<div style={{width:50,height:50,borderRadius:"50%",background:T.accent,display:"flex",alignItems:"center",justifyContent:"center",marginTop:-20,boxShadow:`0 6px 24px ${T.accentGlow},0 2px 8px rgba(91,143,232,0.5)`}}><IcPlus/></div>
             :<>
-              <div style={{position:"relative"}}>
+              <div style={{position:"relative",width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center"}}>
                 <span style={{color:active?T.accent:T.textSub}}><item.Ic/></span>
                 {item.badge>0&&<div style={{position:"absolute",top:-4,right:-6,minWidth:14,height:14,borderRadius:7,background:T.red,display:"flex",alignItems:"center",justifyContent:"center",padding:"0 3px"}}><span style={{fontFamily:"system-ui",fontSize:8,fontWeight:700,color:"#fff"}}>{item.badge}</span></div>}
               </div>
-              <span style={{fontFamily:"system-ui",fontSize:10,fontWeight:active?700:400,color:active?T.accent:T.textSub}}>{item.label}</span>
+              <span style={{fontFamily:"system-ui",fontSize:10,fontWeight:active?700:400,color:active?T.accent:T.textSub,lineHeight:1}}>{item.label}</span>
             </>}
         </button>;
       })}
     </div>}
 
-    {/* Footer */}
-    {isMain&&<div style={{textAlign:"center",padding:"16px 0",borderTop:`1px solid ${T.border}`}}><span style={{fontFamily:"'DM Sans',system-ui",fontSize:11,color:T.textDim}}>© 2026 The TOONO</span></div>}
+    {/* Footer — desktop only */}
+    {isMain&&<div className="toono-desktop-only" style={{textAlign:"center",padding:"16px 0",borderTop:`1px solid ${T.border}`}}><span style={{fontFamily:"'DM Sans',system-ui",fontSize:11,color:T.textDim}}>© 2026 The TOONO</span></div>}
 
     <Toast/>
     <NetworkStatus/>
@@ -5336,7 +5379,7 @@ function FeedScreen({nav, refresh, goBack}) {
 
       {/* Caption */}
       <div style={{padding:"0 14px 14px"}}>
-        {w.likes_count>0&&<div style={{fontFamily:"system-ui",fontSize:12,fontWeight:700,color:T.textH,marginBottom:4}}>좋아요 {(w.likes_count||0).toLocaleString()}개</div>}
+        {w.likes_count>0&&<div style={{fontFamily:"system-ui",fontSize:12,fontWeight:700,color:T.textH,marginBottom:4}}>{(w.likes_count||0).toLocaleString()} хүнд таалагдав</div>}
         <div style={{fontFamily:"system-ui",fontSize:13,color:T.textH,lineHeight:1.6}}>
           <span style={{fontWeight:700}}>{creator?.name?.split(" ")[0]||w.creator||"—"} </span>
           <span style={{color:T.textB}}>{w.description||w.title}</span>

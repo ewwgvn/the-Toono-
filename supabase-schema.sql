@@ -213,13 +213,16 @@ alter table public.follows enable row level security;
 alter table public.offers enable row level security;
 alter table public.cart_items enable row level security;
 
--- Profiles: anyone can read, only owner can update
+-- Profiles: anyone can read, owner can insert/update
 create policy "Profiles visible to all" on public.profiles for select using (true);
+create policy "Users can insert own profile" on public.profiles for insert with check (auth.uid() = id);
 create policy "Users can update own profile" on public.profiles for update using (auth.uid() = id);
 
 -- Works: published visible to all, creators manage own
 create policy "Published works visible" on public.works for select using (status = 'published' or creator_id = auth.uid());
-create policy "Creators manage works" on public.works for all using (creator_id = auth.uid());
+create policy "Creators insert works" on public.works for insert with check (creator_id = auth.uid());
+create policy "Creators update works" on public.works for update using (creator_id = auth.uid());
+create policy "Creators delete works" on public.works for delete using (creator_id = auth.uid());
 
 -- Orders: buyer and seller can see their orders
 create policy "Order participants" on public.orders for select using (buyer_id = auth.uid() or seller_id = auth.uid());
