@@ -1825,13 +1825,13 @@ function Login({nav}) {
 
 
   return <div style={{height:"100%",display:"flex",flexDirection:"column",background:T.bg,alignItems:"center"}}>
-    <div style={{width:"100%",maxWidth:480}}>
-    <div style={{padding:"20px 20px 0",display:"flex",alignItems:"center",gap:10}}>
+    <div style={{width:"100%",maxWidth:480,height:"100%",display:"flex",flexDirection:"column"}}>
+    <div style={{padding:"20px 20px 0",display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
       <button onClick={()=>step>0?setStep(step-1):nav("onboarding")} style={{background:"none",border:"none",color:T.textH,cursor:"pointer",display:"flex"}}><IcBack/></button>
       <div style={{fontFamily:"system-ui",fontSize:18,fontWeight:700,color:T.textH}}>{mode==="login"?"Нэвтрэх":"Бүртгүүлэх"}</div>
     </div>
 
-    <div style={{flex:1,padding:"24px 24px 0",overflowY:"auto",scrollbarWidth:"none"}}>
+    <div style={{flex:1,padding:"24px 24px 40px",overflowY:"auto",scrollbarWidth:"none"}}>
       {/* Logo */}
       <div style={{textAlign:"center",marginBottom:28}}>
         <div style={{display:"inline-flex",width:68,height:68,borderRadius:20,background:T.accentSub,border:`1px solid ${T.accentGlow}`,alignItems:"center",justifyContent:"center",marginBottom:12}}>
