@@ -1231,9 +1231,11 @@ const PBtn = ({children, onClick, full, loading, disabled, small, secondary, dan
 
 const Crd = ({children, onClick, style}) => <div onClick={onClick} style={{background:T.s1,border:`1px solid ${T.border}`,borderRadius:16,overflow:"hidden",cursor:onClick?"pointer":"default",transition:"all .15s",...style}} onMouseEnter={e=>{if(onClick)e.currentTarget.style.borderColor=T.borderMid;}} onMouseLeave={e=>{if(onClick)e.currentTarget.style.borderColor=T.border;}}>{children}</div>;
 
-const Avt = ({size=44, color=T.accent, children, onClick}) => {
+const Avt = ({size=44, color=T.accent, photo, children, onClick}) => {
   const r=Math.round(size*0.33);
-  return <div onClick={onClick} style={{width:size,height:size,borderRadius:r,background:color+"22",border:`1.5px solid ${color}40`,display:"flex",alignItems:"center",justifyContent:"center",cursor:onClick?"pointer":"default",flexShrink:0}}>{children||<Toono size={Math.round(size*0.65)} color={color}/>}</div>;
+  return <div onClick={onClick} style={{width:size,height:size,borderRadius:r,background:color+"22",border:`1.5px solid ${color}40`,display:"flex",alignItems:"center",justifyContent:"center",cursor:onClick?"pointer":"default",flexShrink:0,overflow:"hidden"}}>
+    {photo ? <img src={photo} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/> : children||<Toono size={Math.round(size*0.65)} color={color}/>}
+  </div>;
 };
 
 const Inp = ({label, type="text", placeholder, value, onChange, error}) => <div style={{marginBottom:14}}>
@@ -1636,7 +1638,7 @@ function WorkCard({work:w, onClick, onToggleLike, onToggleSave, horizontal}) {
 function CreatorRow({creator:c, onClick, onFollow, showFollow}) {
   const following=GS.following.has(c.id);
   return <div onClick={onClick} style={{display:"flex",alignItems:"center",gap:14,padding:"12px 0",borderBottom:`1px solid ${T.border}`,cursor:"pointer"}}>
-    <Avt size={50} color={c.accent}/>
+    <Avt size={50} color={c.accent} photo={c.photo}/>
     <div style={{flex:1}}>
       <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:3}}>
         <div style={{fontFamily:"system-ui",fontSize:15,fontWeight:700,color:T.textH}}>{c.name}</div>
@@ -1997,10 +1999,14 @@ function ProfileSetup({nav, refresh, goBack}) {
       GS.needsProfileSetup = false;
       // Upload photo to Storage, get URL
       let photoUrl = GS.user.photo || null;
-      if (photo && photo.startsWith("data:") && isSupabaseReady() && GS.user.id) {
-        const uploaded = await DB.uploadFile("avatars", `${GS.user.id}/avatar.jpg`, photo);
-        if (uploaded) photoUrl = uploaded;
-        else photoUrl = null; // don't store base64 in DB
+      if (photo && photo.startsWith("data:")) {
+        if (isSupabaseReady() && GS.user.id) {
+          const uploaded = await DB.uploadFile("avatars", `${GS.user.id}/avatar.jpg`, photo);
+          if (uploaded) photoUrl = uploaded;
+          else { photoUrl = photo; toast("Storage-д хадгалах боломжгүй — орон нутгийн зурагтай үргэлжлэнэ","info"); }
+        } else {
+          photoUrl = photo;
+        }
       } else if (photo && !photo.startsWith("data:")) {
         photoUrl = photo;
       }
@@ -2613,7 +2619,7 @@ function CreatorProfile({nav, refresh, creatorId}) {
     // Fetch from Supabase
     if(isSupabaseReady()) {
       DB.getProfile(creatorId).then(p=>{
-        if(p) setCreator({id:p.id,name:p.name||"—",field:p.field||"Бүтээлч",followers:String(p.followers_count||0),works:0,comm:p.comm_open||false,rating:p.rating||0,accent:"#5B8FE8",bio:p.bio||"",tags:p.tags||[]});
+        if(p) setCreator({id:p.id,name:p.name||"—",field:p.field||"Бүтээлч",photo:p.photo||null,followers:String(p.followers_count||0),works:0,comm:p.comm_open||false,rating:p.rating||0,accent:"#5B8FE8",bio:p.bio||"",tags:p.tags||[]});
       });
       DB.getWorks({creator_id:creatorId}).then(ws=>{
         setCreatorWorks(ws.map(w=>({...w,creator:w.profiles?.name||w.creator||"—"})));
@@ -2636,7 +2642,9 @@ function CreatorProfile({nav, refresh, creatorId}) {
     <div style={{flex:1,overflowY:"auto",scrollbarWidth:"none"}}>
       <div style={{height:110,background:`linear-gradient(135deg,${c.accent}28,${c.accent}08)`,margin:"14px 20px 0",borderRadius:20,position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",inset:0,opacity:.08,display:"flex",alignItems:"center",justifyContent:"center"}}><Toono size={160} color={c.accent}/></div>
-        <div style={{position:"absolute",bottom:-26,left:20,width:52,height:52,borderRadius:16,background:c.accent,display:"flex",alignItems:"center",justifyContent:"center",border:`3px solid ${T.bg}`}}><Toono size={32} color="#fff"/></div>
+        <div style={{position:"absolute",bottom:-26,left:20,width:52,height:52,borderRadius:16,background:c.accent,display:"flex",alignItems:"center",justifyContent:"center",border:`3px solid ${T.bg}`,overflow:"hidden"}}>
+          {c.photo?<img src={c.photo} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<Toono size={32} color="#fff"/>}
+        </div>
       </div>
       <div style={{padding:"34px 20px 0"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
@@ -2953,7 +2961,7 @@ function ChatList({nav, refresh}) {
           const lastTime = lastMsg?.time||"";
           return <div key={c.id} onClick={()=>openChat(c)} style={{padding:"13px 20px",display:"flex",alignItems:"center",gap:14,cursor:"pointer",borderBottom:`1px solid ${T.border}`,background:c.unread>0?T.s1+"80":"transparent"}}>
           <div style={{position:"relative",flexShrink:0}}>
-            <Avt size={52} color={c.accent}/>
+            <Avt size={52} color={c.accent} photo={c.photo}/>
             {c.online&&<div style={{position:"absolute",bottom:1,right:1,width:11,height:11,borderRadius:"50%",background:T.green,border:`2px solid ${T.bg}`}}/>}
           </div>
           <div style={{flex:1,minWidth:0}}>
@@ -3036,7 +3044,7 @@ function ChatRoom({nav, refresh, goBack}) {
   return <div style={{height:"100%",display:"flex",flexDirection:"column",background:T.bg}}>
     <div style={{padding:"20px 20px 12px",display:"flex",alignItems:"center",gap:12,borderBottom:`1px solid ${T.border}`}}>
       <button onClick={()=>{GS.activeChatId=null;nav("chat");}} style={{background:"none",border:"none",color:T.textH,cursor:"pointer",display:"flex"}}><IcBack/></button>
-      <Avt size={38} color={convo?.accent||T.accent} onClick={()=>nav("profile",{creatorId:convo?.id||1})}/>
+      <Avt size={38} color={convo?.accent||T.accent} photo={convo?.photo} onClick={()=>nav("profile",{creatorId:convo?.id||1})}/>
       <div style={{flex:1}}>
         <div style={{fontFamily:"system-ui",fontSize:15,fontWeight:700,color:T.textH}}>{convo?.name||"The TOONO"}</div>
         <div style={{display:"flex",alignItems:"center",gap:5}}>
@@ -3052,7 +3060,7 @@ function ChatRoom({nav, refresh, goBack}) {
         <span style={{fontFamily:"system-ui",fontSize:11,color:T.textSub,background:T.s1,padding:"4px 12px",borderRadius:20}}>Өнөөдөр</span>
       </div>
       {msgs.map(m=><div key={m.id} style={{display:"flex",justifyContent:m.mine?"flex-end":"flex-start",marginBottom:10,alignItems:"flex-end",gap:6}}>
-        {!m.mine&&<Avt size={28} color={convo?.accent||T.accent}/>}
+        {!m.mine&&<Avt size={28} color={convo?.accent||T.accent} photo={convo?.photo}/>}
         <div style={{maxWidth:"72%"}}>
           {m.img
             ?m.imgSrc
@@ -3408,9 +3416,14 @@ function EditProfile({nav, refresh, goBack}) {
     try {
       // Upload photo to Storage if new base64 photo selected
       let photoUrl = GS.user.photo || null;
-      if (photo && photo.startsWith("data:") && isSupabaseReady() && GS.user.id) {
-        const uploaded = await DB.uploadFile("avatars", `${GS.user.id}/avatar.jpg`, photo);
-        if (uploaded) photoUrl = uploaded;
+      if (photo && photo.startsWith("data:")) {
+        if (isSupabaseReady() && GS.user.id) {
+          const uploaded = await DB.uploadFile("avatars", `${GS.user.id}/avatar.jpg`, photo);
+          if (uploaded) photoUrl = uploaded;
+          else photoUrl = photo; // fallback: keep base64 locally
+        } else {
+          photoUrl = photo;
+        }
       } else if (photo && !photo.startsWith("data:")) {
         photoUrl = photo;
       }
