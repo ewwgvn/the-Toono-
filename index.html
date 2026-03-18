@@ -360,6 +360,13 @@ const DB = {
     const { data } = await query;
     return data || [];
   },
+
+  // Search all users by name
+  async searchProfiles(query) {
+    if (!isSupabaseReady() || !query) return [];
+    const { data } = await supabase.from("profiles").select("id,name,field,photo,role,bio,followers_count,rating").ilike("name", `%${query}%`).limit(30);
+    return data || [];
+  },
 };
 
 // ══════════════════════════════════════════
@@ -399,7 +406,7 @@ async function syncFromSupabase() {
     };
     
     // Load user data in parallel
-    const [myWorks, allWorks, orders, likes, saves, follows, notifs, comms, receivedComms, convos] = await Promise.all([
+    const [myWorks, allWorks, orders, likes, saves, follows, notifs, comms, receivedComms, convos, allCreators] = await Promise.all([
       DB.getMyWorks(user.id),
       DB.getWorks(),
       DB.getMyOrders(user.id),
@@ -410,6 +417,7 @@ async function syncFromSupabase() {
       DB.getMyCommissions(user.id),
       DB.getReceivedCommissions(user.id),
       DB.getConversations(user.id),
+      DB.getCreators(),
     ]);
     // Populate global WORKS array with all published works from Supabase
     WORKS.length = 0;
@@ -418,6 +426,11 @@ async function syncFromSupabase() {
       creator: w.profiles?.name || w.creator || "—",
       comm: w.profiles?.comm_open || false,
     }));
+    // Populate global CREATORS array with all creator profiles from Supabase
+    CREATORS.length = 0;
+    allCreators.forEach(p => {
+      if (p.id !== user.id) CREATORS.push(p);
+    });
     
     GS.myWorks = myWorks;
     GS.user.works = myWorks.length;
@@ -1594,12 +1607,19 @@ function getCreators() {
   if(GS.isLoggedIn && GS.currentRole==="creator") {
     list.push({id:GS.user.id||1,name:GS.user.name,field:GS.user.field||"Бүтээлч",photo:GS.user.photo||null,followers:GS.user.followers||"0",works:GS.myWorks.length,comm:GS.user.commOpen,rating:GS.trustMetrics?.avgRating||0,accent:"#5B8FE8",level:GS.trustMetrics?.avgRating>=4.8?"top":"verified",bio:GS.user.bio,tags:GS.user.tags});
   }
-  // Add other creators from WORKS (deduplicate by creator_id)
+  // Add creators fetched from Supabase (even if they have no works yet)
   const seen = new Set(list.map(c=>c.id));
+  CREATORS.forEach(p => {
+    if(p.id && !seen.has(p.id)) {
+      seen.add(p.id);
+      list.push({id:p.id,name:p.name||"—",field:p.field||"Бүтээлч",photo:p.photo||null,followers:String(p.followers_count||0),works:0,comm:p.comm_open||false,rating:p.rating||0,accent:"#5B8FE8",bio:p.bio||"",tags:p.tags||[]});
+    }
+  });
+  // Also add creators from WORKS (fills in works count and accent color)
   WORKS.forEach(w => {
     if(w.creator_id && !seen.has(w.creator_id)) {
       seen.add(w.creator_id);
-      list.push({id:w.creator_id,name:w.creator||w.profiles?.name||"—",field:w.profiles?.field||"Бүтээлч",photo:w.profiles?.photo||null,followers:"0",works:0,comm:w.profiles?.comm_open||false,rating:w.profiles?.rating||0,accent:w.accent||"#5B8FE8",bio:w.profiles?.bio||"",tags:w.profiles?.tags||[]});
+      list.push({id:w.creator_id,name:w.creator||w.profiles?.name||"—",field:w.profiles?.field||"Бүтээлч",photo:w.profiles?.photo||null,followers:String(w.profiles?.followers_count||0),works:0,comm:w.profiles?.comm_open||false,rating:w.profiles?.rating||0,accent:w.accent||"#5B8FE8",bio:w.profiles?.bio||"",tags:w.profiles?.tags||[]});
     }
   });
   return list;
@@ -2327,6 +2347,8 @@ function Explore({nav, refresh}) {
   const [filterOpen,setFilterOpen]=useState(false);
   const [commOnly,setCommOnly]=useState(false);
   const [price,setPrice]=useState("all");
+  const [userResults,setUserResults]=useState([]);
+  const [userLoading,setUserLoading]=useState(false);
   const cats=["all","Загвар","Нэхмэл","Урлаг","Орон зай","График"];
   const af=(cat!=="all"?1:0)+(price!=="all"?1:0)+(commOnly?1:0);
   const fc=getCreators().filter(c=>{
@@ -2344,6 +2366,12 @@ function Explore({nav, refresh}) {
     if(price==="over300"&&w.price<300000)return false;
     return true;
   });
+  // Search all users when on users tab
+  useEffect(()=>{
+    if(tab!=="users"||!debouncedQ.trim()){setUserResults([]);return;}
+    setUserLoading(true);
+    DB.searchProfiles(debouncedQ).then(res=>{setUserResults(res);setUserLoading(false);});
+  },[debouncedQ,tab]);
   const tFollow=id=>{GS.following.has(id)?GS.following.delete(id):GS.following.add(id);refresh();if(GS.user.id)DB.toggleFollow(GS.user.id,id);};
   const tLike=id=>{GS.liked.has(id)?GS.liked.delete(id):GS.liked.add(id);refresh();if(GS.user.id)DB.toggleLike(GS.user.id,id);};
   const tSave=id=>{GS.saved.has(id)?GS.saved.delete(id):GS.saved.add(id);refresh();if(GS.user.id)DB.toggleSave(GS.user.id,id);};
@@ -2364,7 +2392,7 @@ function Explore({nav, refresh}) {
       </div>
     </div>
     <div style={{display:"flex",borderBottom:`1px solid ${T.border}`,flexShrink:0}}>
-      {[["creators","Бүтээлч "+fc.length],["works","Бүтээл "+fw.length]].map(t=><button key={t[0]} onClick={()=>setTab(t[0])} style={{flex:1,padding:"11px 0",background:"none",border:"none",fontFamily:"system-ui",fontSize:14,fontWeight:tab===t[0]?700:500,color:tab===t[0]?T.accent:T.textSub,borderBottom:`2px solid ${tab===t[0]?T.accent:"transparent"}`,cursor:"pointer"}}>{t[1]}</button>)}
+      {[["creators","Бүтээлч "+fc.length],["works","Бүтээл "+fw.length],["users","Хэрэглэгч"]].map(t=><button key={t[0]} onClick={()=>setTab(t[0])} style={{flex:1,padding:"11px 0",background:"none",border:"none",fontFamily:"system-ui",fontSize:13,fontWeight:tab===t[0]?700:500,color:tab===t[0]?T.accent:T.textSub,borderBottom:`2px solid ${tab===t[0]?T.accent:"transparent"}`,cursor:"pointer"}}>{t[1]}</button>)}
     </div>
     <div style={{padding:"10px 20px 0",display:"flex",gap:8,overflowX:"auto",scrollbarWidth:"none",flexShrink:0}}>
       {cats.map(c=><button key={c} onClick={()=>setCat(c)} style={{flexShrink:0,padding:"6px 14px",borderRadius:20,cursor:"pointer",fontFamily:"system-ui",fontSize:12,fontWeight:600,background:cat===c?T.accent:T.s1,border:`1px solid ${cat===c?T.accent:T.border}`,color:cat===c?"#fff":T.textSub}}>{c==="all"?"Бүгд":c}</button>)}
@@ -2393,6 +2421,29 @@ function Explore({nav, refresh}) {
             <button onClick={()=>setVisibleCount(v=>v+12)} style={{background:T.s1,border:`1px solid ${T.border}`,borderRadius:12,padding:"12px 32px",fontFamily:"system-ui",fontSize:13,fontWeight:600,color:T.accent,cursor:"pointer"}}>Дараагийнхыг харах ({fw.length-visibleCount} үлдсэн)</button>
           </div>}
         </div>)}
+      {tab==="users"&&<div>
+        {!debouncedQ.trim()
+          ?<div style={{textAlign:"center",padding:"48px 20px"}}>
+            <div style={{fontSize:36,marginBottom:12}}>🔍</div>
+            <div style={{fontFamily:"system-ui",fontSize:15,fontWeight:600,color:T.textH,marginBottom:6}}>Хэрэглэгч хайх</div>
+            <div style={{fontFamily:"system-ui",fontSize:13,color:T.textSub}}>Дээрх хайлтанд нэр бичнэ үү</div>
+          </div>
+          :userLoading
+            ?<div style={{textAlign:"center",padding:"40px 0",fontFamily:"system-ui",fontSize:13,color:T.textSub}}>Хайж байна...</div>
+            :userResults.length===0
+              ?<div style={{textAlign:"center",padding:"40px 0",fontFamily:"system-ui",fontSize:13,color:T.textSub}}>"{debouncedQ}" — олдсонгүй</div>
+              :userResults.map(u=><div key={u.id} onClick={()=>nav("profile",{creatorId:u.id})} style={{display:"flex",alignItems:"center",gap:14,padding:"12px 0",borderBottom:`1px solid ${T.border}`,cursor:"pointer"}}>
+                <div style={{width:48,height:48,borderRadius:16,background:T.accentSub,border:`1px solid ${T.accentGlow}`,overflow:"hidden",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  {u.photo?<img src={u.photo} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<Toono size={28} color={T.accent}/>}
+                </div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontFamily:"system-ui",fontSize:15,fontWeight:700,color:T.textH,marginBottom:2}}>{u.name}</div>
+                  <div style={{fontFamily:"system-ui",fontSize:12,color:T.textSub}}>{u.field||"The TOONO хэрэглэгч"}</div>
+                </div>
+                <span style={{fontFamily:"system-ui",fontSize:10,fontWeight:700,padding:"3px 9px",borderRadius:8,background:u.role==="creator"?T.accentSub:T.s2,color:u.role==="creator"?T.accent:T.textSub}}>{u.role==="creator"?"Бүтээлч":"Худалдан авагч"}</span>
+              </div>)
+        }
+      </div>}
       <div style={{height:20}}/>
     </div>
     {filterOpen&&<div onClick={()=>setFilterOpen(false)} style={{position:"absolute",inset:0,background:"rgba(0,0,0,0.6)",zIndex:90}}>
