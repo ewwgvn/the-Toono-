@@ -229,6 +229,7 @@ create policy "Participants update orders" on public.orders for update using (bu
 -- Commissions
 create policy "Commission participants" on public.commissions for select using (buyer_id = auth.uid() or seller_id = auth.uid());
 create policy "Buyers create commissions" on public.commissions for insert with check (buyer_id = auth.uid());
+create policy "Participants update commissions" on public.commissions for update using (buyer_id = auth.uid() or seller_id = auth.uid());
 
 -- Notifications: only own
 create policy "Own notifications" on public.notifications for all using (user_id = auth.uid());

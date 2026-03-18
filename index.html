@@ -140,8 +140,8 @@ const DB = {
   async getWork(id) {
     if (!isSupabaseReady()) return null;
     const { data } = await supabase.from("works").select("*, profiles!creator_id(name, field, rating, comm_open, photo)").eq("id", id).single();
-    // Increment view count
-    if (data) supabase.from("works").update({ views_count: (data.views_count || 0) + 1 }).eq("id", id);
+    // Increment view count (fire-and-forget, no await needed)
+    if (data) supabase.from("works").update({ views_count: (data.views_count || 0) + 1 }).eq("id", id).then(()=>{});
     return data;
   },
 
@@ -267,6 +267,12 @@ const DB = {
   async createCommission(comm) {
     if (!isSupabaseReady()) return null;
     const { data } = await supabase.from("commissions").insert(comm).select().single();
+    return data;
+  },
+
+  async updateCommission(id, updates) {
+    if (!isSupabaseReady()) return null;
+    const { data } = await supabase.from("commissions").update(updates).eq("id", id).select().single();
     return data;
   },
 
@@ -485,11 +491,14 @@ async function syncFromSupabase() {
     GS.unreadNotif = notifs.filter(n=>!n.read).length;
     GS.seeded = true;
     GS.needsProfileSetup = !profile.name || profile.name.length === 0;
-    
+
     // Revenue calculation
     const totalRev = orders.filter(o=>o.status==="done").reduce((s,o)=>s+o.total_price,0);
     GS.user.revenue = "₮" + totalRev.toLocaleString();
-    
+
+    // Flush any pending writes from previous sessions
+    setTimeout(()=>SQ.flush(), 2000);
+
     return true;
   } catch(e) {
     console.error("Supabase sync error:", e);
@@ -541,11 +550,97 @@ const GS = {
   selectedOrderId: null,
   // Trust metrics (for Star Seller calculation)
   trustMetrics: {responseRate:100,onTimeRate:100,avgRating:0,totalOrders:0,memberSince:""},
+  // Pending Supabase writes — retried on next sync
+  syncQueue: [],
 };
 
 // ── DYNAMIC BADGE COMPUTATION (replaces manual counters) ──
 function getUnreadChat(){ return GS.conversations.reduce((s,c)=>s+(c.unread||0),0); }
 function getUnreadNotif(){ return GS.notifications.filter(n=>!n.read).length; }
+
+// ══════════════════════════════════════════
+// SYNC QUEUE — Never lose data to Supabase
+// If a write fails, it's queued and retried
+// ══════════════════════════════════════════
+const SQ = {
+  // Add a pending operation
+  push(op, payload) {
+    const item = {id: Date.now()+Math.random(), op, payload, retries: 0, ts: new Date().toISOString()};
+    GS.syncQueue.push(item);
+    saveGS();
+    // Try immediately in background
+    SQ.flush();
+    return item.id;
+  },
+
+  // Remove successfully synced item
+  done(id) {
+    GS.syncQueue = GS.syncQueue.filter(i => i.id !== id);
+    saveGS();
+  },
+
+  // Retry all pending items
+  async flush() {
+    if (!isSupabaseReady() || !GS.isLoggedIn || GS.syncQueue.length === 0) return;
+    const queue = [...GS.syncQueue];
+    for (const item of queue) {
+      try {
+        let ok = false;
+        switch(item.op) {
+          case 'createWork': {
+            const {data,error} = await supabase.from('works').insert(item.payload).select().single();
+            if (data) {
+              // Update local work with real Supabase ID
+              [GS.myWorks, WORKS].forEach(arr => {
+                const w = arr.find(w => w._sqId === item.id);
+                if (w) { w.id = data.id; delete w._sqId; }
+              });
+              ok = true;
+            } else if (error) console.error('[SQ] createWork:', error.message);
+            break;
+          }
+          case 'updateProfile': {
+            const {error} = await supabase.from('profiles').upsert(item.payload, {onConflict:'id'});
+            if (!error) ok = true;
+            else console.error('[SQ] updateProfile:', error.message);
+            break;
+          }
+          case 'createOrder': {
+            const {data,error} = await supabase.from('orders').insert(item.payload).select().single();
+            if (data) {
+              const o = GS.orders.find(o => o._sqId === item.id);
+              if (o) { o.id = data.id; delete o._sqId; }
+              ok = true;
+            } else if (error) console.error('[SQ] createOrder:', error.message);
+            break;
+          }
+          case 'createCommission': {
+            const {data,error} = await supabase.from('commissions').insert(item.payload).select().single();
+            if (data) ok = true;
+            else if (error) console.error('[SQ] createCommission:', error.message);
+            break;
+          }
+          case 'updateWork': {
+            const {error} = await supabase.from('works').update(item.payload.updates).eq('id', item.payload.id);
+            if (!error) ok = true;
+            break;
+          }
+        }
+        if (ok) SQ.done(item.id);
+        else {
+          item.retries = (item.retries || 0) + 1;
+          // Drop after 10 failed attempts
+          if (item.retries >= 10) SQ.done(item.id);
+          else saveGS();
+        }
+      } catch(e) {
+        item.retries = (item.retries || 0) + 1;
+        if (item.retries >= 10) SQ.done(item.id);
+        else saveGS();
+      }
+    }
+  },
+};
 
 // ── PERSISTENCE via window.storage ──
 const STORAGE_KEY = "toono-app-state";
@@ -574,6 +669,7 @@ async function saveGS() {
       wishlists: GS.wishlists || [],
       offers: GS.offers || [],
       trustMetrics: GS.trustMetrics || {},
+      syncQueue: GS.syncQueue || [],
     };
     await window.storage.set(STORAGE_KEY, JSON.stringify(data));
   } catch(e) { /* storage unavailable, silent fail */ }
@@ -605,6 +701,7 @@ async function loadGS() {
     GS.wishlists = data.wishlists || [{id:1,name:"Хадгалах жагсаалт",items:[]}];
     GS.offers = data.offers || [];
     GS.trustMetrics = data.trustMetrics || {responseRate:100,onTimeRate:100,avgRating:0,totalOrders:0,memberSince:""};
+    GS.syncQueue = data.syncQueue || [];
     // Recompute badge counters from actual data
     GS.unreadChat = getUnreadChat();
     GS.unreadNotif = getUnreadNotif();
@@ -1809,7 +1906,7 @@ function Login({nav}) {
       const synced = await syncFromSupabase();
       if (synced) {
         nav(GS.needsProfileSetup ? "profile-setup" : "home");
-        toast(`Тавтай морил! ${WORKS.length}작품 · ${CREATORS.length}창작자 불러옴`,"success");
+        toast(`Тавтай морил, ${GS.user.name.split(" ")[0]||""}! ${WORKS.length} бүтээл · ${CREATORS.length} бүтээлч`,"success");
       }
     } else {
       // localStorage fallback
@@ -2752,7 +2849,7 @@ function CreatorProfile({nav, refresh, goBack, creatorId}) {
         <div style={{display:"flex",gap:8,flexShrink:0}}>
           <button onClick={async ()=>{
               let convo = GS.conversations.find(cv=>cv.name===c.name);
-              if(!convo){convo={id:Date.now(),name:c.name,accent:c.accent||T.accent,online:false,unread:0,msgs:[]};GS.conversations.unshift(convo);}
+              if(!convo){convo={id:Date.now(),creatorId:c.id||null,name:c.name,accent:c.accent||T.accent,online:false,unread:0,msgs:[]};GS.conversations.unshift(convo);}
               if(isSupabaseReady()&&GS.user.id&&c.id&&GS.user.id!==c.id){
                 const dbConvo=await DB.getOrCreateConversation(GS.user.id,c.id);
                 if(dbConvo)convo.dbId=dbConvo.id;
@@ -2852,8 +2949,8 @@ function CommissionScreen({nav, goBack, creatorId}) {
           msg: form.desc,
           status: "pending",
         };
-        if (isSupabaseReady() && GS.user.id && creatorId) {
-          const saved = await DB.createCommission({
+        if (GS.user.id && creatorId) {
+          const commPayload = {
             buyer_id: GS.user.id,
             seller_id: creatorId,
             type: form.type || "",
@@ -2861,8 +2958,14 @@ function CommissionScreen({nav, goBack, creatorId}) {
             delivery_date: form.date || "",
             description: form.desc || "",
             status: "pending",
-          });
-          if (saved) newComm.id = saved.id;
+          };
+          if (isSupabaseReady()) {
+            const {data, error} = await supabase.from('commissions').insert(commPayload).select().single();
+            if (data) newComm.id = data.id;
+            else { SQ.push('createCommission', commPayload); if(error) console.error('[Comm]', error.message); }
+          } else {
+            SQ.push('createCommission', commPayload);
+          }
         }
         GS.myCommissions.unshift(newComm);
         GS.notifications.unshift({id:Date.now()+1,icon:"comm",title:"Захиалга илгээгдлээ",desc:`${form.type||"Загварын дизайн"} захиалга амжилттай илгээгдлээ.`,time:"Сая",read:true,to:"comm-manage"});
@@ -3093,6 +3196,11 @@ function ChatRoom({nav, refresh, goBack}) {
   useEffect(()=>{
     if(scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   },[msgs]);
+
+  // Clear unread when entering chatroom
+  useEffect(()=>{
+    if(convo&&convo.unread>0){convo.unread=0;saveGS();refresh();}
+  },[convo?.id]);
 
   // Load messages from Supabase on open
   useEffect(()=>{
@@ -4061,7 +4169,8 @@ function Checkout({nav, workId, refresh, goBack}) {
         else{
           setLoading(true);
           try{
-            const sellerId = items[0]?.creator_id || null;
+            // Find seller_id — check creator_id on item, or look up from WORKS array
+            const sellerId = items[0]?.creator_id || getAllWorks().find(w=>w.id===items[0]?.id)?.creator_id || null;
             const newOrder = {
               id: Date.now(),
               title: items.length===1 ? items[0].title : items.length+" бүтээл",
@@ -4075,9 +4184,9 @@ function Checkout({nav, workId, refresh, goBack}) {
               canReview: false,
               tracking: null,
             };
-            // Save to Supabase
-            if (isSupabaseReady() && GS.user.id && sellerId) {
-              const saved = await DB.createOrder({
+            // Save to Supabase — with retry queue
+            if (GS.user.id) {
+              const orderPayload = {
                 buyer_id: GS.user.id,
                 seller_id: sellerId,
                 items: newOrder.items,
@@ -4086,8 +4195,20 @@ function Checkout({nav, workId, refresh, goBack}) {
                 payment_method: method,
                 address: addr,
                 status: "pending",
-              });
-              if (saved) newOrder.id = saved.id;
+              };
+              if (isSupabaseReady() && sellerId) {
+                const {data, error} = await supabase.from('orders').insert(orderPayload).select().single();
+                if (data) {
+                  newOrder.id = data.id;
+                } else {
+                  const sqId = SQ.push('createOrder', orderPayload);
+                  newOrder._sqId = sqId;
+                  if (error) console.error('[Checkout] createOrder:', error.message);
+                }
+              } else if (sellerId) {
+                const sqId = SQ.push('createOrder', orderPayload);
+                newOrder._sqId = sqId;
+              }
             }
             GS.orders.unshift(newOrder);
             GS.selectedOrderId = newOrder.id;
@@ -4338,9 +4459,9 @@ function Upload({nav, goBack}) {
               images: imageUrls,
               video: videoUrl,
             };
-            // Save to Supabase
-            if (isSupabaseReady() && GS.user.id) {
-              const saved = await DB.createWork({
+            // Save to Supabase — with auto-retry queue if it fails
+            if (GS.user.id) {
+              const workPayload = {
                 creator_id: GS.user.id,
                 title: newWork.title,
                 description: newWork.desc || "",
@@ -4358,11 +4479,21 @@ function Upload({nav, goBack}) {
                 badge: newWork.badge || null,
                 status: "published",
                 accent: newWork.accent || "#5B8FE8",
-              });
-              if (saved) {
-                newWork.id = saved.id;
+              };
+              if (isSupabaseReady()) {
+                const {data, error} = await supabase.from('works').insert(workPayload).select().single();
+                if (data) {
+                  newWork.id = data.id;
+                } else {
+                  // Failed — add to retry queue, tag local work with sqId
+                  const sqId = SQ.push('createWork', workPayload);
+                  newWork._sqId = sqId;
+                  toast("Серверт хадгалагдсангүй. Сүлжээ сайжрахад автоматаар синк хийнэ","info");
+                  if (error) console.error('[Upload] createWork:', error.message, error.code);
+                }
               } else {
-                toast("Supabase хадгалагдсангүй — зөвхөн локал хадгалав","error");
+                const sqId = SQ.push('createWork', workPayload);
+                newWork._sqId = sqId;
               }
             }
             GS.myWorks.unshift(newWork);
@@ -4395,15 +4526,25 @@ function CommManage({nav, goBack}) {
   const done = GS.receivedCommissions.filter(c=>c.status==="done"||c.status==="delivered");
 
   const acceptComm = (r) => {
-    GS.receivedCommissions = GS.receivedCommissions.map(c=>c.id===r.id?{...c,status:"ongoing"}:c);
-    GS.notifications.unshift({id:Date.now(),icon:"comm",title:"Захиалга зөвшөөрөгдлөө",desc:`${r.buyer}-ын захиалгыг зөвшөөрлөө.`,time:"Сая",read:true,to:"comm-manage"});
-    setTick(t=>t+1);
+    GS.receivedCommissions = GS.receivedCommissions.map(c=>c.id===r.id?{...c,status:"ongoing",step:1}:c);
+    GS.notifications.unshift({id:Date.now(),icon:"comm",title:"Захиалга зөвшөөрөгдлөө",desc:`${r.buyer||r.buyer_id}-ын захиалгыг зөвшөөрлөө.`,time:"Сая",read:true,to:"comm-manage"});
+    if(isSupabaseReady()&&r.id) DB.updateCommission(r.id,{status:"ongoing",step:1});
+    saveGS(); setTick(t=>t+1);
     toast("Захиалга зөвшөөрөгдлөө","success");
   };
   const rejectComm = (r) => {
     GS.receivedCommissions = GS.receivedCommissions.filter(c=>c.id!==r.id);
-    setTick(t=>t+1);
+    if(isSupabaseReady()&&r.id) DB.updateCommission(r.id,{status:"rejected"});
+    saveGS(); setTick(t=>t+1);
     toast("Захиалга татгалзлаа","info");
+  };
+  const advanceStep = (r) => {
+    const nextStep = (r.step||1)+1;
+    const nextStatus = nextStep>=4?"delivered":"ongoing";
+    GS.receivedCommissions = GS.receivedCommissions.map(c=>c.id===r.id?{...c,step:nextStep,status:nextStatus}:c);
+    if(isSupabaseReady()&&r.id) DB.updateCommission(r.id,{step:nextStep,status:nextStatus});
+    saveGS(); setTick(t=>t+1);
+    toast(nextStep>=4?"Захиалга хүргэгдлээ":"Дараагийн шатанд шилжлээ","success");
   };
 
   return <div style={{height:"100%",display:"flex",flexDirection:"column",background:T.bg}}>
@@ -4446,7 +4587,7 @@ function CommManage({nav, goBack}) {
         <div style={{fontFamily:"system-ui",fontSize:11,color:T.textSub,marginBottom:12}}>{stepL[r.step-1]}</div>
         <div style={{display:"flex",gap:8}}>
           <PBtn full secondary onClick={()=>{GS.activeChatId=GS.conversations[0]?.id||null;nav("chatroom");}}>Харилцаа</PBtn>
-          {r.step<4&&<PBtn full onClick={()=>toast("Дараагийн шатанд шилжлээ","success")}>Дараах шат</PBtn>}
+          {r.step<4&&<PBtn full onClick={()=>advanceStep(r)}>Дараах шат</PBtn>}
         </div>
       </Crd>)}
       {tab==="done"&&done.map(r=><Crd key={r.id} style={{padding:"14px 16px",marginBottom:10}}>
