@@ -83,7 +83,8 @@ const DB = {
       options: { data: { name, role } }
     });
     if (!error && data.user) {
-      await supabase.from("profiles").update({ name, role, comm_open: role === "creator" }).eq("id", data.user.id);
+      // upsert handles both: trigger already created profile, or not yet
+      await supabase.from("profiles").upsert({ id: data.user.id, name, role, comm_open: role === "creator" }, { onConflict: "id" });
     }
     return { user: data?.user, error };
   },
@@ -384,8 +385,19 @@ async function syncFromSupabase() {
   try {
     const user = await DB.getCurrentUser();
     if (!user) return false;
-    
-    const profile = await DB.getProfile(user.id);
+
+    let profile = await DB.getProfile(user.id);
+    // Profile missing — create it (handles cases where trigger failed)
+    if (!profile) {
+      const meta = user.user_metadata || {};
+      await supabase.from("profiles").upsert({
+        id: user.id,
+        name: meta.name || "",
+        role: meta.role || "buyer",
+        comm_open: meta.role === "creator",
+      }, { onConflict: "id" });
+      profile = await DB.getProfile(user.id);
+    }
     if (!profile) return false;
     
     GS.isLoggedIn = true;
@@ -412,19 +424,20 @@ async function syncFromSupabase() {
       memberSince: profile.created_at?.slice(0,7) || "",
     };
     
-    // Load user data in parallel
+    // Load user data in parallel — each wrapped so one failure doesn't abort all
+    const safe = (p) => p.catch(() => []);
     const [myWorks, allWorks, orders, likes, saves, follows, notifs, comms, receivedComms, convos, allCreators] = await Promise.all([
-      DB.getMyWorks(user.id),
-      DB.getWorks(),
-      DB.getMyOrders(user.id),
-      DB.getMyLikes(user.id),
-      DB.getMySaves(user.id),
-      DB.getMyFollows(user.id),
-      DB.getNotifications(user.id),
-      DB.getMyCommissions(user.id),
-      DB.getReceivedCommissions(user.id),
-      DB.getConversations(user.id),
-      DB.getCreators(),
+      safe(DB.getMyWorks(user.id)),
+      safe(DB.getWorks()),
+      safe(DB.getMyOrders(user.id)),
+      safe(DB.getMyLikes(user.id)),
+      safe(DB.getMySaves(user.id)),
+      safe(DB.getMyFollows(user.id)),
+      safe(DB.getNotifications(user.id)),
+      safe(DB.getMyCommissions(user.id)),
+      safe(DB.getReceivedCommissions(user.id)),
+      safe(DB.getConversations(user.id)),
+      safe(DB.getCreators()),
     ]);
     // Populate global WORKS array with all published works from Supabase
     WORKS.length = 0;
@@ -4649,6 +4662,17 @@ function App() {
       setTab(s);
       setScreen("main");
       setHistory([]);
+      // Background refresh from Supabase when switching to home
+      if(s==="home"&&GS.isLoggedIn&&isSupabaseReady()){
+        Promise.all([
+          DB.getWorks().catch(()=>[]),
+          DB.getCreators().catch(()=>[]),
+        ]).then(([ws,cs])=>{
+          if(ws.length){WORKS.length=0;ws.forEach(w=>WORKS.push({...w,creator:w.profiles?.name||w.creator||"—"}));}
+          if(cs.length){CREATORS.length=0;cs.forEach(p=>{if(p.id!==GS.user.id)CREATORS.push(p);});}
+          setTick(t=>t+1);
+        });
+      }
     } else {
       setHistory(h=>[...h, screen]);
       setScreen(s);

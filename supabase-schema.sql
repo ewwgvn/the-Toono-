@@ -25,9 +25,21 @@ create table public.profiles (
 -- Auto-create profile on signup
 create or replace function public.handle_new_user()
 returns trigger as $$
+declare
+  user_role text;
 begin
-  insert into public.profiles (id, name)
-  values (new.id, coalesce(new.raw_user_meta_data->>'name', ''));
+  user_role := coalesce(new.raw_user_meta_data->>'role', 'buyer');
+  insert into public.profiles (id, name, role, comm_open)
+  values (
+    new.id,
+    coalesce(new.raw_user_meta_data->>'name', ''),
+    user_role,
+    (user_role = 'creator')
+  )
+  on conflict (id) do update set
+    name = excluded.name,
+    role = excluded.role,
+    comm_open = excluded.comm_open;
   return new;
 end;
 $$ language plpgsql security definer;
