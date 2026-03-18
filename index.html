@@ -290,7 +290,7 @@ const DB = {
   // Messages (realtime)
   async getConversations(userId) {
     if (!isSupabaseReady()) return [];
-    const { data } = await supabase.from("conversations").select("*, user_a_profile:profiles!user_a(name, photo), user_b_profile:profiles!user_b(name, photo)").or(`user_a.eq.${userId},user_b.eq.${userId}`).order("last_at", { ascending: false });
+    const { data } = await supabase.from("conversations").select("*, user_a_profile:profiles!user_a(id, name, photo), user_b_profile:profiles!user_b(id, name, photo)").or(`user_a.eq.${userId},user_b.eq.${userId}`).order("last_at", { ascending: false });
     return data || [];
   },
 
@@ -359,6 +359,13 @@ const DB = {
     if (filters.limit) query = query.limit(filters.limit);
     const { data } = await query;
     return data || [];
+  },
+
+  // Offers
+  async createOffer(offer) {
+    if (!isSupabaseReady()) return null;
+    const { data } = await supabase.from("offers").insert(offer).select().single();
+    return data;
   },
 
   // Search all users by name
@@ -451,6 +458,7 @@ async function syncFromSupabase() {
       const otherUnread = isA ? cv.unread_a : cv.unread_b;
       return {
         id: cv.id, dbId: cv.id,
+        creatorId: other?.id || null,
         name: other?.name || "—",
         photo: other?.photo || null,
         accent: "#5B8FE8",
@@ -1818,6 +1826,7 @@ function Login({nav}) {
       setLoading(false);
       if (error) {
         if (error.message.includes("already registered")) setErrors({email:"Энэ имэйл бүртгэлтэй байна"});
+        else if (error.message.toLowerCase().includes("rate limit") || error.message.toLowerCase().includes("email rate")) setErrors({email:"Имэйл хязгаар хэтэрлээ. Хэдэн минут хүлээгээд дахин оролдоно уу."});
         else setErrors({email: error.message});
         toast("Бүртгэл амжилтгүй","error");
         return;
@@ -2070,6 +2079,7 @@ function ProfileSetup({nav, refresh, goBack}) {
 
   const skip = () => {
     GS.needsProfileSetup = false;
+    saveGS();
     nav("home");
   };
 
@@ -2487,7 +2497,7 @@ function Simple({children, nav, title, back="home", right, goBack}) {
 }
 
 // ── WORK DETAIL ──
-function WorkDetail({nav, refresh, workId}) {
+function WorkDetail({nav, refresh, goBack, workId}) {
   const w=getAllWorks().find(x=>x.id===workId)||GS.myWorks[0]||{id:0,title:"—",creator:"—",price:0,accent:"#5B8FE8",likes:0,desc:"",sizes:[],colors:[],stock:0};
   const [offerOpen,setOfferOpen]=useState(false);
   const [zoomOpen,setZoomOpen]=useState(false);
@@ -2516,7 +2526,7 @@ function WorkDetail({nav, refresh, workId}) {
       <div style={{display:"flex",gap:12,color:T.textSub}}>
         <button onClick={tLike} style={{background:"none",border:"none",cursor:"pointer",color:liked?T.red:T.textSub,display:"flex"}}><IcHeart filled={liked}/></button>
         <button onClick={tSave} style={{background:"none",border:"none",cursor:"pointer",color:saved?T.accent:T.textSub,display:"flex"}}><IcBookmark filled={saved}/></button>
-        <button onClick={()=>toast("Холбоос хуулагдлаа","success")} style={{background:"none",border:"none",cursor:"pointer",color:T.textSub,display:"flex"}}><IcShare/></button>
+        <button onClick={()=>{navigator.clipboard?.writeText(`${location.origin}?work=${w.id}`).catch(()=>{});toast("Холбоос хуулагдлаа","success");}} style={{background:"none",border:"none",cursor:"pointer",color:T.textSub,display:"flex"}}><IcShare/></button>
         <button onClick={()=>nav("report")} style={{background:"none",border:"none",cursor:"pointer",fontSize:16}}><IcReport/></button>
       </div>
     </div>
@@ -2618,9 +2628,15 @@ function WorkDetail({nav, refresh, workId}) {
       <div style={{fontFamily:"system-ui",fontSize:12,fontWeight:600,color:T.textSub,marginBottom:6}}>Анхны үнэ: {fmtP(w)}</div>
       <input type="number" value={offerPrice} onChange={e=>setOfferPrice(e.target.value)} placeholder="Санал болгох үнэ (₮)" style={{width:"100%",background:T.s2,border:`1px solid ${T.border}`,borderRadius:13,padding:"14px 16px",fontFamily:"system-ui",fontSize:16,fontWeight:700,color:T.textH,outline:"none",marginBottom:12,boxSizing:"border-box"}}/>
       <textarea value={offerMsg} onChange={e=>setOfferMsg(e.target.value)} placeholder="Зурвас (заавал биш)" rows={3} style={{width:"100%",background:T.s2,border:`1px solid ${T.border}`,borderRadius:13,padding:"12px 16px",fontFamily:"system-ui",fontSize:14,color:T.textH,outline:"none",resize:"none",marginBottom:16,boxSizing:"border-box"}}/>
-      <PBtn full disabled={!offerPrice} onClick={()=>{
-        GS.offers.push({id:Date.now(),workId:w.id,workTitle:w.title,price:Number(offerPrice),msg:offerMsg,status:"pending",date:new Date().toLocaleDateString()});
-        GS.notifications.unshift({id:Date.now(),icon:"comm",title:"Үнийн санал илгээлээ",desc:`${w.title} — ₮${Number(offerPrice).toLocaleString()}`,time:"Сая",read:true,to:"me"});
+      <PBtn full disabled={!offerPrice} onClick={async ()=>{
+        const price = Number(offerPrice);
+        const newOffer = {id:Date.now(),workId:w.id,workTitle:w.title,price,msg:offerMsg,status:"pending",date:new Date().toLocaleDateString()};
+        if(isSupabaseReady()&&GS.user.id&&w.id){
+          const saved = await DB.createOffer({buyer_id:GS.user.id,work_id:w.id,price,message:offerMsg,status:"pending"});
+          if(saved) newOffer.id = saved.id;
+        }
+        GS.offers.push(newOffer);
+        GS.notifications.unshift({id:Date.now(),icon:"comm",title:"Үнийн санал илгээлээ",desc:`${w.title} — ₮${price.toLocaleString()}`,time:"Сая",read:true,to:"me"});
         setOfferOpen(false);setOfferPrice("");setOfferMsg("");
         refresh();toast("Үнийн санал илгээлээ","success");
       }}>Санал илгээх</PBtn>
@@ -2646,7 +2662,7 @@ function WorkDetail({nav, refresh, workId}) {
     <div style={{padding:"12px 20px 32px",background:T.bg,borderTop:`1px solid ${T.border}`,display:"flex",gap:8,alignItems:"center"}}>
       <button onClick={async ()=>{
         let convo = GS.conversations.find(cv=>cv.name===(w.creator||GS.user.name));
-        if(!convo){convo={id:Date.now(),name:w.creator||"Бүтээлч",accent:w.accent||T.accent,online:false,unread:0,msgs:[]};GS.conversations.unshift(convo);}
+        if(!convo){convo={id:Date.now(),creatorId:w.creator_id||null,name:w.creator||"Бүтээлч",accent:w.accent||T.accent,online:false,unread:0,msgs:[]};GS.conversations.unshift(convo);}
         if(isSupabaseReady()&&GS.user.id&&w.creator_id&&GS.user.id!==w.creator_id){
           const dbConvo=await DB.getOrCreateConversation(GS.user.id,w.creator_id);
           if(dbConvo)convo.dbId=dbConvo.id;
@@ -2667,13 +2683,13 @@ function WorkDetail({nav, refresh, workId}) {
            }} style={{flex:2,background:T.accent,border:"none",borderRadius:14,padding:14,fontFamily:"system-ui",fontSize:15,fontWeight:700,color:"#fff",cursor:"pointer"}}>Шууд авах — {fmtP(w)}</button></>
         :w.price>0
           ?<button onClick={()=>toast("Нөөц ирэхэд мэдэгдэл илгээнэ","success")} style={{flex:1,background:T.s2,border:`1px solid ${T.border}`,borderRadius:14,padding:14,fontFamily:"system-ui",fontSize:13,fontWeight:600,color:T.textSub,cursor:"pointer"}}><span style={{display:"flex",marginRight:4}}><IcBell/></span>Нөөц ирэхэд мэдэгдэх</button>
-          :<button onClick={()=>nav("commission")} style={{flex:1,background:T.accentSub,border:`1px solid ${T.accentGlow}`,borderRadius:14,padding:14,fontFamily:"system-ui",fontSize:14,fontWeight:600,color:T.accent,cursor:"pointer"}}>Захиалга өгөх</button>}
+          :<button onClick={()=>nav("commission",{creatorId:w.creator_id})} style={{flex:1,background:T.accentSub,border:`1px solid ${T.accentGlow}`,borderRadius:14,padding:14,fontFamily:"system-ui",fontSize:14,fontWeight:600,color:T.accent,cursor:"pointer"}}>Захиалга өгөх</button>}
     </div>
   </div>;
 }
 
 // ── CREATOR PROFILE ──
-function CreatorProfile({nav, refresh, creatorId}) {
+function CreatorProfile({nav, refresh, goBack, creatorId}) {
   const localCreator = getCreators().find(x=>x.id===creatorId)||null;
   const [creator, setCreator] = useState(localCreator || {id:creatorId,name:"...",field:"",followers:"0",works:0,comm:false,rating:0,accent:"#5B8FE8",bio:"",tags:[]});
   const [creatorWorks, setCreatorWorks] = useState(null);
@@ -2681,7 +2697,7 @@ function CreatorProfile({nav, refresh, creatorId}) {
   React.useEffect(()=>{
     if(!creatorId) return;
     // If it's the current user's own profile
-    if(creatorId===GS.user.id||creatorId===1) {
+    if(creatorId===GS.user.id) {
       setCreator({id:GS.user.id||1,name:GS.user.name,field:GS.user.field||"Бүтээлч",followers:GS.user.followers||"0",works:GS.myWorks.length,comm:GS.user.commOpen,rating:GS.trustMetrics?.avgRating||0,accent:"#5B8FE8",bio:GS.user.bio,tags:GS.user.tags||[]});
       setCreatorWorks(GS.myWorks);
       return;
@@ -2705,7 +2721,7 @@ function CreatorProfile({nav, refresh, creatorId}) {
     <div style={{padding:"20px 20px 0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
       <button onClick={()=>goBack?goBack():nav("home")} style={{background:"none",border:"none",color:T.textH,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}><IcBack/><span style={{fontFamily:"system-ui",fontSize:16,fontWeight:600}}>Буцах</span></button>
       <div style={{display:"flex",gap:8}}>
-        <button onClick={()=>toast("Профайлын холбоос хуулагдлаа","success")} style={{background:"none",border:"none",cursor:"pointer",color:T.textSub,display:"flex"}}><IcShare/></button>
+        <button onClick={()=>{const url=`${location.origin}?creator=${c.id}`;navigator.clipboard?.writeText(url).catch(()=>{});toast("Профайлын холбоос хуулагдлаа","success");}} style={{background:"none",border:"none",cursor:"pointer",color:T.textSub,display:"flex"}}><IcShare/></button>
         <button style={{background:"none",border:"none",cursor:"pointer",color:T.textSub,display:"flex"}}><IcDots/></button>
       </div>
     </div>
@@ -2770,7 +2786,7 @@ function CreatorProfile({nav, refresh, creatorId}) {
       </div></div>}
       {tab==="commission"&&<div style={{padding:"14px 20px 0"}}>
         {(c.comm?[["Захиалга өгөх","Бүтээлчтэй шууд холбогдож нөхцлийг тохирно",""]]:[]
-        ).map((cc,i)=><Crd key={i} onClick={()=>nav("commission")} style={{padding:"14px 16px",marginBottom:10,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        ).map((cc,i)=><Crd key={i} onClick={()=>nav("commission",{creatorId:c.id})} style={{padding:"14px 16px",marginBottom:10,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
           <div>
             <div style={{fontFamily:"system-ui",fontSize:14,fontWeight:700,color:T.textH,marginBottom:3}}>{cc[0]}</div>
             <div style={{fontFamily:"system-ui",fontSize:12,color:T.textSub}}>Хугацаа {cc[2]}</div>
@@ -2790,7 +2806,7 @@ function CreatorProfile({nav, refresh, creatorId}) {
       <div style={{height:40}}/>
     </div>
     {c.comm&&<div style={{padding:"12px 20px 32px",background:T.bg,borderTop:`1px solid ${T.border}`}}>
-      <PBtn full onClick={()=>nav("commission")}>Захиалга өгөх</PBtn>
+      <PBtn full onClick={()=>nav("commission",{creatorId:c.id})}>Захиалга өгөх</PBtn>
     </div>}
   </div>;
 }
@@ -3089,6 +3105,7 @@ function ChatRoom({nav, refresh, goBack}) {
     setMsgs(updated);
     if(convo) convo.msgs = updated;
     setMsg("");
+    saveGS();
     // Save to Supabase
     if(isSupabaseReady()&&GS.user.id&&convo?.dbId){
       DB.sendMessage(convo.dbId, GS.user.id, msg.trim()).then(()=>{
@@ -3111,7 +3128,7 @@ function ChatRoom({nav, refresh, goBack}) {
   return <div style={{height:"100%",display:"flex",flexDirection:"column",background:T.bg}}>
     <div style={{padding:"20px 20px 12px",display:"flex",alignItems:"center",gap:12,borderBottom:`1px solid ${T.border}`}}>
       <button onClick={()=>{GS.activeChatId=null;nav("chat");}} style={{background:"none",border:"none",color:T.textH,cursor:"pointer",display:"flex"}}><IcBack/></button>
-      <Avt size={38} color={convo?.accent||T.accent} photo={convo?.photo} onClick={()=>nav("profile",{creatorId:convo?.id||1})}/>
+      <Avt size={38} color={convo?.accent||T.accent} photo={convo?.photo} onClick={()=>convo?.creatorId&&nav("profile",{creatorId:convo.creatorId})}/>
       <div style={{flex:1}}>
         <div style={{fontFamily:"system-ui",fontSize:15,fontWeight:700,color:T.textH}}>{convo?.name||"The TOONO"}</div>
         <div style={{display:"flex",alignItems:"center",gap:5}}>
@@ -3120,7 +3137,7 @@ function ChatRoom({nav, refresh, goBack}) {
             :<span style={{fontFamily:"system-ui",fontSize:12,color:T.textSub}}>Сүүлд идэвхтэй</span>}
         </div>
       </div>
-      <PBtn small secondary onClick={()=>nav("commission")}>Захиалга</PBtn>
+      <PBtn small secondary onClick={()=>convo?.creatorId&&nav("commission",{creatorId:convo.creatorId})}>Захиалга</PBtn>
     </div>
     <div ref={scrollRef} style={{flex:1,overflowY:"auto",scrollbarWidth:"none",padding:"16px 20px"}}>
       <div style={{textAlign:"center",marginBottom:16}}>
@@ -3524,10 +3541,7 @@ function EditProfile({nav, refresh, goBack}) {
     {cropSrc&&<ImageCropper src={cropSrc} aspect="circle" onDone={(cropped)=>{setPhoto(cropped);setCropSrc(null);}} onCancel={()=>setCropSrc(null)}/>}
     <div style={{padding:"20px 20px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
       <button onClick={()=>{
-        if(step>0) setStep(step-1);
-        else if(title||desc||mediaFiles.length>0){
-          if(window.confirm("Хадгалаагүй мэдээлэл байна. Гарах уу?")) goBack?goBack():nav("me");
-        } else { goBack?goBack():nav("me"); }
+        goBack?goBack():nav("me");
       }} style={{background:"none",border:"none",color:T.textH,cursor:"pointer",display:"flex"}}><IcBack/></button>
       <div style={{fontFamily:"system-ui",fontSize:18,fontWeight:700,color:T.textH}}>Профайл засах</div>
       <PBtn small loading={loading} onClick={save}>Хадгалах</PBtn>
@@ -4062,13 +4076,15 @@ function Checkout({nav, workId, refresh, goBack}) {
               if (saved) newOrder.id = saved.id;
             }
             GS.orders.unshift(newOrder);
+            GS.selectedOrderId = newOrder.id;
             if(directItem) GS.directBuyItem = null;
             else GS.cart = [];
             GS.notifications.unshift({id:Date.now(),icon:"sale",title:"Захиалга баталгаажлаа",desc:`"${w.title}" захиалга амжилттай.`,time:"Сая",read:false,to:"order-detail"});
             GS.unreadNotif++;
             setLoading(false);
+            saveGS();
             nav("order-detail");
-            saveGS();toast("Төлбөр дууслаа!","success");
+            toast("Төлбөр дууслаа!","success");
           }catch(e){toast("Төлбөр амжилтгүй. Дахин оролдоно уу","error");setLoading(false);}
         }
       }}>{step===2?"₮"+total.toLocaleString()+" Төлөх":"Дараах"}</PBtn>
@@ -4352,7 +4368,7 @@ function Upload({nav, goBack}) {
 
 
 // ── COMM MANAGE ──
-function CommManage({nav}) {
+function CommManage({nav, goBack}) {
   const [tab,setTab]=useState("pending");
   const [,setTick]=useState(0);
   const stepL=["Захиалга Зөвшөөрөх","Ажил эхлэх","Хүргэлтэд бэлтгэх","Дууссан"];
@@ -4531,7 +4547,7 @@ function PrivacyScreen({nav}) {
 }
 
 // ── RETURN REQUEST ──
-function ReturnRequest({nav}) {
+function ReturnRequest({nav, goBack}) {
   const [reason,setReason]=useState("");
   const [detail,setDetail]=useState("");
   const [photos,setPhotos]=useState([]);
@@ -5072,7 +5088,7 @@ function ReferralScreen({nav, goBack}) {
 }
 
 // ── FOLLOWING FEED ──
-function FeedScreen({nav, refresh}) {
+function FeedScreen({nav, refresh, goBack}) {
   const tLike=id=>{GS.liked.has(id)?GS.liked.delete(id):GS.liked.add(id);refresh();if(GS.user.id)DB.toggleLike(GS.user.id,id);};
   const tSave=id=>{GS.saved.has(id)?GS.saved.delete(id):GS.saved.add(id);refresh();if(GS.user.id)DB.toggleSave(GS.user.id,id);};
   const feedPosts=[

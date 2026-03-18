@@ -229,6 +229,8 @@ create policy "Send messages" on public.messages for insert with check (sender_i
 
 -- Conversations
 create policy "Conversation participants" on public.conversations for select using (user_a = auth.uid() or user_b = auth.uid());
+create policy "Create conversations" on public.conversations for insert with check (user_a = auth.uid() or user_b = auth.uid());
+create policy "Update conversations" on public.conversations for update using (user_a = auth.uid() or user_b = auth.uid());
 
 -- Reviews: anyone reads, verified buyers write
 create policy "Reviews visible" on public.reviews for select using (true);
