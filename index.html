@@ -147,7 +147,8 @@ const DB = {
 
   async createWork(work) {
     if (!isSupabaseReady()) return null;
-    const { data } = await supabase.from("works").insert(work).select().single();
+    const { data, error } = await supabase.from("works").insert(work).select().single();
+    if (error) console.error("createWork error:", error.message, error.code);
     return data;
   },
 
@@ -1808,7 +1809,7 @@ function Login({nav}) {
       const synced = await syncFromSupabase();
       if (synced) {
         nav(GS.needsProfileSetup ? "profile-setup" : "home");
-        toast(`Тавтай морил, ${GS.user.name.split(" ")[0] || ""}!`,"success");
+        toast(`Тавтай морил! ${WORKS.length}작품 · ${CREATORS.length}창작자 불러옴`,"success");
       }
     } else {
       // localStorage fallback
@@ -4358,7 +4359,11 @@ function Upload({nav, goBack}) {
                 status: "published",
                 accent: newWork.accent || "#5B8FE8",
               });
-              if (saved) newWork.id = saved.id;
+              if (saved) {
+                newWork.id = saved.id;
+              } else {
+                toast("Supabase хадгалагдсангүй — зөвхөн локал хадгалав","error");
+              }
             }
             GS.myWorks.unshift(newWork);
             WORKS.unshift(newWork);
