@@ -507,6 +507,57 @@ async function syncFromSupabase() {
   }
 }
 
+async function fetchPublicData() {
+  if (!isSupabaseReady()) return;
+  try {
+    const [works, creators] = await Promise.all([
+      DB.getWorks(),
+      DB.getCreators()
+    ]);
+    GS.publicWorks = (works || []).map(w => ({
+      id: w.id,
+      title: w.title,
+      creator: w.profiles?.name || "Бүтээлч",
+      cid: w.creator_id,
+      price: w.price || 0,
+      accent: w.accent || "#5B8FE8",
+      likes: w.likes_count || 0,
+      desc: w.description || "",
+      sizes: w.sizes || [],
+      colors: w.colors || [],
+      stock: w.stock || 1,
+      cat: w.category || "",
+      medium: w.material || w.medium || "",
+      duration: "",
+      tags: w.tags || [],
+      images: w.images || [],
+      video: w.video || null,
+      year: w.created_at ? new Date(w.created_at).getFullYear() : 2026,
+      status: w.status || "published",
+      sales: w.sales_count || 0,
+      views: w.views_count || 0,
+      digital: w.digital || false,
+      badge: w.badge || null,
+    }));
+    GS.publicCreators = (creators || []).map(c => ({
+      id: c.id,
+      name: c.name || "",
+      field: c.field || "Бүтээлч",
+      followers: String(c.followers_count || 0),
+      works: 0,
+      comm: c.comm_open || false,
+      rating: c.rating || 0,
+      accent: "#5B8FE8",
+      level: c.rating >= 4.8 ? "top" : c.rating >= 3 ? "verified" : "rising",
+      photo: c.photo || null,
+      bio: c.bio || "",
+      tags: c.tags || [],
+    }));
+  } catch(e) {
+    console.error("fetchPublicData error:", e);
+  }
+}
+
 const GS = {
   liked:new Set(), saved:new Set(), following:new Set(),
   unreadChat:0, unreadNotif:0, cart:[], cartCount:0,
@@ -553,6 +604,8 @@ const GS = {
   trustMetrics: {responseRate:100,onTimeRate:100,avgRating:0,totalOrders:0,memberSince:""},
   // Pending Supabase writes — retried on next sync
   syncQueue: [],
+  publicWorks: [],
+  publicCreators: [],
 };
 
 // ── DYNAMIC BADGE COMPUTATION (replaces manual counters) ──
@@ -755,6 +808,8 @@ function resetGS() {
   GS.wishlists = [{id:1,name:"Хадгалах жагсаалт",items:[]}];
   GS.offers = [];
   GS.trustMetrics = {responseRate:0,onTimeRate:0,avgRating:0,totalOrders:0,memberSince:""};
+  GS.publicWorks = [];
+  GS.publicCreators = [];
   saveGS();
 }
 
@@ -1722,34 +1777,32 @@ const MATERIALS = ["Бүгд","Тэмээний ноос","Хонины ноос
 // Dynamic data arrays — populated by user actions, persisted via GS
 const CREATORS = [];
 function getCreators() {
-  const list = [];
-  // Add logged-in user if creator
-  if(GS.isLoggedIn && GS.currentRole==="creator") {
-    list.push({id:GS.user.id||1,name:GS.user.name,field:GS.user.field||"Бүтээлч",photo:GS.user.photo||null,followers:GS.user.followers||"0",works:GS.myWorks.length,comm:GS.user.commOpen,rating:GS.trustMetrics?.avgRating||0,accent:"#5B8FE8",level:GS.trustMetrics?.avgRating>=4.8?"top":"verified",bio:GS.user.bio,tags:GS.user.tags});
+  const list = [...GS.publicCreators];
+  if (GS.isLoggedIn && GS.currentRole === "creator") {
+    if (!list.find(c => c.id === GS.user.id)) {
+      list.unshift({
+        id: GS.user.id || 1,
+        name: GS.user.name,
+        field: GS.user.field || "Бүтээлч",
+        followers: GS.user.followers || "0",
+        works: GS.myWorks.length,
+        comm: GS.user.commOpen,
+        rating: GS.trustMetrics?.avgRating || 0,
+        accent: "#5B8FE8",
+        level: "verified",
+        photo: GS.user.photo || null,
+        bio: GS.user.bio || "",
+        tags: GS.user.tags || [],
+      });
+    }
   }
-  // Add creators fetched from Supabase (even if they have no works yet)
-  const seen = new Set(list.map(c=>c.id));
-  CREATORS.forEach(p => {
-    if(p.id && !seen.has(p.id)) {
-      seen.add(p.id);
-      list.push({id:p.id,name:p.name||"—",field:p.field||"Бүтээлч",photo:p.photo||null,followers:String(p.followers_count||0),works:0,comm:p.comm_open||false,rating:p.rating||0,accent:"#5B8FE8",bio:p.bio||"",tags:p.tags||[]});
-    }
-  });
-  // Also add creators from WORKS (fills in works count and accent color)
-  WORKS.forEach(w => {
-    if(w.creator_id && !seen.has(w.creator_id)) {
-      seen.add(w.creator_id);
-      list.push({id:w.creator_id,name:w.creator||w.profiles?.name||"—",field:w.profiles?.field||"Бүтээлч",photo:w.profiles?.photo||null,followers:String(w.profiles?.followers_count||0),works:0,comm:w.profiles?.comm_open||false,rating:w.profiles?.rating||0,accent:w.accent||"#5B8FE8",bio:w.profiles?.bio||"",tags:w.profiles?.tags||[]});
-    }
-  });
   return list;
 }
 const WORKS = [];
 function getAllWorks() {
-  // Combine user's works + WORKS array (which gets items pushed from uploads)
-  const combined = [...WORKS];
+  const combined = [...GS.publicWorks];
   GS.myWorks.forEach(w => {
-    if(!combined.find(x=>x.id===w.id)) combined.unshift(w);
+    if (!combined.find(x => x.id === w.id)) combined.unshift(w);
   });
   return combined;
 }
@@ -1929,8 +1982,9 @@ function Login({nav}) {
       }
       const synced = await syncFromSupabase();
       if (synced) {
+        await fetchPublicData();
         nav(GS.needsProfileSetup ? "profile-setup" : "home");
-        toast(`Тавтай морил, ${GS.user.name.split(" ")[0]||""}! ${WORKS.length} бүтээл · ${CREATORS.length} бүтээлч`,"success");
+        toast(`Тавтай морил, ${GS.user.name.split(" ")[0]||""}! ${getAllWorks().length} бүтээл · ${getCreators().length} бүтээлч`,"success");
       }
     } else {
       // localStorage fallback
@@ -4790,7 +4844,7 @@ function App() {
   useEffect(()=>{
     const init = async () => {
       // Version check — clear stale data on app update
-      const APP_VERSION = "2.0.0";
+      const APP_VERSION = "2.1.0";
       try {
         const savedVer = localStorage.getItem("toono-version");
         if (savedVer !== APP_VERSION) {
@@ -4809,12 +4863,13 @@ function App() {
         const session = await DB.getSession();
         if (session) {
           const synced = await syncFromSupabase();
-          if (synced) { setScreen(GS.needsProfileSetup ? "profile-setup" : "main"); return; }
+          if (synced) { await fetchPublicData(); setScreen(GS.needsProfileSetup ? "profile-setup" : "main"); return; }
         }
       }
       // 2. Fallback to localStorage
       const loaded = await loadGS();
       if(loaded && GS.isLoggedIn && GS.user.name) {
+        await fetchPublicData();
         setScreen("main");
       } else {
         await new Promise(r=>setTimeout(r,1500));
