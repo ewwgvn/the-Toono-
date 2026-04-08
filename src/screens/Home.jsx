@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { T } from "@/theme/colors";
 import { GS } from "@/lib/store";
 import { DB } from "@/lib/supabase";
@@ -15,11 +15,29 @@ import {
 
 export default function Home({ nav, refresh }) {
   const [cat, setCat] = useState("all");
+  const [commentCounts, setCommentCounts] = useState({});
   const cats = ["all","Загвар","Нэхмэл","Урлаг","График"];
   const allW = getAllWorks();
   const filtered = cat==="all" ? allW : allW.filter(w => w.cat===cat);
   const tLike = id => {GS.liked.has(id)?GS.liked.delete(id):GS.liked.add(id);refresh();if(GS.user.id)DB.toggleLike(GS.user.id,id);};
   const tSave = id => {GS.saved.has(id)?GS.saved.delete(id):GS.saved.add(id);refresh();if(GS.user.id)DB.toggleSave(GS.user.id,id);};
+  const handleComment = useCallback(async (workId, text) => {
+    if (!GS.user.id) return;
+    const c = await DB.addComment(workId, GS.user.id, text);
+    if (c) setCommentCounts(prev => ({ ...prev, [workId]: (prev[workId] || 0) + 1 }));
+  }, []);
+
+  // Load comment counts for visible works
+  useEffect(() => {
+    const ids = filtered.map(w => w.id);
+    ids.forEach(id => {
+      if (commentCounts[id] === undefined) {
+        DB.getCommentCount(id).then(cnt => {
+          if (cnt > 0) setCommentCounts(prev => ({ ...prev, [id]: cnt }));
+        });
+      }
+    });
+  }, [filtered.map(w => w.id).join(",")]);
 
   return <div style={{height:"100%",display:"flex",flexDirection:"column",background:T.bg}}>
 
@@ -138,7 +156,7 @@ export default function Home({ nav, refresh }) {
 
       {/* Feed */}
       {filtered.length>0?<div style={{marginBottom:20}}>
-        {filtered.map(w => <WorkCard key={w.id} work={w} feed onClick={() => nav("work",{workId:w.id})} onCreatorClick={w.creator_id ? () => nav("profile",{creatorId:w.creator_id||w.cid}) : undefined} onToggleLike={tLike} onToggleSave={tSave} liked={GS.liked.has(w.id)} saved={GS.saved.has(w.id)}/>)}
+        {filtered.map(w => <WorkCard key={w.id} work={w} feed onClick={() => nav("work",{workId:w.id})} onCreatorClick={(w.creator_id||w.cid) ? () => nav("profile",{creatorId:w.creator_id||w.cid}) : undefined} onToggleLike={tLike} onToggleSave={tSave} onComment={handleComment} liked={GS.liked.has(w.id)} saved={GS.saved.has(w.id)} commentCount={commentCounts[w.id]||0} userPhoto={GS.user.photo}/>)}
       </div>
       :<div style={{padding:"40px 20px",textAlign:"center"}}>
         <div style={{width:72,height:72,borderRadius:22,background:T.accentSub,border:`1px solid ${T.accentGlow}`,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px"}}><Toono size={40} color={T.accent}/></div>

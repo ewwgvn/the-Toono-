@@ -43,6 +43,7 @@ input:focus, textarea:focus { border-color: rgba(91,143,232,0.4) !important; }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+@keyframes feedHeartPop { 0% { transform: scale(0); opacity: 0; } 15% { transform: scale(1.2); opacity: 1; } 30% { transform: scale(0.95); opacity: 1; } 45% { transform: scale(1); opacity: 1; } 80% { transform: scale(1); opacity: 1; } 100% { transform: scale(1); opacity: 0; } }
 
 /* ── MOBILE FIRST (default) ── */
 .toono-mobile-nav { display: flex; }

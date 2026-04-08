@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { T } from "@/theme/colors";
 import { fmtP } from "@/lib/utils";
 import { IcHeart, IcBookmark, IcShare } from "@/components/icons";
@@ -8,45 +8,83 @@ import Crd from "@/components/atoms/Crd";
 import Toono from "@/components/atoms/Toono";
 import Avt from "@/components/atoms/Avt";
 
-export default function WorkCard({ work: w, onClick, onCreatorClick, onToggleLike, onToggleSave, horizontal, feed, liked, saved }) {
+function timeAgo(dateStr) {
+  if (!dateStr) return "";
+  const sec = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
+  if (sec < 60) return "방금";
+  const min = Math.floor(sec / 60);
+  if (min < 60) return `${min}분`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `${hr}시간`;
+  const day = Math.floor(hr / 24);
+  if (day < 7) return `${day}일`;
+  const wk = Math.floor(day / 7);
+  if (wk < 5) return `${wk}주`;
+  const mo = Math.floor(day / 30);
+  return `${mo}개월`;
+}
+
+export default function WorkCard({ work: w, onClick, onCreatorClick, onToggleLike, onToggleSave, onComment, horizontal, feed, liked, saved, commentCount, userPhoto }) {
   const thumb = w.images?.[0] || null;
   const [imgIdx, setImgIdx] = useState(0);
   const imgs = w.images?.length ? w.images : [];
+  const [showHeart, setShowHeart] = useState(false);
+  const [commentText, setCommentText] = useState("");
+  const lastTap = useRef(0);
+  const touchStart = useRef(null);
+
+  // Double-tap to like
+  const handleDoubleTap = useCallback(() => {
+    const now = Date.now();
+    if (now - lastTap.current < 300) {
+      if (!liked && onToggleLike) onToggleLike(w.id);
+      setShowHeart(true);
+      setTimeout(() => setShowHeart(false), 800);
+    }
+    lastTap.current = now;
+  }, [liked, onToggleLike, w.id]);
+
+  // Swipe for multiple images
+  const handleTouchStart = (e) => { touchStart.current = e.touches[0].clientX; };
+  const handleTouchEnd = (e) => {
+    if (touchStart.current === null || imgs.length <= 1) return;
+    const diff = touchStart.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0 && imgIdx < imgs.length - 1) setImgIdx(imgIdx + 1);
+      if (diff < 0 && imgIdx > 0) setImgIdx(imgIdx - 1);
+    }
+    touchStart.current = null;
+  };
+
+  const likeCount = (w.likes || 0) + (liked && !(w._origLiked) ? 1 : 0) - (!liked && w._origLiked ? 1 : 0);
 
   // ── Feed mode (Instagram-style) ──
   if (feed) {
     return (
-      <div style={{ marginBottom: 2, background: T.bg }}>
+      <div style={{ marginBottom: 0, background: T.bg, borderBottom: `1px solid ${T.border}` }}>
         {/* Creator header */}
-        <div
-          onClick={onCreatorClick}
-          style={{
-            display: "flex", alignItems: "center", gap: 10,
-            padding: "12px 16px", cursor: onCreatorClick ? "pointer" : "default",
-          }}
-        >
-          <Avt size={32} color={w.accent || T.accent} photo={w.creatorPhoto} />
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontFamily: "system-ui", fontSize: 13, fontWeight: 700, color: T.textH }}>{w.creator}</div>
-            {w.cat && <div style={{ fontFamily: "system-ui", fontSize: 11, color: T.textSub }}>{w.cat}</div>}
+        <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 16px" }}>
+          <div onClick={onCreatorClick} style={{ cursor: onCreatorClick ? "pointer" : "default", display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
+            <Avt size={32} color={w.accent || T.accent} photo={w.creatorPhoto} />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontFamily: "system-ui", fontSize: 13, fontWeight: 700, color: T.textH }}>{w.creator}</div>
+            </div>
           </div>
-          <div style={{ fontFamily: "system-ui", fontSize: 14, fontWeight: 700, color: T.accent }}>{fmtP(w)}</div>
+          {w.createdAt && <div style={{ fontFamily: "system-ui", fontSize: 11, color: T.textSub }}>{timeAgo(w.createdAt)}</div>}
         </div>
 
-        {/* Image */}
+        {/* Image with swipe + double-tap */}
         <div
-          onClick={onClick}
+          onClick={handleDoubleTap}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
           style={{
-            width: "100%",
-            aspectRatio: "1",
-            background: T.s2,
-            cursor: "pointer",
-            position: "relative",
-            overflow: "hidden",
+            width: "100%", aspectRatio: "1", background: T.s2,
+            cursor: "pointer", position: "relative", overflow: "hidden", userSelect: "none",
           }}
         >
           {imgs.length > 0 ? (
-            <img src={imgs[imgIdx]} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            <img src={imgs[imgIdx]} alt="" loading="lazy" draggable={false} style={{ width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }} />
           ) : (
             <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: `linear-gradient(145deg,${w.accent || T.accent}20,${w.accent || T.accent}06)` }}>
               <Toono size={80} color={w.accent || T.accent} />
@@ -57,22 +95,32 @@ export default function WorkCard({ work: w, onClick, onCreatorClick, onToggleLik
               {w.badge}
             </span>
           )}
+          {/* Image counter */}
+          {imgs.length > 1 && (
+            <div style={{ position: "absolute", top: 12, right: 12, fontFamily: "system-ui", fontSize: 11, fontWeight: 600, color: "#fff", background: "rgba(0,0,0,0.6)", padding: "3px 8px", borderRadius: 10 }}>
+              {imgIdx + 1}/{imgs.length}
+            </div>
+          )}
           {/* Image dots */}
           {imgs.length > 1 && (
             <div style={{ position: "absolute", bottom: 12, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 5 }}>
               {imgs.map((_, i) => (
-                <div
-                  key={i}
-                  onClick={(e) => { e.stopPropagation(); setImgIdx(i); }}
-                  style={{ width: 6, height: 6, borderRadius: 3, background: i === imgIdx ? "#fff" : "rgba(255,255,255,0.4)", cursor: "pointer", transition: "all .2s" }}
-                />
+                <div key={i} style={{ width: 6, height: 6, borderRadius: 3, background: i === imgIdx ? "#fff" : "rgba(255,255,255,0.4)", transition: "all .2s" }} />
               ))}
+            </div>
+          )}
+          {/* Double-tap heart animation */}
+          {showHeart && (
+            <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
+              <svg width="80" height="80" viewBox="0 0 20 20" fill="#E04848" style={{ filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.3))", animation: "feedHeartPop .8s ease forwards" }}>
+                <path d="M10 17C10 17 2.5 12 2.5 7C2.5 4.5 4.5 2.5 7 2.5C8.5 2.5 9.5 3.2 10 4C10.5 3.2 11.5 2.5 13 2.5C15.5 2.5 17.5 4.5 17.5 7C17.5 12 10 17 10 17Z"/>
+              </svg>
             </div>
           )}
         </div>
 
         {/* Action buttons */}
-        <div style={{ padding: "10px 14px 4px", display: "flex", alignItems: "center" }}>
+        <div style={{ padding: "10px 14px 2px", display: "flex", alignItems: "center" }}>
           <div style={{ display: "flex", gap: 14, alignItems: "center", flex: 1 }}>
             <button
               onClick={(e) => { e.stopPropagation(); onToggleLike && onToggleLike(w.id); }}
@@ -101,10 +149,57 @@ export default function WorkCard({ work: w, onClick, onCreatorClick, onToggleLik
           </button>
         </div>
 
-        {/* Title */}
-        <div style={{ padding: "2px 16px 14px" }}>
+        {/* Like count */}
+        {likeCount > 0 && (
+          <div style={{ padding: "0 16px 2px", fontFamily: "system-ui", fontSize: 13, fontWeight: 700, color: T.textH }}>
+            {likeCount.toLocaleString()} таалагдсан
+          </div>
+        )}
+
+        {/* Caption */}
+        <div style={{ padding: "2px 16px 0" }}>
           <span style={{ fontFamily: "system-ui", fontSize: 13, fontWeight: 700, color: T.textH }}>{w.creator}</span>
           <span style={{ fontFamily: "system-ui", fontSize: 13, color: T.text, marginLeft: 6 }}>{w.title}</span>
+        </div>
+
+        {/* Comment count + view all */}
+        {commentCount > 0 && (
+          <div onClick={onClick} style={{ padding: "4px 16px 0", fontFamily: "system-ui", fontSize: 13, color: T.textSub, cursor: "pointer" }}>
+            {commentCount}개 댓글 모두 보기
+          </div>
+        )}
+
+        {/* Price */}
+        <div style={{ padding: "4px 16px 0", fontFamily: "system-ui", fontSize: 14, fontWeight: 700, color: T.accent }}>
+          {fmtP(w)}
+        </div>
+
+        {/* Comment input */}
+        <div style={{ padding: "8px 16px 12px", display: "flex", alignItems: "center", gap: 10 }}>
+          {userPhoto !== undefined && <Avt size={24} color={T.accent} photo={userPhoto} />}
+          <input
+            value={commentText}
+            onChange={(e) => setCommentText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && commentText.trim() && onComment) {
+                onComment(w.id, commentText.trim());
+                setCommentText("");
+              }
+            }}
+            placeholder="Сэтгэгдэл бичих..."
+            style={{
+              flex: 1, background: "none", border: "none", outline: "none",
+              fontFamily: "system-ui", fontSize: 13, color: T.text, padding: 0,
+            }}
+          />
+          {commentText.trim() && (
+            <button
+              onClick={() => { if (onComment) { onComment(w.id, commentText.trim()); setCommentText(""); } }}
+              style={{ background: "none", border: "none", fontFamily: "system-ui", fontSize: 13, fontWeight: 700, color: T.accent, cursor: "pointer", padding: 0 }}
+            >
+              게시
+            </button>
+          )}
         </div>
       </div>
     );

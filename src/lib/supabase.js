@@ -194,6 +194,30 @@ export const DB = {
     return (data || []).map(d => d.following_id);
   },
 
+  // Comments
+  async getComments(workId, limit = 20) {
+    if (!isSupabaseReady()) return [];
+    const { data } = await supabase.from("comments").select("*, profiles!user_id(name, photo)").eq("work_id", workId).order("created_at", { ascending: false }).limit(limit);
+    return data || [];
+  },
+
+  async addComment(workId, userId, text) {
+    if (!isSupabaseReady() || !text.trim()) return null;
+    const { data } = await supabase.from("comments").insert({ work_id: workId, user_id: userId, text: text.trim() }).select("*, profiles!user_id(name, photo)").single();
+    return data;
+  },
+
+  async deleteComment(commentId) {
+    if (!isSupabaseReady()) return;
+    await supabase.from("comments").delete().eq("id", commentId);
+  },
+
+  async getCommentCount(workId) {
+    if (!isSupabaseReady()) return 0;
+    const { count } = await supabase.from("comments").select("id", { count: "exact", head: true }).eq("work_id", workId);
+    return count || 0;
+  },
+
   // Notifications
   async getNotifications(userId) {
     if (!isSupabaseReady()) return [];
@@ -484,6 +508,8 @@ export async function fetchPublicData() {
       tags: w.tags || [],
       images: w.images || [],
       video: w.video || null,
+      creator_id: w.creator_id,
+      createdAt: w.created_at || null,
       year: w.created_at ? new Date(w.created_at).getFullYear() : 2026,
       status: w.status || "published",
       sales: w.sales_count || 0,

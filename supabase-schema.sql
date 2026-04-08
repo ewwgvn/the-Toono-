@@ -172,6 +172,19 @@ create table public.follows (
   primary key (follower_id, following_id)
 );
 
+-- 8b. COMMENTS
+create table public.comments (
+  id bigint generated always as identity primary key,
+  work_id bigint references public.works(id) on delete cascade not null,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  text text not null,
+  created_at timestamptz default now()
+);
+alter table public.comments enable row level security;
+create policy "Comments visible" on public.comments for select using (true);
+create policy "Own comments" on public.comments for insert with check (user_id = auth.uid());
+create policy "Delete own comments" on public.comments for delete using (user_id = auth.uid());
+
 -- 9. OFFERS (price negotiation)
 create table public.offers (
   id bigint generated always as identity primary key,
