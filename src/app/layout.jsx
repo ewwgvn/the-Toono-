@@ -3,6 +3,9 @@ import "./globals.css";
 export const metadata = {
   title: "The TOONO — Бүтээлчдийн Зах",
   description: "The TOONO — Монгол бүтээлчдийн дижитал зах",
+};
+
+export const viewport = {
   themeColor: "#08090E",
 };
 
