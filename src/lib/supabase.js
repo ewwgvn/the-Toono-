@@ -469,6 +469,7 @@ export async function fetchPublicData() {
       id: w.id,
       title: w.title,
       creator: w.profiles?.name || "\u0411\u04AF\u0442\u044D\u044D\u043B\u0447",
+      creatorPhoto: w.profiles?.photo || null,
       cid: w.creator_id,
       price: w.price || 0,
       accent: w.accent || "#5B8FE8",
