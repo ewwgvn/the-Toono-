@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body, #__next {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background: #08090E;
+}
+
+html {
+  height: -webkit-fill-available;
+}
+
+body {
+  min-height: -webkit-fill-available;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+}
+
+input, textarea, button, select {
+  font-family: inherit;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+
+input, textarea, button { font-family: 'DM Sans', system-ui, -apple-system, sans-serif; }
+button:active { opacity: 0.75; }
+input:focus, textarea:focus { border-color: rgba(91,143,232,0.4) !important; }
+
+@keyframes shimmer { 0% { background-position: 200% 0; } to { background-position: -200% 0; } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+
+/* ── MOBILE FIRST (default) ── */
+.toono-mobile-nav { display: flex; }
+.toono-desktop-nav { display: none; }
+.toono-content { width: 100%; max-width: 100%; margin: 0 auto; }
+.toono-grid-2 { grid-template-columns: 1fr 1fr !important; }
+.toono-desktop-only { display: none !important; }
+.toono-mobile-only { display: flex; }
+
+/* iOS momentum scrolling */
+[style*="overflow-y: auto"], [style*="overflowY:auto"], [style*="overflowY: auto"] {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent iOS input zoom */
+input, textarea, select { font-size: 16px !important; -webkit-appearance: none; appearance: none; }
+
+/* Better tap feedback */
+button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+
+/* Prevent text selection on tap */
+.toono-mobile-nav button { user-select: none; -webkit-user-select: none; }
+
+/* ── TABLET (768px+) ── */
+@media (min-width: 768px) {
+  .toono-mobile-nav { display: none !important; }
+  .toono-desktop-nav { display: flex !important; }
+  .toono-content { max-width: 800px; padding: 0 24px; margin: 0 auto; }
+  .toono-grid-2 { grid-template-columns: repeat(3, 1fr) !important; }
+  .toono-desktop-only { display: flex !important; }
+  .toono-mobile-only { display: none !important; }
+  input, textarea, select { font-size: 14px !important; }
+}
+
+/* ── DESKTOP (1024px+) ── */
+@media (min-width: 1024px) {
+  .toono-content { max-width: 1000px; padding: 0 32px; }
+  .toono-grid-2 { grid-template-columns: repeat(4, 1fr) !important; }
+}
+
+/* ── WIDE DESKTOP (1400px+) ── */
+@media (min-width: 1400px) {
+  .toono-content { max-width: 1200px; }
+}
