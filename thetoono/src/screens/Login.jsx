@@ -26,7 +26,7 @@ export default function Login({ nav }) {
   const [showPw, setShowPw] = useState(false);
   const [name, setName] = useState("");
   const [errors, setErrors] = useState({});
-  const [agree, setAgree] = useState(false);
+  const [agreeItems, setAgreeItems] = useState({ terms: false, privacy: false, age: false, marketing: false });
 
   const validate = () => {
     const e = {};
@@ -77,7 +77,7 @@ export default function Login({ nav }) {
     const e = validate();
     if (!name) e.name = "Нэр оруулна уу";
     if (pw !== pwConfirm) e.pwConfirm = "Нууц үг таарахгүй байна";
-    if (!agree) e.agree = "Үйлчилгээний нөхцлийг зөвшөөрнө үү";
+    if (!agreeItems.terms || !agreeItems.privacy || !agreeItems.age) e.agree = "Шаардлагатай нөхцлүүдийг зөвшөөрнө үү";
     if (Object.keys(e).length) { setErrors(e); return; }
     setErrors({});
     setLoading(true);
@@ -253,12 +253,12 @@ export default function Login({ nav }) {
             {key:"age",label:"[Шаардлагатай] 14 нас дээш болохоо баталж байна",required:true},
             {key:"marketing",label:"[Сонголтоор] Маркетинг мэдээлэл хүлээн авах",required:false},
           ].map(item => <div key={item.key} style={{display:"flex",alignItems:"center",gap:10,padding:"7px 0",borderBottom:`1px solid ${T.border}`}}>
-            <input type="checkbox" checked={item.required?agree:false} onChange={e => {if(item.required)setAgree(e.target.checked);}} style={{accentColor:T.accent,width:16,height:16,flexShrink:0,cursor:"pointer"}}/>
+            <input type="checkbox" checked={!!agreeItems[item.key]} onChange={e => setAgreeItems(prev => ({...prev,[item.key]:e.target.checked}))} style={{accentColor:T.accent,width:16,height:16,flexShrink:0,cursor:"pointer"}}/>
             <span style={{fontFamily:"system-ui",fontSize:12,color:item.required?T.textB:T.textSub,flex:1,lineHeight:1.5}}>{item.label}</span>
             {item.link&&<button onClick={() => nav(item.link)} style={{background:"none",border:"none",fontFamily:"system-ui",fontSize:11,color:T.accent,cursor:"pointer",flexShrink:0}}>Үзэх</button>}
           </div>)}
           <div style={{display:"flex",alignItems:"center",gap:10,marginTop:10}}>
-            <input type="checkbox" checked={agree} onChange={e => setAgree(e.target.checked)} style={{accentColor:T.accent,width:18,height:18,flexShrink:0,cursor:"pointer"}}/>
+            <input type="checkbox" checked={agreeItems.terms && agreeItems.privacy && agreeItems.age && agreeItems.marketing} onChange={e => {const v=e.target.checked; setAgreeItems({terms:v,privacy:v,age:v,marketing:v});}} style={{accentColor:T.accent,width:18,height:18,flexShrink:0,cursor:"pointer"}}/>
             <span style={{fontFamily:"system-ui",fontSize:13,fontWeight:700,color:T.accent}}>Бүгдийг зөвшөөрөх</span>
           </div>
         </div>

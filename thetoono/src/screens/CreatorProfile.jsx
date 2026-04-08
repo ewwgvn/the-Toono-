@@ -151,7 +151,7 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
         </Crd>)}
       </div>}
       {tab==="about"&&<div style={{padding:"14px 20px 0"}}>
-        {[["Үйл ажиллагааны бүс","Улаанбаатар, Монгол"],["Мэргэшил",c.field||GS.user.field||"—"],["Бүтээл",String(c.works||GS.myWorks.length)],["Үнэлгээ",c.rating>0?c.rating+"★":"—"]].map(r=><div key={r[0]} style={{display:"flex",justifyContent:"space-between",padding:"12px 0",borderBottom:`1px solid ${T.border}`}}>
+        {[["Мэргэшил",c.field||GS.user.field||"—"],["Бүтээл",String(c.works||GS.myWorks.length)],["Үнэлгээ",c.rating>0?c.rating+"★":"—"]].map(r=><div key={r[0]} style={{display:"flex",justifyContent:"space-between",padding:"12px 0",borderBottom:`1px solid ${T.border}`}}>
           <span style={{fontFamily:"system-ui",fontSize:13,color:T.textSub}}>{r[0]}</span>
           <span style={{fontFamily:"system-ui",fontSize:13,fontWeight:500,color:T.textH}}>{r[1]}</span>
         </div>)}

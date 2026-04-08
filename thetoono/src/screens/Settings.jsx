@@ -59,7 +59,7 @@ export default function Settings({ nav, goBack, refresh }) {
       ]} />
       <Sec title="Бүтээлч" items={[
         { icon: <IcCommission />, label: "Захиалга Зөвшөөрөх", tog: c1, set: setC1 },
-        { icon: "⏱", label: "Үндсэн хүргэлтийн хугацаа", val: "3~4 долоо хоног" },
+        { icon: "⏱", label: "Үндсэн хүргэлтийн хугацаа", val: "Тохируулах" },
         { icon: <IcOrder />, label: "Хүргэлтийн бүс", sub: "Дотоод · Гадаад" },
       ]} />
       <Sec title="Мэдэгдэл" items={[

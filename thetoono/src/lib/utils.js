@@ -11,24 +11,30 @@ export function getAllWorks() {
 }
 
 export function getCreators() {
-  const list = [...GS.publicCreators];
+  const allWorks = getAllWorks();
+  // Enrich publicCreators with actual works count
+  const list = GS.publicCreators.map(c => ({
+    ...c,
+    works: allWorks.filter(w => w.creator_id === c.id || w.cid === c.id).length,
+  }));
   if (GS.isLoggedIn && GS.currentRole === "creator") {
-    if (!list.find(c => c.id === GS.user.id)) {
-      list.unshift({
-        id: GS.user.id || 1,
-        name: GS.user.name,
-        field: GS.user.field || "Бүтээлч",
-        followers: GS.user.followers || "0",
-        works: GS.myWorks.length,
-        comm: GS.user.commOpen,
-        rating: GS.trustMetrics?.avgRating || 0,
-        accent: "#5B8FE8",
-        level: "verified",
-        photo: GS.user.photo || null,
-        bio: GS.user.bio || "",
-        tags: GS.user.tags || [],
-      });
-    }
+    const idx = list.findIndex(c => c.id === GS.user.id);
+    const myData = {
+      id: GS.user.id || 1,
+      name: GS.user.name,
+      field: GS.user.field || "Бүтээлч",
+      followers: GS.user.followers || "0",
+      works: GS.myWorks.length,
+      comm: GS.user.commOpen,
+      rating: GS.trustMetrics?.avgRating || 0,
+      accent: "#5B8FE8",
+      level: "verified",
+      photo: GS.user.photo || null,
+      bio: GS.user.bio || "",
+      tags: GS.user.tags || [],
+    };
+    if (idx >= 0) list[idx] = { ...list[idx], ...myData };
+    else list.unshift(myData);
   }
   return list;
 }
