@@ -9,13 +9,12 @@ import Crd from "@/components/atoms/Crd";
 import PBtn from "@/components/atoms/PBtn";
 import WorkCard from "@/components/shared/WorkCard";
 import {
-  IcCart, IcBell, IcSearch, IcHeart, IcBookmark,
+  IcCart, IcBell, IcSearch,
   IcCommission, IcChevron, IcOrder
 } from "@/components/icons";
 
 export default function Home({ nav, refresh }) {
   const [cat, setCat] = useState("all");
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
   const cats = ["all","Загвар","Нэхмэл","Урлаг","График"];
   const allW = getAllWorks();
   const filtered = cat==="all" ? allW : allW.filter(w => w.cat===cat);
@@ -61,28 +60,7 @@ export default function Home({ nav, refresh }) {
         {cats.map(c => <button key={c} onClick={() => setCat(c)} style={{flexShrink:0,padding:"7px 16px",borderRadius:20,cursor:"pointer",fontFamily:"system-ui",fontSize:13,fontWeight:500,background:cat===c?T.accent:T.s1,border:`1px solid ${cat===c?T.accent:T.border}`,color:cat===c?"#fff":T.textSub,transition:"all .12s"}}>{c==="all"?"Бүгд":c}</button>)}
       </div>
 
-      {/* Editor pick */}
-      {filtered[0]&&<div style={{padding:"0 20px 4px"}}>
-        <Crd onClick={() => nav("work",{workId:filtered[0].id})} style={{marginBottom:16,overflow:"hidden"}}>
-          <div style={{height:180,background:filtered[0].images?.[0]?T.s2:`linear-gradient(145deg,${filtered[0].accent}28 0%,${filtered[0].accent}08 100%)`,display:"flex",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden"}}>
-            {filtered[0].images?.[0]
-              ?<img src={filtered[0].images[0]} alt="" loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
-              :<div style={{opacity:.22}}><Toono size={160} color={filtered[0].accent}/></div>}
-            {filtered[0].badge&&<span style={{position:"absolute",top:12,left:14,fontFamily:"system-ui",fontSize:10,fontWeight:700,color:"#fff",background:filtered[0].accent,padding:"4px 10px",borderRadius:8}}>{filtered[0].badge}</span>}
-            <div style={{position:"absolute",bottom:12,right:12,display:"flex",gap:6}}>
-              <button onClick={e => {e.stopPropagation();tLike(filtered[0].id);}} style={{width:32,height:32,borderRadius:"50%",background:"rgba(0,0,0,0.4)",border:"none",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:GS.liked.has(filtered[0].id)?T.red:"rgba(255,255,255,0.7)"}}><IcHeart filled={GS.liked.has(filtered[0].id)}/></button>
-              <button onClick={e => {e.stopPropagation();tSave(filtered[0].id);}} style={{width:32,height:32,borderRadius:"50%",background:"rgba(0,0,0,0.4)",border:"none",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:GS.saved.has(filtered[0].id)?T.accent:"rgba(255,255,255,0.7)"}}><IcBookmark filled={GS.saved.has(filtered[0].id)}/></button>
-            </div>
-          </div>
-          <div style={{padding:"14px 16px 16px",display:"flex",justifyContent:"space-between",alignItems:"flex-end"}}>
-            <div>
-              <div style={{fontFamily:"system-ui",fontSize:16,fontWeight:700,color:T.textH,marginBottom:2}}>{filtered[0].title}</div>
-              <div style={{fontFamily:"system-ui",fontSize:13,color:T.textSub}}>{filtered[0].creator}</div>
-            </div>
-            <div style={{fontFamily:"system-ui",fontSize:17,fontWeight:700,color:T.accent}}>{fmtP(filtered[0])}</div>
-          </div>
-        </Crd>
-      </div>}
+      {/* Feed (Instagram-style) */}
 
       {/* Recently Viewed */}
       {GS.recentlyViewed.length>0&&<div style={{padding:"0 20px",marginBottom:16}}>
@@ -158,9 +136,9 @@ export default function Home({ nav, refresh }) {
         </div>}
       </div>
 
-      {/* Grid */}
-      {filtered.length>0?<div className="toono-grid-2" style={{padding:"0 20px",display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:20}}>
-        {filtered.slice(1,5).map(w => <WorkCard key={w.id} work={w} onClick={() => nav("work",{workId:w.id})} onToggleLike={tLike} onToggleSave={tSave}/>)}
+      {/* Feed */}
+      {filtered.length>0?<div style={{marginBottom:20}}>
+        {filtered.map(w => <WorkCard key={w.id} work={w} feed onClick={() => nav("work",{workId:w.id})} onCreatorClick={w.creator_id ? () => nav("profile",{creatorId:w.creator_id||w.cid}) : undefined} onToggleLike={tLike} onToggleSave={tSave} liked={GS.liked.has(w.id)} saved={GS.saved.has(w.id)}/>)}
       </div>
       :<div style={{padding:"40px 20px",textAlign:"center"}}>
         <div style={{width:72,height:72,borderRadius:22,background:T.accentSub,border:`1px solid ${T.accentGlow}`,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px"}}><Toono size={40} color={T.accent}/></div>
