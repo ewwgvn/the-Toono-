@@ -29,6 +29,8 @@ input, textarea, button, select {
   font-family: inherit;
 }
 
+.feed-comment-input::placeholder { color: #4E6080; opacity: 1; }
+
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }

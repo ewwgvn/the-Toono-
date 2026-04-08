@@ -159,7 +159,7 @@ export default function WorkCard({ work: w, onClick, onCreatorClick, onToggleLik
         {/* Caption */}
         <div style={{ padding: "2px 16px 0" }}>
           <span style={{ fontFamily: "system-ui", fontSize: 13, fontWeight: 700, color: T.textH }}>{w.creator}</span>
-          <span style={{ fontFamily: "system-ui", fontSize: 13, color: T.text, marginLeft: 6 }}>{w.title}</span>
+          <span style={{ fontFamily: "system-ui", fontSize: 13, color: T.textB, marginLeft: 6 }}>{w.title}</span>
         </div>
 
         {/* Comment count + view all */}
@@ -187,9 +187,10 @@ export default function WorkCard({ work: w, onClick, onCreatorClick, onToggleLik
               }
             }}
             placeholder="Сэтгэгдэл бичих..."
+            className="feed-comment-input"
             style={{
               flex: 1, background: "none", border: "none", outline: "none",
-              fontFamily: "system-ui", fontSize: 13, color: T.text, padding: 0,
+              fontFamily: "system-ui", fontSize: 13, color: T.textB, padding: 0,
             }}
           />
           {commentText.trim() && (
