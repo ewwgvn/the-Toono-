@@ -59,17 +59,8 @@ export default function Login({ nav }) {
         toast(`Тавтай морил, ${GS.user.name.split(" ")[0]||""}! ${getAllWorks().length} бүтээл · ${getCreators().length} бүтээлч`,"success");
       }
     } else {
-      // localStorage fallback
-      setTimeout(() => {
-        setLoading(false);
-        GS.isLoggedIn = true;
-        GS.currentRole = "buyer";
-        GS.user.name = email.split("@")[0];
-        GS.needsProfileSetup = true;
-        saveGS();
-        nav("profile-setup");
-        toast("Нэвтэрлээ","success");
-      }, 600);
+      setLoading(false);
+      toast("Сервертэй холбогдож чадсангүй. Дахин оролдоно уу.", "error");
     }
   };
 

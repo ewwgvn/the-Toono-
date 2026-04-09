@@ -15,7 +15,18 @@ export default function ChatRoom({ nav, refresh, goBack }) {
   const [msgs,setMsgs]=useState(convo?.msgs||[]);
   const scrollRef = React.useRef(null);
   const timersRef = React.useRef([]);
-  const toast = typeof window !== "undefined" && window.toast ? window.toast : () => {};
+  // Subscribe to realtime messages
+  React.useEffect(() => {
+    if (!convo?.dbId || !isSupabaseReady()) return;
+    const sub = DB.subscribeToMessages?.(convo.dbId, (newMsg) => {
+      if (newMsg.sender_id !== GS.user.id) {
+        const mapped = { id: newMsg.id, mine: false, text: newMsg.text, img: !!newMsg.image, imgSrc: newMsg.image || null, time: new Date(newMsg.created_at).getHours() + ":" + String(new Date(newMsg.created_at).getMinutes()).padStart(2, "0"), status: "read" };
+        setMsgs(prev => [...prev, mapped]);
+        if (convo) convo.msgs = [...(convo.msgs || []), mapped];
+      }
+    });
+    return () => { sub?.unsubscribe?.(); };
+  }, [convo?.dbId]);
   // Cleanup all timers on unmount
   React.useEffect(()=>()=>{timersRef.current.forEach(t=>clearTimeout(t));},[]);
 

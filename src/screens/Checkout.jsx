@@ -84,38 +84,38 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
 
       {/* Step 0: Address & Contact */}
       {step === 0 && <>
-        <div style={{ fontFamily: F, fontSize: 14, fontWeight: 600, color: "#111111", marginBottom: 12 }}>Delivery Information</div>
+        <div style={{ fontFamily: F, fontSize: 14, fontWeight: 600, color: "#111111", marginBottom: 12 }}>Хүргэлтийн мэдээлэл</div>
         <div style={{ display: "grid", gap: 12, marginBottom: 16 }}>
           <div>
-            <div style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#666666", marginBottom: 4 }}>Full Name *</div>
+            <div style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#666666", marginBottom: 4 }}>Нэр *</div>
             <input value={addr.name} onChange={e => { setAddr({ ...addr, name: e.target.value }); setErrors(p => ({ ...p, name: "" })); }} placeholder="Нэр" style={inputStyle("name")} />
             {errors.name && <div style={{ fontFamily: F, fontSize: 11, color: "#D32F2F", marginTop: 3 }}>{errors.name}</div>}
           </div>
           <div>
-            <div style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#666666", marginBottom: 4 }}>Phone Number *</div>
+            <div style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#666666", marginBottom: 4 }}>Утасны дугаар *</div>
             <input value={addr.phone} onChange={e => { setAddr({ ...addr, phone: e.target.value }); setErrors(p => ({ ...p, phone: "" })); }} placeholder="99001122" type="tel" style={inputStyle("phone")} />
             {errors.phone && <div style={{ fontFamily: F, fontSize: 11, color: "#D32F2F", marginTop: 3 }}>{errors.phone}</div>}
           </div>
           <div style={{ display: "flex", gap: 8 }}>
             <div style={{ flex: 1 }}>
-              <div style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#666666", marginBottom: 4 }}>City *</div>
+              <div style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#666666", marginBottom: 4 }}>Хот *</div>
               <select value={addr.city} onChange={e => setAddr({ ...addr, city: e.target.value })} style={{ ...inputStyle("city"), cursor: "pointer", appearance: "none" }}>
                 {["Улаанбаатар", "Дархан", "Эрдэнэт", "Бусад"].map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#666666", marginBottom: 4 }}>District *</div>
+              <div style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#666666", marginBottom: 4 }}>Дүүрэг *</div>
               <input value={addr.district} onChange={e => { setAddr({ ...addr, district: e.target.value }); setErrors(p => ({ ...p, district: "" })); }} placeholder="Баянгол" style={inputStyle("district")} />
               {errors.district && <div style={{ fontFamily: F, fontSize: 11, color: "#D32F2F", marginTop: 3 }}>{errors.district}</div>}
             </div>
           </div>
           <div>
-            <div style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#666666", marginBottom: 4 }}>Address Detail *</div>
+            <div style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#666666", marginBottom: 4 }}>Дэлгэрэнгүй хаяг *</div>
             <textarea value={addr.detail} onChange={e => { setAddr({ ...addr, detail: e.target.value }); setErrors(p => ({ ...p, detail: "" })); }} placeholder="Байр, тоот, давхар, орц..." rows={2} style={{ ...inputStyle("detail"), resize: "none" }} />
             {errors.detail && <div style={{ fontFamily: F, fontSize: 11, color: "#D32F2F", marginTop: 3 }}>{errors.detail}</div>}
           </div>
           <div>
-            <div style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#666666", marginBottom: 4 }}>Note (optional)</div>
+            <div style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#666666", marginBottom: 4 }}>Тэмдэглэл (заавал биш)</div>
             <input value={addr.memo} onChange={e => setAddr({ ...addr, memo: e.target.value })} placeholder="Delivery instructions..." style={inputStyle("memo")} />
           </div>
         </div>
@@ -123,7 +123,7 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
 
       {/* Step 1: Payment method */}
       {step === 1 && <>
-        <div style={{ fontFamily: F, fontSize: 14, fontWeight: 600, color: "#111111", marginBottom: 12 }}>Payment Method</div>
+        <div style={{ fontFamily: F, fontSize: 14, fontWeight: 600, color: "#111111", marginBottom: 12 }}>Төлбөрийн хэлбэр</div>
         {methods.map(m => <button key={m[0]} onClick={() => setMethod(m[0])} style={{
           width: "100%", background: method === m[0] ? "#F7F7F7" : "#FFFFFF",
           border: `1px solid ${method === m[0] ? "#111111" : "#E5E5E5"}`,
@@ -141,9 +141,9 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
 
       {/* Step 2: Confirmation */}
       {step === 2 && <>
-        <div style={{ fontFamily: F, fontSize: 14, fontWeight: 600, color: "#111111", marginBottom: 12 }}>Order Summary</div>
+        <div style={{ fontFamily: F, fontSize: 14, fontWeight: 600, color: "#111111", marginBottom: 12 }}>Захиалгын дүн</div>
         <div style={{ border: "1px solid #E5E5E5", borderRadius: 8, padding: 16, marginBottom: 16 }}>
-          <div style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#999999", marginBottom: 8 }}>Delivery to</div>
+          <div style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#999999", marginBottom: 8 }}>Хүргэлтийн хаяг</div>
           <div style={{ fontFamily: F, fontSize: 13, color: "#111111", lineHeight: 1.6, marginBottom: 12 }}>
             {addr.name} · {addr.phone}<br/>
             {addr.city} {addr.district}<br/>
@@ -152,9 +152,9 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
           </div>
           <div style={{ height: 1, background: "#F0F0F0", margin: "8px 0 12px" }} />
           {[
-            ["Subtotal", "₮" + subtotal.toLocaleString()],
-            ["Shipping", shipping === 0 ? "Free" : "₮" + shipping.toLocaleString()],
-            ["Total", "₮" + total.toLocaleString()],
+            ["Барааны дүн", "₮" + subtotal.toLocaleString()],
+            ["Хүргэлт", shipping === 0 ? "Үнэгүй" : "₮" + shipping.toLocaleString()],
+            ["Нийт", "₮" + total.toLocaleString()],
           ].map((r, i) => <div key={r[0]} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0" }}>
             <span style={{ fontFamily: F, fontSize: i === 2 ? 14 : 13, fontWeight: i === 2 ? 600 : 400, color: i === 2 ? "#111111" : "#666666" }}>{r[0]}</span>
             <span style={{ fontFamily: F, fontSize: i === 2 ? 16 : 13, fontWeight: i === 2 ? 700 : 400, color: "#111111" }}>{r[1]}</span>
@@ -209,7 +209,7 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
             GS.selectedOrderId = newOrder.id;
             if (directItem) GS.directBuyItem = null;
             else GS.cart = [];
-            GS.notifications.unshift({ id: Date.now(), icon: "sale", title: "Order confirmed", desc: `"${w.title}" ordered successfully.`, time: "Now", read: false, to: "order-detail" });
+            GS.notifications.unshift({ id: Date.now(), icon: "sale", title: "Захиалга баталгаажлаа", desc: `"${w.title}" амжилттай захиалагдлаа.`, time: "Сая", read: false, to: "order-detail" });
             GS.unreadNotif++;
             setLoading(false);
             saveGS();
@@ -218,7 +218,7 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
             setLoading(false);
           }
         }
-      }}>{step === 2 ? `Pay ₮${total.toLocaleString()}` : "Continue"}</PBtn>
+      }}>{step === 2 ? `₮${total.toLocaleString()} Төлөх` : "Дараах"}</PBtn>
     </div>
   </div>;
 }

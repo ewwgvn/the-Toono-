@@ -115,21 +115,11 @@ export default function FeedScreen({ nav, refresh, goBack }) {
       {/* Stories */}
       <div style={{ padding: "12px 0", borderBottom: `1px solid ${T.border}` }}>
         <div style={{ display: "flex", gap: 14, overflowX: "auto", scrollbarWidth: "none", padding: "0 14px" }}>
-          {stories.map((s, i) => <div key={s.id || i} onClick={() => s._self ? null : nav("profile", { creatorId: s.id })} style={{ flexShrink: 0, textAlign: "center", cursor: s._self ? "default" : "pointer", width: 62 }}>
-            <div style={{ position: "relative", width: 58, height: 58, margin: "0 auto 5px" }}>
-              {/* Gradient ring */}
-              <div style={{ position: "absolute", inset: -2, borderRadius: 20, background: s._self ? "none" : `linear-gradient(135deg,${s.accent || "#111111"},#999999)`, padding: 2 }}>
-                <div style={{ width: "100%", height: "100%", borderRadius: 18, background: T.bg }} />
-              </div>
-              <div style={{ position: "absolute", inset: 2, borderRadius: 16, background: (s.accent || "#111111") + "22", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                {s.photo ? <img src={s.photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <Toono size={28} color={s.accent || "#111111"} />}
-              </div>
-              {/* Add button for self */}
-              {s._self && <div style={{ position: "absolute", bottom: -2, right: -2, width: 18, height: 18, borderRadius: "50%", background: T.accent, border: `2px solid ${T.bg}`, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => nav("upload")}>
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 2v6M2 5h6" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" /></svg>
-              </div>}
+          {stories.map((s, i) => <div key={s.id || i} onClick={() => s._self ? nav("upload") : nav("profile", { creatorId: s.id })} style={{ flexShrink: 0, textAlign: "center", cursor: "pointer", width: 62 }}>
+            <div style={{ width: 48, height: 48, borderRadius: "50%", background: "#F7F7F7", border: `2px solid ${s._self ? "#E5E5E5" : "#111111"}`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 5px", overflow: "hidden", position: "relative" }}>
+              {s.photo ? <img src={s.photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : s._self ? <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 4v10M4 9h10" stroke="#999" strokeWidth="1.5" strokeLinecap="round"/></svg> : <Toono size={24} color="#111111" />}
             </div>
-            <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 10, color: T.textSub, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 58 }}>{s._self ? "Таны" : (s.name || "—").split(" ")[0]}</div>
+            <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 10, color: "#666666", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 58 }}>{s._self ? "Таны" : (s.name || "—").split(" ")[0]}</div>
           </div>)}
           {/* Discover more */}
           <div onClick={() => nav("explore")} style={{ flexShrink: 0, textAlign: "center", cursor: "pointer", width: 62 }}>
