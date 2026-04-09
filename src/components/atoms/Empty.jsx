@@ -5,53 +5,19 @@ import PBtn from "@/components/atoms/PBtn";
 
 export default function Empty({ icon, title, sub, action, onAction }) {
   return (
-    <div
-      style={{
-        textAlign: "center",
-        padding: "60px 24px",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 12,
-      }}
-    >
-      <div
-        style={{
-          width: 72,
-          height: 72,
-          borderRadius: 22,
-          background: T.s1,
-          border: `1px solid ${T.border}`,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: T.textSub,
-          marginBottom: 4,
-        }}
-      >
+    <div style={{ textAlign: "center", padding: "60px 24px", display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+      <div style={{ width: 64, height: 64, borderRadius: 32, background: "#F7F7F7", display: "flex", alignItems: "center", justifyContent: "center", color: "#999999", marginBottom: 4 }}>
         {icon}
       </div>
-      <div style={{ fontFamily: "system-ui", fontSize: 17, fontWeight: 700, color: T.textH }}>
+      <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 16, fontWeight: 600, color: T.textH }}>
         {title}
       </div>
       {sub && (
-        <div
-          style={{
-            fontFamily: "system-ui",
-            fontSize: 13,
-            color: T.textSub,
-            lineHeight: 1.6,
-            maxWidth: 240,
-          }}
-        >
+        <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 14, color: T.textSub, lineHeight: 1.6, maxWidth: 260 }}>
           {sub}
         </div>
       )}
-      {action && (
-        <PBtn small onClick={onAction}>
-          {action}
-        </PBtn>
-      )}
+      {action && <PBtn small onClick={onAction}>{action}</PBtn>}
     </div>
   );
 }

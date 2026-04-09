@@ -23,7 +23,7 @@ export default function FollowList({ nav, refresh }) {
 
   return <Simple nav={nav} title="Холболт" back="me">
     <div style={{ display: "flex", marginBottom: 8, borderBottom: `1px solid ${T.border}` }}>
-      {[["following", "Дагаж байна " + GS.following.size], ["followers", "Дагагч " + followerList.length]].map(t => <button key={t[0]} onClick={() => setTab(t[0])} style={{ flex: 1, padding: "12px 0", background: "none", border: "none", fontFamily: "system-ui", fontSize: 14, fontWeight: tab === t[0] ? 700 : 500, color: tab === t[0] ? T.accent : T.textSub, borderBottom: `2px solid ${tab === t[0] ? T.accent : "transparent"}`, cursor: "pointer" }}>{t[1]}</button>)}
+      {[["following", "Дагаж байна " + GS.following.size], ["followers", "Дагагч " + followerList.length]].map(t => <button key={t[0]} onClick={() => setTab(t[0])} style={{ flex: 1, padding: "12px 0", background: "none", border: "none", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 14, fontWeight: tab === t[0] ? 700 : 500, color: tab === t[0] ? T.accent : T.textSub, borderBottom: `2px solid ${tab === t[0] ? T.accent : "transparent"}`, cursor: "pointer" }}>{t[1]}</button>)}
     </div>
     {list.length === 0
       ? <Empty icon={<IcUsersEmpty />} title="Дагаж байна байхгүй" action="Бүтээлч Хайлт" onAction={() => nav("explore")} />

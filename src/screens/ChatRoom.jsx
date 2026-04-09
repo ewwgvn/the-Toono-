@@ -78,18 +78,18 @@ export default function ChatRoom({ nav, refresh, goBack }) {
       <button onClick={()=>{GS.activeChatId=null;nav("chat");}} style={{background:"none",border:"none",color:T.textH,cursor:"pointer",display:"flex"}}><IcBack/></button>
       <Avt size={38} color={convo?.accent||T.accent} photo={convo?.photo} onClick={()=>convo?.creatorId&&nav("profile",{creatorId:convo.creatorId})}/>
       <div style={{flex:1}}>
-        <div style={{fontFamily:"system-ui",fontSize:15,fontWeight:700,color:T.textH}}>{convo?.name||"The TOONO"}</div>
+        <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:15,fontWeight:700,color:T.textH}}>{convo?.name||"The TOONO"}</div>
         <div style={{display:"flex",alignItems:"center",gap:5}}>
           {convo?.online
-            ?<><div style={{width:7,height:7,borderRadius:"50%",background:T.green}}/><span style={{fontFamily:"system-ui",fontSize:12,color:T.green}}>Онлайн</span></>
-            :<span style={{fontFamily:"system-ui",fontSize:12,color:T.textSub}}>Сүүлд идэвхтэй</span>}
+            ?<><div style={{width:7,height:7,borderRadius:"50%",background:T.green}}/><span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.green}}>Онлайн</span></>
+            :<span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.textSub}}>Сүүлд идэвхтэй</span>}
         </div>
       </div>
       <PBtn small secondary onClick={()=>convo?.creatorId&&nav("commission",{creatorId:convo.creatorId})}>Захиалга</PBtn>
     </div>
     <div ref={scrollRef} style={{flex:1,overflowY:"auto",scrollbarWidth:"none",padding:"16px 20px"}}>
       <div style={{textAlign:"center",marginBottom:16}}>
-        <span style={{fontFamily:"system-ui",fontSize:11,color:T.textSub,background:T.s1,padding:"4px 12px",borderRadius:20}}>Өнөөдөр</span>
+        <span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:11,color:T.textSub,background:T.s1,padding:"4px 12px",borderRadius:20}}>Өнөөдөр</span>
       </div>
       {msgs.map(m=><div key={m.id} style={{display:"flex",justifyContent:m.mine?"flex-end":"flex-start",marginBottom:10,alignItems:"flex-end",gap:6}}>
         {!m.mine&&<Avt size={28} color={convo?.accent||T.accent} photo={convo?.photo}/>}
@@ -99,11 +99,11 @@ export default function ChatRoom({ nav, refresh, goBack }) {
               ?m.isVideo
                 ?<video src={m.imgSrc} controls style={{width:200,maxHeight:160,borderRadius:14,display:"block",background:T.s2}}/>
                 :<img src={m.imgSrc} alt="" style={{width:200,maxHeight:200,borderRadius:14,objectFit:"cover",display:"block"}}/>
-              :<div style={{width:160,height:110,borderRadius:14,background:`linear-gradient(135deg,${T.accent}30,#8850D420)`,border:`1px solid ${T.border}`,display:"flex",alignItems:"center",justifyContent:"center"}}><Toono size={50} color="rgba(91,143,232,0.3)"/></div>
+              :<div style={{width:160,height:110,borderRadius:14,background:`linear-gradient(135deg,${T.accent}30,#66666620)`,border:`1px solid ${T.border}`,display:"flex",alignItems:"center",justifyContent:"center"}}><Toono size={50} color="rgba(91,143,232,0.3)"/></div>
             :<div style={{background:m.mine?T.accent:T.s1,borderRadius:m.mine?"18px 18px 4px 18px":"18px 18px 18px 4px",padding:"10px 14px",border:m.mine?"none":`1px solid ${T.border}`}}>
-              <div style={{fontFamily:"system-ui",fontSize:14,color:m.mine?"#fff":T.textH,lineHeight:1.5}}>{m.text}</div>
+              <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,color:m.mine?"#fff":T.textH,lineHeight:1.5}}>{m.text}</div>
             </div>}
-          <div style={{fontFamily:"system-ui",fontSize:10,color:T.textSub,marginTop:3,textAlign:m.mine?"right":"left",display:"flex",alignItems:"center",justifyContent:m.mine?"flex-end":"flex-start",gap:2}}>
+          <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:10,color:T.textSub,marginTop:3,textAlign:m.mine?"right":"left",display:"flex",alignItems:"center",justifyContent:m.mine?"flex-end":"flex-start",gap:2}}>
             {m.time}
             {m.mine&&<ReadReceipt status={m.status}/>}
           </div>
@@ -130,7 +130,7 @@ export default function ChatRoom({ nav, refresh, goBack }) {
         }} style={{display:"none"}}/>
       </label>
       <div style={{flex:1,background:T.s1,border:`1px solid ${T.border}`,borderRadius:20,padding:"10px 14px",display:"flex",alignItems:"center"}}>
-        <input value={msg} onChange={e=>setMsg(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}}} placeholder="Зурвасийг оруулна уу..." style={{background:"none",border:"none",outline:"none",fontFamily:"system-ui",fontSize:14,color:T.textH,flex:1}}/>
+        <input value={msg} onChange={e=>setMsg(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}}} placeholder="Зурвасийг оруулна уу..." style={{background:"none",border:"none",outline:"none",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,color:T.textH,flex:1}}/>
       </div>
       <button onClick={send} style={{width:42,height:42,borderRadius:"50%",background:msg.trim()?T.accent:T.s1,border:`1px solid ${msg.trim()?T.accent:T.border}`,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"background .15s",flexShrink:0,color:msg.trim()?"#fff":T.textSub}}><IcSend/></button>
     </div>

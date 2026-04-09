@@ -11,7 +11,6 @@ import { toast } from "@/components/layout/Toast";
 import NetworkStatus from "@/components/layout/NetworkStatus";
 import PWAInstall from "@/components/shared/PWAInstall";
 
-// Screens
 import Splash from "@/screens/Splash";
 import Onboarding from "@/screens/Onboarding";
 import Login from "@/screens/Login";
@@ -46,6 +45,7 @@ import Report from "@/screens/Report";
 import Terms from "@/screens/Terms";
 import Privacy from "@/screens/Privacy";
 
+const F = "'Helvetica Neue', Arial, sans-serif";
 const APP_VERSION = "2.1.0";
 
 export default function App() {
@@ -60,7 +60,6 @@ export default function App() {
 
   useEffect(() => {
     const init = async () => {
-      // Version check
       try {
         const savedVer = localStorage.getItem("toono-version");
         if (savedVer !== APP_VERSION) {
@@ -70,7 +69,6 @@ export default function App() {
         }
       } catch (e) {}
 
-      // 1. Try Supabase
       initSupabase();
       if (isSupabaseReady()) {
         const session = await DB.getSession();
@@ -79,7 +77,6 @@ export default function App() {
           if (synced) { await fetchPublicData(); setScreen(GS.needsProfileSetup ? "profile-setup" : "main"); return; }
         }
       }
-      // 2. Fallback to localStorage
       const loaded = await loadGS();
       if (loaded && GS.isLoggedIn && GS.user.name) {
         await fetchPublicData();
@@ -114,7 +111,6 @@ export default function App() {
       setScreen(s);
     }
 
-    // Background refresh on home tab switch
     if (s === "home" && GS.isLoggedIn && isSupabaseReady()) {
       Promise.all([DB.getWorks().catch(() => []), DB.getCreators().catch(() => [])]).then(([ws, cs]) => {
         if (ws.length) { GS.publicWorks = ws.map(w => ({ ...w, creator: w.profiles?.name || "—" })); }
@@ -184,42 +180,47 @@ export default function App() {
   ];
 
   return (
-    <div style={{ width: "100%", height: "100dvh", background: T.bg, display: "flex", flexDirection: "column", overflow: "hidden", position: "relative" }}>
+    <div style={{ width: "100%", height: "100dvh", background: "#FFFFFF", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative" }}>
+
       {/* ── DESKTOP TOP NAV ── */}
-      {isMain && <div className="toono-desktop-nav" style={{ background: "rgba(8,9,14,0.95)", backdropFilter: "blur(20px)", borderBottom: `1px solid ${T.border}`, padding: "0 32px", position: "sticky", top: 0, zIndex: 100, justifyContent: "center" }}>
-        <div style={{ maxWidth: 1200, width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", height: 64 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-            <div onClick={() => nav("home")} style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
-              <Toono size={28} color={T.accent} />
-              <span style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: 22, fontWeight: 700, color: T.textH, letterSpacing: ".05em" }}>The TOONO</span>
+      {isMain && <div className="toono-desktop-nav" style={{ background: "#FFFFFF", borderBottom: "1px solid #E5E5E5", padding: "0 32px", position: "sticky", top: 0, zIndex: 100, justifyContent: "center" }}>
+        <div style={{ maxWidth: 1200, width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", height: 56 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
+            <div onClick={() => nav("home")} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+              <Toono size={22} color="#111111" />
+              <span style={{ fontFamily: F, fontSize: 16, fontWeight: 700, color: "#111111", letterSpacing: "0.05em", textTransform: "uppercase" }}>The TOONO</span>
             </div>
-            <div style={{ display: "flex", gap: 6 }}>
+            <div style={{ display: "flex", gap: 4 }}>
               {[["home", "Нүүр"], ["explore", "Хайлт"], ["feed", "Фийд"]].map(([id, label]) =>
-                <button key={id} onClick={() => nav(id)} style={{ background: tab === id ? T.accentSub : "transparent", border: `1px solid ${tab === id ? T.accent + "40" : "transparent"}`, borderRadius: 10, padding: "8px 16px", fontFamily: "'DM Sans',system-ui", fontSize: 14, fontWeight: tab === id ? 600 : 400, color: tab === id ? T.accent : T.textSub, cursor: "pointer", transition: "all .2s" }}>{label}</button>
+                <button key={id} onClick={() => nav(id)} style={{
+                  background: "transparent", border: "none", padding: "8px 14px",
+                  fontFamily: F, fontSize: 13, fontWeight: tab === id ? 600 : 400,
+                  color: tab === id ? "#111111" : "#999999", cursor: "pointer",
+                  borderBottom: tab === id ? "2px solid #111111" : "2px solid transparent",
+                  transition: "all 150ms ease",
+                }}>{label}</button>
               )}
             </div>
           </div>
-          <div style={{ flex: 1, maxWidth: 400, margin: "0 24px" }}>
-            <div onClick={() => nav("explore")} style={{ background: T.s1, border: `1px solid ${T.border}`, borderRadius: 12, padding: "10px 16px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
-              <IcSearch /><span style={{ fontFamily: "'DM Sans',system-ui", fontSize: 14, color: T.textSub }}>Хайлт...</span>
+          <div style={{ flex: 1, maxWidth: 360, margin: "0 24px" }}>
+            <div onClick={() => nav("explore")} style={{ background: "#F7F7F7", border: "1px solid #E5E5E5", borderRadius: 8, padding: "8px 14px", display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+              <IcSearch /><span style={{ fontFamily: F, fontSize: 13, color: "#999999" }}>Хайлт...</span>
             </div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            {GS.currentRole === "creator" && <button onClick={() => nav("upload")} style={{ display: "flex", alignItems: "center", gap: 6, background: T.accent, border: "none", borderRadius: 10, padding: "8px 18px", fontFamily: "'DM Sans',system-ui", fontSize: 13, fontWeight: 600, color: "#fff", cursor: "pointer" }}><IcPlus /> Байршуулах</button>}
-            <button onClick={() => nav("cart")} style={{ position: "relative", width: 40, height: 40, borderRadius: 10, background: T.s1, border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: T.textSub }}>
-              <IcCart />
-              {GS.cart.length > 0 && <div style={{ position: "absolute", top: -4, right: -4, minWidth: 16, height: 16, borderRadius: 8, background: T.red, display: "flex", alignItems: "center", justifyContent: "center" }}><span style={{ fontSize: 9, fontWeight: 700, color: "#fff" }}>{GS.cart.length}</span></div>}
-            </button>
-            <button onClick={() => nav("notifications")} style={{ position: "relative", width: 40, height: 40, borderRadius: 10, background: T.s1, border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: T.textSub }}>
-              <IcBell />
-              {getUnreadNotif() > 0 && <div style={{ position: "absolute", top: -4, right: -4, width: 8, height: 8, borderRadius: 4, background: T.red }} />}
-            </button>
-            <button onClick={() => nav("chat")} style={{ position: "relative", width: 40, height: 40, borderRadius: 10, background: T.s1, border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: T.textSub }}>
-              <IcMsg />
-              {getUnreadChat() > 0 && <div style={{ position: "absolute", top: -4, right: -4, minWidth: 16, height: 16, borderRadius: 8, background: T.accent, display: "flex", alignItems: "center", justifyContent: "center" }}><span style={{ fontSize: 9, fontWeight: 700, color: "#fff" }}>{getUnreadChat()}</span></div>}
-            </button>
-            <button onClick={() => nav("me")} style={{ width: 36, height: 36, borderRadius: 12, background: T.accentSub, border: `2px solid ${T.accent}40`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", overflow: "hidden" }}>
-              {GS.user.photo ? <img src={GS.user.photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ color: T.accent, fontSize: 12, fontWeight: 700 }}>{(GS.user.name || "?")[0]}</span>}
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {GS.currentRole === "creator" && <button onClick={() => nav("upload")} style={{ display: "flex", alignItems: "center", gap: 6, background: "#111111", border: "none", borderRadius: 20, padding: "8px 18px", fontFamily: F, fontSize: 13, fontWeight: 600, color: "#FFFFFF", cursor: "pointer" }}><IcPlus /> Байршуулах</button>}
+            {[
+              { action: "cart", Ic: IcCart, badge: GS.cart.length },
+              { action: "notifications", Ic: IcBell, badge: getUnreadNotif() },
+              { action: "chat", Ic: IcMsg, badge: getUnreadChat() },
+            ].map(({ action, Ic, badge }) => (
+              <button key={action} onClick={() => nav(action)} style={{ position: "relative", width: 36, height: 36, borderRadius: 8, background: "transparent", border: "1px solid #E5E5E5", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#111111" }}>
+                <Ic />
+                {badge > 0 && <div style={{ position: "absolute", top: -3, right: -3, minWidth: 14, height: 14, borderRadius: 7, background: "#D32F2F", display: "flex", alignItems: "center", justifyContent: "center" }}><span style={{ fontSize: 9, fontWeight: 600, color: "#fff" }}>{badge}</span></div>}
+              </button>
+            ))}
+            <button onClick={() => nav("me")} style={{ width: 32, height: 32, borderRadius: "50%", background: "#F7F7F7", border: "1px solid #E5E5E5", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", overflow: "hidden" }}>
+              {GS.user.photo ? <img src={GS.user.photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ color: "#111111", fontSize: 11, fontWeight: 600 }}>{(GS.user.name || "?")[0]}</span>}
             </button>
           </div>
         </div>
@@ -233,25 +234,31 @@ export default function App() {
       </div>
 
       {/* ── MOBILE BOTTOM NAV ── */}
-      {isMain && <div className="toono-mobile-nav" style={{ background: T.nav, borderTop: `1px solid ${T.border}`, paddingTop: 6, paddingLeft: 4, paddingRight: 4, paddingBottom: "calc(6px + env(safe-area-inset-bottom, 0px))", justifyContent: "space-around", alignItems: "center", flexShrink: 0, position: "relative", zIndex: 50, boxShadow: "0 -4px 20px rgba(0,0,0,0.3)" }}>
+      {isMain && <div className="toono-mobile-nav" style={{
+        background: "#FFFFFF", borderTop: "1px solid #F0F0F0",
+        paddingTop: 6, paddingLeft: 4, paddingRight: 4,
+        paddingBottom: "calc(6px + env(safe-area-inset-bottom, 0px))",
+        justifyContent: "space-around", alignItems: "center",
+        flexShrink: 0, position: "relative", zIndex: 50,
+      }}>
         {navItems.map(item => {
           const active = tab === item.id && isMain;
-          return <button key={item.id} onClick={() => nav(item.id)} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3, cursor: "pointer", background: "none", border: "none", padding: "4px 8px", minWidth: 48, minHeight: 44, justifyContent: "center", position: "relative" }}>
+          return <button key={item.id} onClick={() => nav(item.id)} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, cursor: "pointer", background: "none", border: "none", padding: "4px 8px", minWidth: 48, minHeight: 44, justifyContent: "center", position: "relative" }}>
             {item.id === "upload"
-              ? <div style={{ width: 50, height: 50, borderRadius: "50%", background: T.accent, display: "flex", alignItems: "center", justifyContent: "center", marginTop: -20, boxShadow: `0 6px 24px ${T.accentGlow},0 2px 8px rgba(91,143,232,0.5)` }}><IcPlus /></div>
+              ? <div style={{ width: 44, height: 44, borderRadius: "50%", background: "#111111", display: "flex", alignItems: "center", justifyContent: "center", marginTop: -16 }}><IcPlus /></div>
               : <>
-                <div style={{ position: "relative", width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ color: active ? T.accent : T.textSub }}><item.Ic /></span>
-                  {item.badge > 0 && <div style={{ position: "absolute", top: -4, right: -6, minWidth: 14, height: 14, borderRadius: 7, background: T.red, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 3px" }}><span style={{ fontFamily: "system-ui", fontSize: 8, fontWeight: 700, color: "#fff" }}>{item.badge}</span></div>}
+                <div style={{ position: "relative", width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <span style={{ color: active ? "#111111" : "#999999" }}><item.Ic /></span>
+                  {item.badge > 0 && <div style={{ position: "absolute", top: -4, right: -8, minWidth: 14, height: 14, borderRadius: 7, background: "#D32F2F", display: "flex", alignItems: "center", justifyContent: "center", padding: "0 3px" }}><span style={{ fontFamily: F, fontSize: 8, fontWeight: 600, color: "#fff" }}>{item.badge}</span></div>}
                 </div>
-                <span style={{ fontFamily: "system-ui", fontSize: 10, fontWeight: active ? 700 : 400, color: active ? T.accent : T.textSub, lineHeight: 1 }}>{item.label}</span>
+                <span style={{ fontFamily: F, fontSize: 10, fontWeight: active ? 600 : 400, color: active ? "#111111" : "#999999", lineHeight: 1 }}>{item.label}</span>
               </>}
           </button>;
         })}
       </div>}
 
       {/* Footer — desktop only */}
-      {isMain && <div className="toono-desktop-only" style={{ textAlign: "center", padding: "16px 0", borderTop: `1px solid ${T.border}` }}><span style={{ fontFamily: "'DM Sans',system-ui", fontSize: 11, color: T.textDim }}>© 2026 The TOONO</span></div>}
+      {isMain && <div className="toono-desktop-only" style={{ textAlign: "center", padding: "12px 0", borderTop: "1px solid #F0F0F0" }}><span style={{ fontFamily: F, fontSize: 11, color: "#999999" }}>© 2026 The TOONO</span></div>}
 
       <Toast />
       <NetworkStatus />

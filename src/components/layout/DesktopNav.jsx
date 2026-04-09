@@ -49,7 +49,7 @@ export default function DesktopNav({
             {ToonoLogo && <ToonoLogo size={28} color={T.accent} />}
             <span
               style={{
-                fontFamily: "'Playfair Display',Georgia,serif",
+                fontFamily: "'Helvetica Neue', Arial, sans-serif",
                 fontSize: 22,
                 fontWeight: 700,
                 color: T.textH,
@@ -73,7 +73,7 @@ export default function DesktopNav({
                   border: `1px solid ${activeTab === id ? T.accent + "40" : "transparent"}`,
                   borderRadius: 10,
                   padding: "8px 16px",
-                  fontFamily: "'DM Sans',system-ui",
+                  fontFamily: "'Helvetica Neue', Arial, sans-serif",
                   fontSize: 14,
                   fontWeight: activeTab === id ? 600 : 400,
                   color: activeTab === id ? T.accent : T.textSub,
@@ -101,7 +101,7 @@ export default function DesktopNav({
             }}
           >
             <IcSearch />
-            <span style={{ fontFamily: "'DM Sans',system-ui", fontSize: 14, color: T.textSub }}>
+            <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 14, color: T.textSub }}>
               Хайлт...
             </span>
           </div>
@@ -118,7 +118,7 @@ export default function DesktopNav({
                 border: "none",
                 borderRadius: 10,
                 padding: "8px 18px",
-                fontFamily: "'DM Sans',system-ui",
+                fontFamily: "'Helvetica Neue', Arial, sans-serif",
                 fontSize: 13,
                 fontWeight: 600,
                 color: "#fff",

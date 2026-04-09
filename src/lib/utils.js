@@ -27,7 +27,7 @@ export function getCreators() {
       works: GS.myWorks.length,
       comm: GS.user.commOpen,
       rating: GS.trustMetrics?.avgRating || 0,
-      accent: "#5B8FE8",
+      accent: "#111111",
       level: "verified",
       photo: GS.user.photo || null,
       bio: GS.user.bio || "",

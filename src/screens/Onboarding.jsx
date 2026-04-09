@@ -23,8 +23,8 @@ export default function Onboarding({ nav }) {
         {slides.map((_, i) => <div key={i} style={{width:i===step?24:7,height:7,borderRadius:4,background:i===step?T.accent:T.textDim,transition:"all .3s"}}/>)}
       </div>
       <div style={{textAlign:"center"}}>
-        <div style={{fontFamily:"system-ui",fontSize:27,fontWeight:800,color:T.textH,lineHeight:1.2,marginBottom:14,whiteSpace:"pre-line"}}>{s.title}</div>
-        <div style={{fontFamily:"system-ui",fontSize:14,color:T.textSub,lineHeight:1.7,whiteSpace:"pre-line"}}>{s.sub}</div>
+        <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:27,fontWeight:800,color:T.textH,lineHeight:1.2,marginBottom:14,whiteSpace:"pre-line"}}>{s.title}</div>
+        <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,color:T.textSub,lineHeight:1.7,whiteSpace:"pre-line"}}>{s.sub}</div>
       </div>
     </div>
     <div style={{padding:"0 24px 48px",display:"flex",flexDirection:"column",gap:10,maxWidth:400,margin:"0 auto",width:"100%"}}>

@@ -2,45 +2,33 @@
 
 import { T } from "@/theme/colors";
 import Avt from "@/components/atoms/Avt";
-import Pill from "@/components/atoms/Pill";
+
+const F = "'Helvetica Neue', Arial, sans-serif";
 
 export default function CreatorRow({ creator: c, onClick, onFollow, showFollow, following }) {
   return (
-    <div
-      onClick={onClick}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 14,
-        padding: "12px 0",
-        borderBottom: `1px solid ${T.border}`,
-        cursor: "pointer",
-      }}
-    >
-      <Avt size={50} color={c.accent} photo={c.photo} />
+    <div onClick={onClick} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 0", borderBottom: `1px solid ${T.borderLight}`, cursor: "pointer" }}>
+      <Avt size={44} photo={c.photo} />
       <div style={{ flex: 1 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 3 }}>
-          <div style={{ fontFamily: "system-ui", fontSize: 15, fontWeight: 700, color: T.textH }}>{c.name}</div>
-          {c.comm && <Pill color={T.green}>Захиалга авна</Pill>}
+        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
+          <div style={{ fontFamily: F, fontSize: 14, fontWeight: 600, color: "#111111" }}>{c.name}</div>
+          {c.comm && <span style={{ fontFamily: F, fontSize: 11, fontWeight: 500, color: "#2E7D32", background: "rgba(46,125,50,0.08)", padding: "2px 8px", borderRadius: 20 }}>Захиалга авна</span>}
         </div>
-        <div style={{ fontFamily: "system-ui", fontSize: 12, color: T.textSub }}>
-          {c.field} &middot; {c.works}Бүтээл
+        <div style={{ fontFamily: F, fontSize: 12, color: "#666666" }}>
+          {c.field} · {c.works} бүтээл
         </div>
       </div>
       {showFollow && (
         <button
           onClick={(e) => { e.stopPropagation(); onFollow && onFollow(c.id); }}
           style={{
-            background: following ? T.s2 : T.accentSub,
-            border: `1px solid ${following ? T.border : T.accentGlow}`,
-            borderRadius: 10,
-            padding: "7px 14px",
-            fontFamily: "system-ui",
-            fontSize: 12,
-            fontWeight: 700,
-            color: following ? T.textSub : T.accent,
-            cursor: "pointer",
-            flexShrink: 0,
+            background: following ? "transparent" : "#111111",
+            border: following ? "1px solid #E5E5E5" : "none",
+            borderRadius: 20,
+            padding: "7px 16px",
+            fontFamily: F, fontSize: 12, fontWeight: 600,
+            color: following ? "#666666" : "#FFFFFF",
+            cursor: "pointer", flexShrink: 0,
           }}
         >
           {following ? "Дагаж байна" : "Дагах"}

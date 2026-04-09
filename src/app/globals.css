@@ -11,7 +11,7 @@ html, body, #__next {
   height: 100%;
   width: 100%;
   overflow: hidden;
-  background: #08090E;
+  background: #FFFFFF;
 }
 
 html {
@@ -22,27 +22,32 @@ body {
   min-height: -webkit-fill-available;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  font-family: 'Helvetica Neue', Arial, system-ui, -apple-system, sans-serif;
+  color: #111111;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 input, textarea, button, select {
   font-family: inherit;
 }
 
-.feed-comment-input::placeholder { color: #4E6080; opacity: 1; }
+.feed-comment-input::placeholder { color: #999999; opacity: 1; }
 
-::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+::-webkit-scrollbar-thumb { background: #E5E5E5; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: #D0D0D0; }
 
-input, textarea, button { font-family: 'DM Sans', system-ui, -apple-system, sans-serif; }
-button:active { opacity: 0.75; }
-input:focus, textarea:focus { border-color: rgba(91,143,232,0.4) !important; }
+button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+button:active { transform: scale(0.97); transition: transform 150ms ease; }
+input:focus, textarea:focus { border-color: #111111 !important; outline: none; }
+
+::placeholder { color: #999999; }
 
 @keyframes shimmer { 0% { background-position: 200% 0; } to { background-position: -200% 0; } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
 @keyframes feedHeartPop { 0% { transform: scale(0); opacity: 0; } 15% { transform: scale(1.2); opacity: 1; } 30% { transform: scale(0.95); opacity: 1; } 45% { transform: scale(1); opacity: 1; } 80% { transform: scale(1); opacity: 1; } 100% { transform: scale(1); opacity: 0; } }
@@ -63,11 +68,11 @@ input:focus, textarea:focus { border-color: rgba(91,143,232,0.4) !important; }
 /* Prevent iOS input zoom */
 input, textarea, select { font-size: 16px !important; -webkit-appearance: none; appearance: none; }
 
-/* Better tap feedback */
-button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-
 /* Prevent text selection on tap */
 .toono-mobile-nav button { user-select: none; -webkit-user-select: none; }
+
+/* Scroll shadow for header */
+.toono-header-shadow { box-shadow: 0 1px 0 #E5E5E5; }
 
 /* ── TABLET (768px+) ── */
 @media (min-width: 768px) {

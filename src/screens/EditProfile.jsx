@@ -77,7 +77,7 @@ export default function EditProfile({ nav, refresh, goBack }) {
       {cropSrc && <ImageCropper src={cropSrc} aspect="circle" onDone={(cropped) => { setPhoto(cropped); setCropSrc(null); }} onCancel={() => setCropSrc(null)} />}
       <div style={{ padding: "20px 20px 14px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <button onClick={() => { goBack ? goBack() : nav("me"); }} style={{ background: "none", border: "none", color: T.textH, cursor: "pointer", display: "flex" }}><IcBack /></button>
-        <div style={{ fontFamily: "system-ui", fontSize: 18, fontWeight: 700, color: T.textH }}>Профайл засах</div>
+        <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 18, fontWeight: 700, color: T.textH }}>Профайл засах</div>
         <PBtn small loading={loading} onClick={save}>Хадгалах</PBtn>
       </div>
 
@@ -96,39 +96,39 @@ export default function EditProfile({ nav, refresh, goBack }) {
               <input type="file" accept="image/*" onChange={handlePhoto} style={{ display: "none" }} />
             </label>
           </div>
-          <div style={{ fontFamily: "system-ui", fontSize: 12, color: T.textSub }}>Зураг дарж солих</div>
+          <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.textSub }}>Зураг дарж солих</div>
         </div>
 
         {/* Fields */}
         <div style={{ marginBottom: 14 }}>
-          <div style={{ fontFamily: "system-ui", fontSize: 13, fontWeight: 600, color: T.textSub, marginBottom: 7 }}>Нэр / Хочоо *</div>
-          <input value={name} onChange={e => setName(e.target.value)} style={{ width: "100%", background: T.s1, border: `1.5px solid ${name ? T.green : T.border}`, borderRadius: 13, padding: "13px 16px", fontFamily: "system-ui", fontSize: 15, fontWeight: 600, color: T.textH, outline: "none", boxSizing: "border-box" }} />
+          <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 600, color: T.textSub, marginBottom: 7 }}>Нэр / Хочоо *</div>
+          <input value={name} onChange={e => setName(e.target.value)} style={{ width: "100%", background: T.s1, border: `1.5px solid ${name ? T.green : T.border}`, borderRadius: 13, padding: "13px 16px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 15, fontWeight: 600, color: T.textH, outline: "none", boxSizing: "border-box" }} />
         </div>
 
         <div style={{ marginBottom: 14 }}>
-          <div style={{ fontFamily: "system-ui", fontSize: 13, fontWeight: 600, color: T.textSub, marginBottom: 7 }}>Мэргэжил / Чиглэл</div>
-          <input value={field} onChange={e => setField(e.target.value)} placeholder="Загварын дизайнер · Урлагч" style={{ width: "100%", background: T.s1, border: `1px solid ${T.border}`, borderRadius: 13, padding: "13px 16px", fontFamily: "system-ui", fontSize: 14, color: T.textH, outline: "none", boxSizing: "border-box" }} />
+          <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 600, color: T.textSub, marginBottom: 7 }}>Мэргэжил / Чиглэл</div>
+          <input value={field} onChange={e => setField(e.target.value)} placeholder="Загварын дизайнер · Урлагч" style={{ width: "100%", background: T.s1, border: `1px solid ${T.border}`, borderRadius: 13, padding: "13px 16px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 14, color: T.textH, outline: "none", boxSizing: "border-box" }} />
         </div>
 
         <div style={{ marginBottom: 18 }}>
-          <div style={{ fontFamily: "system-ui", fontSize: 13, fontWeight: 600, color: T.textSub, marginBottom: 7 }}>Биеийн танилцуулга</div>
-          <textarea value={bio} onChange={e => setBio(e.target.value)} rows={4} placeholder="Өөрийгөө товч танилцуулна уу..." style={{ width: "100%", background: T.s1, border: `1px solid ${T.border}`, borderRadius: 13, padding: "13px 16px", fontFamily: "system-ui", fontSize: 14, color: T.textH, outline: "none", resize: "none", lineHeight: 1.7, boxSizing: "border-box" }} />
-          <div style={{ fontFamily: "system-ui", fontSize: 11, color: T.textSub, marginTop: 4, textAlign: "right" }}>{bio.length} тэмдэгт</div>
+          <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 600, color: T.textSub, marginBottom: 7 }}>Биеийн танилцуулга</div>
+          <textarea value={bio} onChange={e => setBio(e.target.value)} rows={4} placeholder="Өөрийгөө товч танилцуулна уу..." style={{ width: "100%", background: T.s1, border: `1px solid ${T.border}`, borderRadius: 13, padding: "13px 16px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 14, color: T.textH, outline: "none", resize: "none", lineHeight: 1.7, boxSizing: "border-box" }} />
+          <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, color: T.textSub, marginTop: 4, textAlign: "right" }}>{bio.length} тэмдэгт</div>
         </div>
 
         {/* Tags */}
         <div style={{ marginBottom: 18 }}>
-          <div style={{ fontFamily: "system-ui", fontSize: 13, fontWeight: 600, color: T.textSub, marginBottom: 10 }}>Таг / Чиглэл</div>
+          <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 600, color: T.textSub, marginBottom: 10 }}>Таг / Чиглэл</div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 10 }}>
             {tags.map((t, i) => (
               <div key={i} style={{ display: "flex", alignItems: "center", gap: 5, background: T.accentSub, border: `1px solid ${T.accentGlow}`, borderRadius: 20, padding: "5px 12px" }}>
-                <span style={{ fontFamily: "system-ui", fontSize: 12, fontWeight: 600, color: T.accent }}>{t}</span>
+                <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: 600, color: T.accent }}>{t}</span>
                 <button onClick={() => setTags(tags.filter((_, j) => j !== i))} style={{ background: "none", border: "none", cursor: "pointer", color: T.accent, display: "flex", padding: 0, lineHeight: 1 }}><IcX /></button>
               </div>
             ))}
           </div>
           <div style={{ display: "flex", gap: 8 }}>
-            <input value={newTag} onChange={e => setNewTag(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && newTag.trim()) { setTags([...tags, newTag.trim()]); setNewTag(""); } }} placeholder="Шинэ таг..." style={{ flex: 1, background: T.s1, border: `1px solid ${T.border}`, borderRadius: 12, padding: "10px 14px", fontFamily: "system-ui", fontSize: 13, color: T.textH, outline: "none" }} />
+            <input value={newTag} onChange={e => setNewTag(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && newTag.trim()) { setTags([...tags, newTag.trim()]); setNewTag(""); } }} placeholder="Шинэ таг..." style={{ flex: 1, background: T.s1, border: `1px solid ${T.border}`, borderRadius: 12, padding: "10px 14px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, color: T.textH, outline: "none" }} />
             <PBtn small onClick={() => { if (newTag.trim()) { setTags([...tags, newTag.trim()]); setNewTag(""); } }} disabled={!newTag.trim()}>Нэмэх</PBtn>
           </div>
         </div>

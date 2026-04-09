@@ -6,7 +6,7 @@ export const metadata = {
 };
 
 export const viewport = {
-  themeColor: "#08090E",
+  themeColor: "#FFFFFF",
 };
 
 export default function RootLayout({ children }) {
@@ -15,11 +15,8 @@ export default function RootLayout({ children }) {
       <head>
         <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0,user-scalable=yes,viewport-fit=cover" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@600&display=swap" rel="stylesheet" />
       </head>
-      <body style={{ background: "#08090E", fontFamily: "'DM Sans', system-ui, sans-serif" }}>
+      <body style={{ background: "#FFFFFF", fontFamily: "'Helvetica Neue', Arial, system-ui, sans-serif" }}>
         {children}
       </body>
     </html>

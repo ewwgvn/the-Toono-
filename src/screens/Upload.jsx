@@ -70,13 +70,13 @@ export default function Upload({ nav, goBack }) {
           if (window.confirm("Хадгалаагүй мэдээлэл байна. Гарах уу?")) goBack ? goBack() : nav("me");
         } else { goBack ? goBack() : nav("me"); }
       }} style={{ background: "none", border: "none", color: T.textH, cursor: "pointer", display: "flex" }}><IcBack /></button>
-      <div style={{ fontFamily: "system-ui", fontSize: 18, fontWeight: 700, color: T.textH }}>Бүтээл байршуулах</div>
+      <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 18, fontWeight: 700, color: T.textH }}>Бүтээл байршуулах</div>
       <PBtn small secondary onClick={() => { /* toast placeholder */ }}>Түр хадгалах</PBtn>
     </div>
 
     {/* Step indicator */}
     <div style={{ display: "flex", borderBottom: `1px solid ${T.border}` }}>
-      {stepL.map((s, i) => <button key={i} onClick={() => setStep(i)} style={{ flex: 1, padding: "11px 0", background: "none", border: "none", fontFamily: "system-ui", fontSize: 12, fontWeight: step === i ? 700 : 500, color: step === i ? T.accent : T.textSub, borderBottom: `2px solid ${step === i ? T.accent : "transparent"}`, cursor: "pointer" }}>{s}</button>)}
+      {stepL.map((s, i) => <button key={i} onClick={() => setStep(i)} style={{ flex: 1, padding: "11px 0", background: "none", border: "none", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: step === i ? 700 : 500, color: step === i ? T.accent : T.textSub, borderBottom: `2px solid ${step === i ? T.accent : "transparent"}`, cursor: "pointer" }}>{s}</button>)}
     </div>
 
     <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", padding: "16px 20px 0" }}>
@@ -86,8 +86,8 @@ export default function Upload({ nav, goBack }) {
         {/* Images */}
         <div style={{ marginBottom: 20 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <div style={{ fontFamily: "system-ui", fontSize: 15, fontWeight: 700, color: T.textH }}>Зураг</div>
-            <div style={{ fontFamily: "system-ui", fontSize: 12, color: T.textSub }}>{mediaFiles.length}/10</div>
+            <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 15, fontWeight: 700, color: T.textH }}>Зураг</div>
+            <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.textSub }}>{mediaFiles.length}/10</div>
           </div>
 
           {/* Media grid */}
@@ -95,44 +95,44 @@ export default function Upload({ nav, goBack }) {
             {mediaFiles.map((f, idx) => <div key={idx} style={{ position: "relative", aspectRatio: "1", borderRadius: 12, overflow: "hidden", background: T.s2 }}>
               <img src={f.url} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} onClick={() => { setCropWorkIdx(idx); setCropWorkSrc(f.url); }} />
               <button onClick={() => removeMedia(idx)} style={{ position: "absolute", top: 4, right: 4, width: 22, height: 22, borderRadius: "50%", background: "rgba(0,0,0,0.6)", border: "none", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10 }}><IcX /></button>
-              <button onClick={() => { setCropWorkIdx(idx); setCropWorkSrc(f.url); }} style={{ position: "absolute", bottom: 4, right: 4, padding: "3px 8px", borderRadius: 6, background: "rgba(0,0,0,0.6)", border: "none", fontFamily: "system-ui", fontSize: 9, fontWeight: 600, color: "#fff", cursor: "pointer" }}>Тайрах</button>
-              {idx === 0 && <div style={{ position: "absolute", bottom: 4, left: 4, background: T.accent, borderRadius: 4, padding: "2px 6px", fontFamily: "system-ui", fontSize: 9, fontWeight: 700, color: "#fff" }}>Гол</div>}
+              <button onClick={() => { setCropWorkIdx(idx); setCropWorkSrc(f.url); }} style={{ position: "absolute", bottom: 4, right: 4, padding: "3px 8px", borderRadius: 6, background: "rgba(0,0,0,0.6)", border: "none", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 9, fontWeight: 600, color: "#fff", cursor: "pointer" }}>Тайрах</button>
+              {idx === 0 && <div style={{ position: "absolute", bottom: 4, left: 4, background: T.accent, borderRadius: 4, padding: "2px 6px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 9, fontWeight: 700, color: "#fff" }}>Гол</div>}
             </div>)}
 
             {/* Add button */}
             {mediaFiles.length < 10 && <label style={{ aspectRatio: "1", borderRadius: 12, background: T.s1, border: `2px dashed ${T.border}`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", gap: 6 }}>
               <div style={{ width: 36, height: 36, borderRadius: 10, background: T.accentSub, display: "flex", alignItems: "center", justifyContent: "center", color: T.accent, fontSize: 22 }}>+</div>
-              <div style={{ fontFamily: "system-ui", fontSize: 11, color: T.textSub }}>Зураг нэмэх</div>
+              <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, color: T.textSub }}>Зураг нэмэх</div>
               <input type="file" accept="image/*" multiple onChange={handleImagePick} style={{ display: "none" }} />
             </label>}
           </div>
-          <div style={{ fontFamily: "system-ui", fontSize: 11, color: T.textSub, marginTop: 8 }}>JPG, PNG, WEBP · Хамгийн ихдээ 10 зураг · Эхний зураг гол зураг болно</div>
+          <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, color: T.textSub, marginTop: 8 }}>JPG, PNG, WEBP · Хамгийн ихдээ 10 зураг · Эхний зураг гол зураг болно</div>
         </div>
 
         {/* Video */}
         <div style={{ marginBottom: 20 }}>
-          <div style={{ fontFamily: "system-ui", fontSize: 15, fontWeight: 700, color: T.textH, marginBottom: 12 }}>Видео <span style={{ fontFamily: "system-ui", fontSize: 12, fontWeight: 400, color: T.textSub }}>(заавал биш)</span></div>
+          <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 15, fontWeight: 700, color: T.textH, marginBottom: 12 }}>Видео <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: 400, color: T.textSub }}>(заавал биш)</span></div>
           {videoFile
             ? <div style={{ borderRadius: 14, overflow: "hidden", background: T.s2, position: "relative" }}>
               <video src={videoFile.url} controls style={{ width: "100%", maxHeight: 200, objectFit: "cover", display: "block" }} />
               <div style={{ padding: "10px 14px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
-                  <div style={{ fontFamily: "system-ui", fontSize: 13, fontWeight: 600, color: T.textH }}>{videoFile.name}</div>
-                  <div style={{ fontFamily: "system-ui", fontSize: 11, color: T.textSub }}>{videoFile.size} MB</div>
+                  <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 600, color: T.textH }}>{videoFile.name}</div>
+                  <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, color: T.textSub }}>{videoFile.size} MB</div>
                 </div>
-                <button onClick={() => setVideoFile(null)} style={{ background: T.redSub, border: `1px solid ${T.red}40`, borderRadius: 8, padding: "6px 12px", fontFamily: "system-ui", fontSize: 12, color: T.red, cursor: "pointer" }}>Устгах</button>
+                <button onClick={() => setVideoFile(null)} style={{ background: T.redSub, border: `1px solid ${T.red}40`, borderRadius: 8, padding: "6px 12px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.red, cursor: "pointer" }}>Устгах</button>
               </div>
             </div>
             : <label style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, padding: "24px", borderRadius: 14, background: T.s1, border: `2px dashed ${T.border}`, cursor: "pointer" }}>
               <div style={{ width: 48, height: 48, borderRadius: 14, background: "rgba(224,80,80,0.12)", display: "flex", alignItems: "center", justifyContent: "center", color: T.red }}><IcVideo /></div>
-              <div style={{ fontFamily: "system-ui", fontSize: 14, fontWeight: 600, color: T.textH }}>Видео нэмэх</div>
-              <div style={{ fontFamily: "system-ui", fontSize: 11, color: T.textSub, textAlign: "center" }}>MP4, MOV · Хамгийн ихдээ 200MB</div>
+              <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 14, fontWeight: 600, color: T.textH }}>Видео нэмэх</div>
+              <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, color: T.textSub, textAlign: "center" }}>MP4, MOV · Хамгийн ихдээ 200MB</div>
               <input type="file" accept="video/*" onChange={handleVideoPick} style={{ display: "none" }} />
             </label>}
         </div>
 
         {/* Warning: no media */}
-        {mediaFiles.length === 0 && <div style={{ background: "rgba(240,160,48,0.1)", border: "1px solid rgba(240,160,48,0.3)", borderRadius: 12, padding: "12px 16px", fontFamily: "system-ui", fontSize: 13, color: T.yellow, marginBottom: 16 }}><span style={{ display: "flex", marginRight: 4 }}><IcWarning /></span>Дор хаяж 1 зураг оруулна уу</div>}
+        {mediaFiles.length === 0 && <div style={{ background: "rgba(240,160,48,0.1)", border: "1px solid rgba(240,160,48,0.3)", borderRadius: 12, padding: "12px 16px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, color: T.yellow, marginBottom: 16 }}><span style={{ display: "flex", marginRight: 4 }}><IcWarning /></span>Дор хаяж 1 зураг оруулна уу</div>}
 
         <PBtn full onClick={() => { if (mediaFiles.length === 0) { alert("Дор хаяж 1 зураг оруулна уу"); return; } setStep(1); }}>Дараах → Мэдээлэл</PBtn>
       </>}
@@ -141,24 +141,24 @@ export default function Upload({ nav, goBack }) {
       {step === 1 && <>
         <Inp label="Бүтээлийн нэр *" placeholder="Гарчиг оруулна уу" value={title} onChange={e => setTitle(e.target.value)} />
         <div style={{ marginBottom: 14 }}>
-          <div style={{ fontFamily: "system-ui", fontSize: 13, fontWeight: 600, color: T.textSub, marginBottom: 7 }}>Тайлбар *</div>
-          <textarea value={desc} onChange={e => setDesc(e.target.value)} placeholder="Тайлбар, урам зориг, хийх арга..." style={{ width: "100%", minHeight: 100, background: T.s1, border: `1px solid ${T.border}`, borderRadius: 13, padding: "12px 14px", fontFamily: "system-ui", fontSize: 14, color: T.textH, outline: "none", resize: "none", lineHeight: 1.7, boxSizing: "border-box" }} />
-          <div style={{ textAlign: "right", fontFamily: "system-ui", fontSize: 11, color: T.textSub, marginTop: 3 }}>{desc.length} тэмдэгт</div>
+          <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 600, color: T.textSub, marginBottom: 7 }}>Тайлбар *</div>
+          <textarea value={desc} onChange={e => setDesc(e.target.value)} placeholder="Тайлбар, урам зориг, хийх арга..." style={{ width: "100%", minHeight: 100, background: T.s1, border: `1px solid ${T.border}`, borderRadius: 13, padding: "12px 14px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 14, color: T.textH, outline: "none", resize: "none", lineHeight: 1.7, boxSizing: "border-box" }} />
+          <div style={{ textAlign: "right", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, color: T.textSub, marginTop: 3 }}>{desc.length} тэмдэгт</div>
         </div>
         <Inp label="Материал" placeholder="Тэмээний ноос 60%, хонины ноос 40%" value={material} onChange={e => setMaterial(e.target.value)} />
         <Inp label="Таг" placeholder="Тэнгэрийн шашин, Бөөгийн мөргөл, пальто" value={tags} onChange={e => setTags(e.target.value)} />
         <div style={{ marginBottom: 14 }}>
-          <div style={{ fontFamily: "system-ui", fontSize: 13, fontWeight: 600, color: T.textSub, marginBottom: 8 }}>Ангилал *</div>
+          <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 600, color: T.textSub, marginBottom: 8 }}>Ангилал *</div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-            {cats.map(c => <button key={c} onClick={() => setCat(c)} style={{ padding: "7px 15px", borderRadius: 20, cursor: "pointer", fontFamily: "system-ui", fontSize: 12, fontWeight: 600, background: cat === c ? T.accent : T.s1, border: `1px solid ${cat === c ? T.accent : T.border}`, color: cat === c ? "#fff" : T.textSub }}>{c}</button>)}
+            {cats.map(c => <button key={c} onClick={() => setCat(c)} style={{ padding: "7px 15px", borderRadius: 20, cursor: "pointer", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: 600, background: cat === c ? T.accent : T.s1, border: `1px solid ${cat === c ? T.accent : T.border}`, color: cat === c ? "#fff" : T.textSub }}>{c}</button>)}
           </div>
         </div>
         <div style={{ marginBottom: 16 }}>
-          <div style={{ fontFamily: "system-ui", fontSize: 13, fontWeight: 600, color: T.textSub, marginBottom: 10 }}>Нийтлэлийн төрөл</div>
+          <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 600, color: T.textSub, marginBottom: 10 }}>Нийтлэлийн төрөл</div>
           {[["sale", "Борлуулалт боломжтой", "Үнэ тохируулсны дараа зарах"], ["portfolio", "Зөвхөн портфолио", "Зарахгүй нийтэлх"], ["sample", "Захиалгын жишээ", "Захиалгын лавлагаа"]].map(t => <button key={t[0]} onClick={() => setSaleType(t[0])} style={{ width: "100%", background: saleType === t[0] ? T.accentSub : T.s1, border: `1.5px solid ${saleType === t[0] ? T.accent : T.border}`, borderRadius: 13, padding: "13px 16px", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
             <div>
-              <div style={{ fontFamily: "system-ui", fontSize: 14, fontWeight: 600, color: T.textH }}>{t[1]}</div>
-              <div style={{ fontFamily: "system-ui", fontSize: 12, color: T.textSub, marginTop: 2 }}>{t[2]}</div>
+              <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 14, fontWeight: 600, color: T.textH }}>{t[1]}</div>
+              <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.textSub, marginTop: 2 }}>{t[2]}</div>
             </div>
             {saleType === t[0] && <span style={{ color: T.accent }}><IcCheck /></span>}
           </button>)}
@@ -170,9 +170,9 @@ export default function Upload({ nav, goBack }) {
       {step === 2 && <>
         {saleType === "sale" && <>
           <div style={{ marginBottom: 14 }}>
-            <div style={{ fontFamily: "system-ui", fontSize: 13, fontWeight: 600, color: T.textSub, marginBottom: 7 }}>Борлуулалтын үнэ (₮) *</div>
-            <input value={price} onChange={e => setPrice(e.target.value.replace(/[^0-9]/g, ""))} placeholder="0" inputMode="numeric" style={{ width: "100%", background: T.s1, border: `1px solid ${T.border}`, borderRadius: 13, padding: "12px 16px", fontFamily: "system-ui", fontSize: 26, fontWeight: 700, color: T.accent, outline: "none", boxSizing: "border-box" }} />
-            {price && <div style={{ fontFamily: "system-ui", fontSize: 13, color: T.textSub, marginTop: 4 }}>₮{Number(price).toLocaleString()}</div>}
+            <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 600, color: T.textSub, marginBottom: 7 }}>Борлуулалтын үнэ (₮) *</div>
+            <input value={price} onChange={e => setPrice(e.target.value.replace(/[^0-9]/g, ""))} placeholder="0" inputMode="numeric" style={{ width: "100%", background: T.s1, border: `1px solid ${T.border}`, borderRadius: 13, padding: "12px 16px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 26, fontWeight: 700, color: T.accent, outline: "none", boxSizing: "border-box" }} />
+            {price && <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, color: T.textSub, marginTop: 4 }}>₮{Number(price).toLocaleString()}</div>}
           </div>
           <Inp label="Нөөцийн тоо" placeholder="1" value={stock} onChange={e => setStock(e.target.value)} />
           <Inp label="Хийх хугацаа" placeholder="Захиалгын дараа 3~4 долоо хоног" value={duration} onChange={e => setDuration(e.target.value)} />
@@ -180,12 +180,12 @@ export default function Upload({ nav, goBack }) {
 
         {/* Preview summary */}
         <div style={{ background: T.accentSub, border: `1px solid ${T.accentGlow}`, borderRadius: 14, padding: "16px", marginBottom: 16 }}>
-          <div style={{ fontFamily: "system-ui", fontSize: 13, fontWeight: 700, color: T.accent, marginBottom: 12 }}>Байршуулах бүтээлийн тойм</div>
+          <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 700, color: T.accent, marginBottom: 12 }}>Байршуулах бүтээлийн тойм</div>
           <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
             {mediaFiles[0] && <img src={mediaFiles[0].url} alt="" style={{ width: 64, height: 64, borderRadius: 10, objectFit: "cover", flexShrink: 0 }} />}
             <div style={{ flex: 1 }}>
-              <div style={{ fontFamily: "system-ui", fontSize: 14, fontWeight: 700, color: T.textH, marginBottom: 2 }}>{title || "Бүтээлийн нэр"}</div>
-              <div style={{ fontFamily: "system-ui", fontSize: 12, color: T.textSub, marginBottom: 6 }}>{cat || "Ангилал"}</div>
+              <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 14, fontWeight: 700, color: T.textH, marginBottom: 2 }}>{title || "Бүтээлийн нэр"}</div>
+              <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.textSub, marginBottom: 6 }}>{cat || "Ангилал"}</div>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                 {price && saleType === "sale" && <Pill>₮{Number(price).toLocaleString()}</Pill>}
                 {videoFile && <Pill color={T.green}><span style={{ display: "flex", marginRight: 3 }}><IcCheck /></span>Видео</Pill>}
@@ -216,7 +216,7 @@ export default function Upload({ nav, goBack }) {
                 if (vUrl) videoUrl = vUrl;
               }
             }
-            const accentPalette = ["#3A6FD8", "#8850D4", "#3A9A60", "#D45A30", "#1A7AB0", "#C05090"];
+            const accentPalette = ["#3A6FD8", "#666666", "#3A9A60", "#D45A30", "#1A7AB0", "#C05090"];
             const accent = accentPalette[(title || "").split("").reduce((s, c) => s + c.charCodeAt(0), 0) % accentPalette.length];
             const tagList = tags ? tags.split(",").map(t => t.trim()).filter(Boolean) : [];
             const newWork = {
@@ -261,7 +261,7 @@ export default function Upload({ nav, goBack }) {
                 stock: newWork.stock || 1,
                 badge: newWork.badge || null,
                 status: "published",
-                accent: newWork.accent || "#5B8FE8",
+                accent: newWork.accent || "#111111",
               };
               if (isSupabaseReady()) {
                 const { data, error } = await supabase.from('works').insert(workPayload).select().single();

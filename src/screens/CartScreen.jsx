@@ -33,8 +33,8 @@ export default function CartScreen({ nav, refresh, goBack }) {
   return <div style={{ height: "100%", display: "flex", flexDirection: "column", background: T.bg }}>
     <div style={{ padding: "20px 20px 14px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
       <button onClick={() => goBack ? goBack() : nav("home")} style={{ background: "none", border: "none", color: T.textH, cursor: "pointer", display: "flex" }}><IcBack /></button>
-      <div style={{ fontFamily: "system-ui", fontSize: 20, fontWeight: 800, color: T.textH }}>Сагс</div>
-      <div style={{ fontFamily: "system-ui", fontSize: 13, color: T.textSub }}>{cartItems.length} бүтээл</div>
+      <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 20, fontWeight: 800, color: T.textH }}>Сагс</div>
+      <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, color: T.textSub }}>{cartItems.length} бүтээл</div>
     </div>
 
     <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", padding: "0 20px" }}>
@@ -45,60 +45,60 @@ export default function CartScreen({ nav, refresh, goBack }) {
             <div style={{ display: "flex", gap: 0 }}>
               <div style={{ width: 90, background: item.accent + "18", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, position: "relative" }}>
                 <Toono size={48} color={item.accent} />
-                {item.digital && <div style={{ position: "absolute", bottom: 6, left: "50%", transform: "translateX(-50%)", background: "rgba(136,80,212,0.9)", borderRadius: 6, padding: "2px 6px", fontFamily: "system-ui", fontSize: 8, fontWeight: 700, color: "#fff" }}>
+                {item.digital && <div style={{ position: "absolute", bottom: 6, left: "50%", transform: "translateX(-50%)", background: "rgba(136,80,212,0.9)", borderRadius: 6, padding: "2px 6px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 8, fontWeight: 700, color: "#fff" }}>
                   <svg width="9" height="10" viewBox="0 0 9 10" fill="none"><path d="M4.5 1V7M1.5 4.5L4.5 7.5L7.5 4.5" stroke="white" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /><path d="M1 9H8" stroke="white" strokeWidth="1.2" strokeLinecap="round" /></svg> Дижитал
                 </div>}
               </div>
               <div style={{ flex: 1, padding: "12px 14px" }}>
-                <div style={{ fontFamily: "system-ui", fontSize: 14, fontWeight: 700, color: T.textH, marginBottom: 3 }}>{item.title}</div>
-                <div style={{ fontFamily: "system-ui", fontSize: 12, color: T.textSub, marginBottom: 6 }}>{item.creator}</div>
+                <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 14, fontWeight: 700, color: T.textH, marginBottom: 3 }}>{item.title}</div>
+                <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.textSub, marginBottom: 6 }}>{item.creator}</div>
                 {(item.size || item.color) && <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
-                  {item.size && <span style={{ fontFamily: "system-ui", fontSize: 11, color: T.accent, background: T.accentSub, padding: "2px 8px", borderRadius: 6 }}><IcFilter /> {item.size}</span>}
-                  {item.color && <span style={{ fontFamily: "system-ui", fontSize: 11, color: T.accent, background: T.accentSub, padding: "2px 8px", borderRadius: 6 }}>
+                  {item.size && <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, color: T.accent, background: T.accentSub, padding: "2px 8px", borderRadius: 6 }}><IcFilter /> {item.size}</span>}
+                  {item.color && <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, color: T.accent, background: T.accentSub, padding: "2px 8px", borderRadius: 6 }}>
                     <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><circle cx="5" cy="5" r="4" stroke="currentColor" strokeWidth="1" fill="none" /><circle cx="5" cy="5" r="1.8" /></svg> {item.color}
                   </span>}
                 </div>}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div style={{ fontFamily: "system-ui", fontSize: 15, fontWeight: 700, color: T.accent }}>₮{(item.price * getQty(item.id)).toLocaleString()}</div>
+                  <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 15, fontWeight: 700, color: T.accent }}>₮{(item.price * getQty(item.id)).toLocaleString()}</div>
                   {!item.digital && <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <button onClick={() => setQty(q => ({ ...q, [item.id]: Math.max(1, getQty(item.id) - 1) }))} style={{ width: 28, height: 28, borderRadius: 8, background: T.s2, border: `1px solid ${T.border}`, color: T.textH, cursor: "pointer", fontFamily: "system-ui", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>−</button>
-                    <span style={{ fontFamily: "system-ui", fontSize: 14, fontWeight: 700, color: T.textH, minWidth: 16, textAlign: "center" }}>{getQty(item.id)}</span>
-                    <button onClick={() => setQty(q => ({ ...q, [item.id]: Math.min(item.stock, getQty(item.id) + 1) }))} style={{ width: 28, height: 28, borderRadius: 8, background: T.s2, border: `1px solid ${T.border}`, color: T.textH, cursor: "pointer", fontFamily: "system-ui", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>+</button>
+                    <button onClick={() => setQty(q => ({ ...q, [item.id]: Math.max(1, getQty(item.id) - 1) }))} style={{ width: 28, height: 28, borderRadius: 8, background: T.s2, border: `1px solid ${T.border}`, color: T.textH, cursor: "pointer", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>−</button>
+                    <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 14, fontWeight: 700, color: T.textH, minWidth: 16, textAlign: "center" }}>{getQty(item.id)}</span>
+                    <button onClick={() => setQty(q => ({ ...q, [item.id]: Math.min(item.stock, getQty(item.id) + 1) }))} style={{ width: 28, height: 28, borderRadius: 8, background: T.s2, border: `1px solid ${T.border}`, color: T.textH, cursor: "pointer", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>+</button>
                   </div>}
                 </div>
               </div>
             </div>
             <div style={{ borderTop: `1px solid ${T.border}`, padding: "8px 14px", display: "flex", justifyContent: "space-between" }}>
-              <button onClick={() => { GS.saved.add(item.id); GS.cart = GS.cart.filter(c => c.id !== item.id); refresh(); }} style={{ background: "none", border: "none", fontFamily: "system-ui", fontSize: 12, color: T.accent, cursor: "pointer" }}><span style={{ display: "flex" }}><IcBookmark /></span> Хадгалах</button>
-              <button onClick={() => { GS.cart = GS.cart.filter(c => c.id !== item.id); refresh(); }} style={{ background: "none", border: "none", fontFamily: "system-ui", fontSize: 12, color: T.red, cursor: "pointer" }}><span style={{ display: "flex" }}><IcTrash /></span> Хасах</button>
+              <button onClick={() => { GS.saved.add(item.id); GS.cart = GS.cart.filter(c => c.id !== item.id); refresh(); }} style={{ background: "none", border: "none", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.accent, cursor: "pointer" }}><span style={{ display: "flex" }}><IcBookmark /></span> Хадгалах</button>
+              <button onClick={() => { GS.cart = GS.cart.filter(c => c.id !== item.id); refresh(); }} style={{ background: "none", border: "none", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.red, cursor: "pointer" }}><span style={{ display: "flex" }}><IcTrash /></span> Хасах</button>
             </div>
           </Crd>)}
 
           {/* Coupon */}
           <Crd style={{ padding: "14px", marginBottom: 16 }}>
-            <div style={{ fontFamily: "system-ui", fontSize: 13, fontWeight: 700, color: T.textH, marginBottom: 10 }}><span style={{ display: "flex", marginRight: 4 }}><IcCoupon /></span>Купон хэрэглэх</div>
+            <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 700, color: T.textH, marginBottom: 10 }}><span style={{ display: "flex", marginRight: 4 }}><IcCoupon /></span>Купон хэрэглэх</div>
             <div style={{ display: "flex", gap: 8 }}>
               <input value={coupon} onChange={e => setCoupon(e.target.value.toUpperCase())} placeholder="THETOONO10 · MONGOL20 · FIRST15" disabled={couponApplied} style={{ flex: 1, background: T.s2, border: `1px solid ${couponApplied ? T.green : T.border}`, borderRadius: 11, padding: "10px 14px", fontFamily: "monospace", fontSize: 13, color: T.textH, outline: "none" }} />
               <PBtn small onClick={applyCoupon} disabled={couponApplied}>{couponApplied ? "OK" : "Хэрэглэх"}</PBtn>
             </div>
-            {couponApplied && <div style={{ fontFamily: "system-ui", fontSize: 12, color: T.green, marginTop: 6 }}><span style={{ display: "flex", marginRight: 4 }}><IcCheck /></span>{Math.round(couponDiscount * 100)}% хөнгөлөлт хэрэглэгдлээ</div>}
+            {couponApplied && <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.green, marginTop: 6 }}><span style={{ display: "flex", marginRight: 4 }}><IcCheck /></span>{Math.round(couponDiscount * 100)}% хөнгөлөлт хэрэглэгдлээ</div>}
           </Crd>
 
           {/* Order summary */}
           <Crd style={{ padding: "16px", marginBottom: 16 }}>
-            <div style={{ fontFamily: "system-ui", fontSize: 14, fontWeight: 700, color: T.textH, marginBottom: 12 }}>Захиалгын дүн</div>
+            <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 14, fontWeight: 700, color: T.textH, marginBottom: 12 }}>Захиалгын дүн</div>
             {[
               ["Барааны дүн", "₮" + subtotal.toLocaleString()],
               ...(couponApplied ? [["Купон хөнгөлөлт", "-₮" + discount.toLocaleString()]] : []),
               ["Хүргэлт", shipping === 0 ? "Үнэгүй" : "₮" + shipping.toLocaleString()],
             ].map((r, i) => <div key={i} style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-              <span style={{ fontFamily: "system-ui", fontSize: 13, color: T.textSub }}>{r[0]}</span>
-              <span style={{ fontFamily: "system-ui", fontSize: 13, color: r[0].includes("хөнгөлөлт") ? T.green : T.textH }}>{r[1]}</span>
+              <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, color: T.textSub }}>{r[0]}</span>
+              <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, color: r[0].includes("хөнгөлөлт") ? T.green : T.textH }}>{r[1]}</span>
             </div>)}
             <div style={{ height: 1, background: T.border, margin: "8px 0" }} />
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span style={{ fontFamily: "system-ui", fontSize: 15, fontWeight: 700, color: T.textH }}>Нийт дүн</span>
-              <span style={{ fontFamily: "system-ui", fontSize: 18, fontWeight: 800, color: T.accent }}>₮{total.toLocaleString()}</span>
+              <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 15, fontWeight: 700, color: T.textH }}>Нийт дүн</span>
+              <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 18, fontWeight: 800, color: T.accent }}>₮{total.toLocaleString()}</span>
             </div>
           </Crd>
         </>}

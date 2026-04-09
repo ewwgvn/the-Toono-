@@ -25,19 +25,19 @@ export default function Settings({ nav, goBack, refresh }) {
 
   const Sec = ({ title, items }) => (
     <div style={{ marginBottom: 22 }}>
-      <div style={{ fontFamily: "system-ui", fontSize: 11, fontWeight: 600, color: T.textSub, letterSpacing: ".1em", textTransform: "uppercase", marginBottom: 8 }}>{title}</div>
+      <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, fontWeight: 600, color: T.textSub, letterSpacing: ".1em", textTransform: "uppercase", marginBottom: 8 }}>{title}</div>
       <Crd style={{ borderRadius: 16, overflow: "hidden" }}>
         {items.map((item, i) => (
           <div key={item.label} style={{ padding: "13px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: i < items.length - 1 ? `1px solid ${T.border}` : "none", cursor: item.action || item.tog !== undefined ? "pointer" : "default" }} onClick={item.action}>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <div style={{ width: 34, height: 34, borderRadius: 10, background: item.bg || T.s2, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color: item.danger ? T.red : T.textB }}>{item.icon}</div>
               <div>
-                <div style={{ fontFamily: "system-ui", fontSize: 14, fontWeight: 600, color: item.danger ? T.red : T.textH }}>{item.label}</div>
-                {item.sub && <div style={{ fontFamily: "system-ui", fontSize: 11, color: T.textSub, marginTop: 1 }}>{item.sub}</div>}
+                <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 14, fontWeight: 600, color: item.danger ? T.red : T.textH }}>{item.label}</div>
+                {item.sub && <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, color: T.textSub, marginTop: 1 }}>{item.sub}</div>}
               </div>
             </div>
             {item.tog !== undefined ? <Tog on={item.tog} set={item.set} />
-              : item.val ? <span style={{ fontFamily: "system-ui", fontSize: 13, color: T.textSub }}>{item.val}</span>
+              : item.val ? <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, color: T.textSub }}>{item.val}</span>
                 : !item.noArrow && <span style={{ color: T.textSub }}><IcChevron /></span>}
           </div>
         ))}

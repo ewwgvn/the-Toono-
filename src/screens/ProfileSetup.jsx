@@ -85,14 +85,14 @@ export default function ProfileSetup({ nav, refresh, goBack }) {
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
         <div style={{display:"flex",alignItems:"center",gap:10}}>
           <button onClick={() => goBack?goBack():nav("login")} style={{width:36,height:36,borderRadius:10,background:T.s1,border:`1px solid ${T.border}`,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:T.textH,flexShrink:0}}><IcBack/></button>
-          <div style={{fontFamily:"system-ui",fontSize:22,fontWeight:800,color:T.textH}}>Профайл тохируулах</div>
+          <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:22,fontWeight:800,color:T.textH}}>Профайл тохируулах</div>
         </div>
-        <button onClick={skip} style={{background:"none",border:"none",fontFamily:"system-ui",fontSize:13,color:T.textSub,cursor:"pointer"}}>Алгасах →</button>
+        <button onClick={skip} style={{background:"none",border:"none",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,color:T.textSub,cursor:"pointer"}}>Алгасах →</button>
       </div>
       <div style={{display:"flex",gap:5,marginBottom:6}}>
         {[0,1,2].map(i => <div key={i} style={{flex:1,height:4,borderRadius:2,background:i<=step?T.accent:T.border}}/>)}
       </div>
-      <div style={{fontFamily:"system-ui",fontSize:12,color:T.textSub}}>{step+1}/3 — {["Зураг · Нэр","Чиглэл · Танилцуулга","Таг сонгох"][step]}</div>
+      <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.textSub}}>{step+1}/3 — {["Зураг · Нэр","Чиглэл · Танилцуулга","Таг сонгох"][step]}</div>
     </div>
 
     <div style={{flex:1,overflowY:"auto",scrollbarWidth:"none",padding:"16px 20px 0"}}>
@@ -108,7 +108,7 @@ export default function ProfileSetup({ nav, refresh, goBack }) {
               <input type="file" accept="image/*" onChange={handlePhoto} style={{display:"none"}}/>
             </label>
           </div>
-          <div style={{fontFamily:"system-ui",fontSize:13,color:T.textSub}}>Профайл зураг нэмэх</div>
+          <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,color:T.textSub}}>Профайл зураг нэмэх</div>
         </div>
         <Inp label="Нэр / Хочоо *" placeholder="Таны нэр эсвэл хочоо" value={GS.user.name} onChange={e => {GS.user.name=e.target.value;refresh();}}/>
         {isCreator&&<Inp label="Мэргэжил / Чиглэл" placeholder="Загварын дизайнер · Урлагч" value={field} onChange={e => setField(e.target.value)}/>}
@@ -116,29 +116,29 @@ export default function ProfileSetup({ nav, refresh, goBack }) {
 
       {step===1&&<>
         <div style={{marginBottom:16}}>
-          <div style={{fontFamily:"system-ui",fontSize:13,fontWeight:600,color:T.textSub,marginBottom:7}}>Биеийн танилцуулга</div>
-          <textarea value={bio} onChange={e => setBio(e.target.value)} rows={5} placeholder={isCreator?"Таны бүтээлч замналыг товч танилцуулна уу...":"Өөрийгөө товч танилцуулна уу..."} style={{width:"100%",background:T.s1,border:`1px solid ${T.border}`,borderRadius:13,padding:"13px 16px",fontFamily:"system-ui",fontSize:14,color:T.textH,outline:"none",resize:"none",lineHeight:1.7,boxSizing:"border-box"}}/>
-          <div style={{fontFamily:"system-ui",fontSize:11,color:T.textSub,marginTop:4,textAlign:"right"}}>{bio.length} тэмдэгт</div>
+          <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,fontWeight:600,color:T.textSub,marginBottom:7}}>Биеийн танилцуулга</div>
+          <textarea value={bio} onChange={e => setBio(e.target.value)} rows={5} placeholder={isCreator?"Таны бүтээлч замналыг товч танилцуулна уу...":"Өөрийгөө товч танилцуулна уу..."} style={{width:"100%",background:T.s1,border:`1px solid ${T.border}`,borderRadius:13,padding:"13px 16px",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,color:T.textH,outline:"none",resize:"none",lineHeight:1.7,boxSizing:"border-box"}}/>
+          <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:11,color:T.textSub,marginTop:4,textAlign:"right"}}>{bio.length} тэмдэгт</div>
         </div>
         {isCreator&&<div style={{background:T.accentSub,border:`1px solid ${T.accentGlow}`,borderRadius:14,padding:"14px 16px"}}>
           <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
             <div style={{color:T.accent,display:"flex"}}><IcCommission/></div>
-            <div style={{fontFamily:"system-ui",fontSize:14,fontWeight:700,color:T.textH}}>Захиалга авах уу?</div>
+            <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,fontWeight:700,color:T.textH}}>Захиалга авах уу?</div>
           </div>
-          <div style={{fontFamily:"system-ui",fontSize:12,color:T.textSub,lineHeight:1.6}}>Идэвхжүүлбэл бусад хүмүүс танд захиалга илгээх боломжтой болно. Дараа тохиргооноос өөрчилж болно.</div>
+          <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.textSub,lineHeight:1.6}}>Идэвхжүүлбэл бусад хүмүүс танд захиалга илгээх боломжтой болно. Дараа тохиргооноос өөрчилж болно.</div>
         </div>}
       </>}
 
       {step===2&&<>
-        <div style={{fontFamily:"system-ui",fontSize:15,fontWeight:700,color:T.textH,marginBottom:14}}>Сонирхлын чиглэл сонгох</div>
-        <div style={{fontFamily:"system-ui",fontSize:13,color:T.textSub,marginBottom:16}}>2-оос дээш сонгоно уу. Энэ нь таны Feed-д нөлөөлнө.</div>
+        <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:15,fontWeight:700,color:T.textH,marginBottom:14}}>Сонирхлын чиглэл сонгох</div>
+        <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,color:T.textSub,marginBottom:16}}>2-оос дээш сонгоно уу. Энэ нь таны Feed-д нөлөөлнө.</div>
         <div style={{display:"flex",flexWrap:"wrap",gap:10}}>
           {suggestedTags.map(t => {
             const sel = tags.includes(t);
-            return <button key={t} onClick={() => setTags(sel?tags.filter(x => x!==t):[...tags,t])} style={{padding:"10px 18px",borderRadius:20,cursor:"pointer",fontFamily:"system-ui",fontSize:13,fontWeight:600,background:sel?T.accent:T.s1,border:`1.5px solid ${sel?T.accent:T.border}`,color:sel?"#fff":T.textSub,transition:"all .12s"}}>{t}</button>;
+            return <button key={t} onClick={() => setTags(sel?tags.filter(x => x!==t):[...tags,t])} style={{padding:"10px 18px",borderRadius:20,cursor:"pointer",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,fontWeight:600,background:sel?T.accent:T.s1,border:`1.5px solid ${sel?T.accent:T.border}`,color:sel?"#fff":T.textSub,transition:"all .12s"}}>{t}</button>;
           })}
         </div>
-        {tags.length>0&&<div style={{fontFamily:"system-ui",fontSize:12,color:T.accent,marginTop:12}}>{tags.length} сонгогдлоо</div>}
+        {tags.length>0&&<div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.accent,marginTop:12}}>{tags.length} сонгогдлоо</div>}
       </>}
 
       <div style={{height:20}}/>
