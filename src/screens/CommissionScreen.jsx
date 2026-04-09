@@ -88,7 +88,7 @@ export default function CommissionScreen({ nav, goBack, refresh, creatorId }) {
         <Avt size={40} color={T.accent}/>
         <div>
           <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,fontWeight:700,color:T.textH}}>{GS.user.name}</div>
-          <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.green}}>● Захиалга Авч байна</div>
+          <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:"#666666"}}>Open for commissions</div>
         </div>
       </Crd>
       {step===0&&<>

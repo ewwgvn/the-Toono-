@@ -12,7 +12,7 @@ export default function CreatorRow({ creator: c, onClick, onFollow, showFollow, 
       <div style={{ flex: 1 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
           <div style={{ fontFamily: F, fontSize: 14, fontWeight: 600, color: "#111111" }}>{c.name}</div>
-          {c.comm && <span style={{ fontFamily: F, fontSize: 11, fontWeight: 500, color: "#2E7D32", background: "rgba(46,125,50,0.08)", padding: "2px 8px", borderRadius: 20 }}>Захиалга авна</span>}
+          {c.comm && <span style={{ fontFamily: F, fontSize: 11, fontWeight: 500, color: "#666666", background: "#F7F7F7", padding: "2px 8px", borderRadius: 20 }}>Commissions open</span>}
         </div>
         <div style={{ fontFamily: F, fontSize: 12, color: "#666666" }}>
           {c.field} · {c.works} бүтээл

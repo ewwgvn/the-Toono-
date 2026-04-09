@@ -68,9 +68,8 @@ export default function MyProfile({ nav, refresh }) {
         </div>
         <div style={{ padding: "16px 20px 0" }}>
           {GS.user.commOpen && (
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: T.greenSub, border: `1px solid ${T.green}40`, borderRadius: 10, padding: "5px 12px", marginBottom: 14 }}>
-              <div style={{ width: 7, height: 7, borderRadius: "50%", background: T.green }} />
-              <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: 600, color: T.green }}>Захиалга Авч байна</span>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#F7F7F7", borderRadius: 20, padding: "5px 12px", marginBottom: 14 }}>
+              <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: 500, color: "#666666" }}>Open for commissions</span>
             </div>
           )}
           {!GS.user.commOpen && GS.currentRole === "creator" && (

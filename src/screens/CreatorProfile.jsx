@@ -29,17 +29,14 @@ function StarSellerBadge({size="sm"}) {
 function TrustBadges({creator}) {
   const c = creator || {};
   return <div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:6}}>
-    {c.level==="top"&&<div style={{display:"inline-flex",alignItems:"center",gap:3,background:"linear-gradient(135deg,#E8960C,#F0C040)",borderRadius:6,padding:"2px 7px"}}><svg width="10" height="10" viewBox="0 0 12 12" fill="#fff"><path d="M6 1L7.4 4.2H10.8L8 6.4L9.2 9.6L6 7.6L2.8 9.6L4 6.4L1.2 4.2H4.6Z"/></svg><span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:9,fontWeight:700,color:"#fff"}}>Top</span></div>}
-    {c.level==="verified"&&<div style={{display:"inline-flex",alignItems:"center",gap:3,background:T.accentSub,border:`1px solid ${T.accent}40`,borderRadius:6,padding:"2px 7px"}}><IcCheck/><span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:9,fontWeight:600,color:T.accent}}>Баталгаат</span></div>}
-    {c.comm&&<div style={{display:"inline-flex",alignItems:"center",gap:3,background:T.greenSub,border:`1px solid ${T.green}40`,borderRadius:6,padding:"2px 7px"}}><span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:9,fontWeight:600,color:T.green}}>Захиалга авна</span></div>}
+    {c.level==="top"&&<span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:11,fontWeight:600,color:"#111111",background:"#F7F7F7",padding:"3px 8px",borderRadius:20}}>Top Creator</span>}
+    {c.level==="verified"&&<span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:11,fontWeight:500,color:"#666666",background:"#F7F7F7",padding:"3px 8px",borderRadius:20}}>Verified</span>}
+    {c.comm&&<span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:11,fontWeight:500,color:"#666666",background:"#F7F7F7",padding:"3px 8px",borderRadius:20}}>Open for commissions</span>}
   </div>;
 }
 
-function ResponseBadge({hours=2}) {
-  return <div style={{display:"inline-flex",alignItems:"center",gap:4,background:T.greenSub,border:`1px solid ${T.green}30`,borderRadius:8,padding:"4px 10px"}}>
-    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke={T.green} strokeWidth="1.2"/><path d="M6 3V6.5L8 8" stroke={T.green} strokeWidth="1.2" strokeLinecap="round"/></svg>
-    <span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:10,fontWeight:600,color:T.green}}>{hours} цагийн дотор хариулна</span>
-  </div>;
+function ResponseBadge() {
+  return null;
 }
 
 export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
@@ -109,9 +106,8 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
           {c.id===GS.user.id&&GS.trustMetrics?.responseRate>=80&&<ResponseBadge hours={GS.trustMetrics.responseRate>=95?1:GS.trustMetrics.responseRate>=80?2:24}/>}
           {c.rating>=4.8&&<StarSellerBadge/>}
         </div>
-        {c.comm&&<div style={{display:"inline-flex",alignItems:"center",gap:6,background:T.greenSub,border:`1px solid ${T.green}40`,borderRadius:10,padding:"5px 12px",marginBottom:12}}>
-          <div style={{width:7,height:7,borderRadius:"50%",background:T.green}}/>
-          <span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,fontWeight:600,color:T.green}}>Захиалга Авч байна</span>
+        {c.comm&&<div style={{display:"inline-flex",background:"#F7F7F7",borderRadius:20,padding:"5px 12px",marginBottom:12}}>
+          <span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,fontWeight:500,color:"#666666"}}>Open for commissions</span>
         </div>}
         {(c.tags||GS.user.tags||[]).length>0&&<div style={{display:"flex",gap:6,marginBottom:16,flexWrap:"wrap"}}>
           {(c.tags||GS.user.tags||[]).map(t=><Pill key={t}>{t}</Pill>)}
