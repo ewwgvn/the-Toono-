@@ -77,14 +77,14 @@ export default function MyProfile({ nav, refresh }) {
               Захиалга идэвхжүүлэх
             </button>
           )}
-          <Crd style={{ display: "flex", marginBottom: 16 }}>
-            {[[GS.myWorks.length + "", "Бүтээл"], [GS.user.followers, "Дагагч"], [GS.user.rating > 0 ? GS.user.rating.toString() : "—", "Үнэлгээ"]].map((s, i) => (
-              <div key={s[1]} onClick={() => s[1] === "Дагагч" && nav("follows")} style={{ flex: 1, textAlign: "center", padding: "13px 0", borderRight: i < 2 ? `1px solid ${T.border}` : "none", cursor: s[1] === "Дагагч" ? "pointer" : "default" }}>
-                <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 15, fontWeight: 800, color: i === 3 ? T.yellow : i === 0 ? T.green : T.textH }}>{s[0]}</div>
-                <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 10, color: T.textSub, marginTop: 1 }}>{s[1]}</div>
+          <div style={{ display: "flex", marginBottom: 16, border: `1px solid ${T.borderLight}`, borderRadius: 8 }}>
+            {[[String(GS.myWorks.length), "Works"], [String(GS.following.size), "Following"]].map((s, i) => (
+              <div key={s[1]} onClick={() => nav("follows")} style={{ flex: 1, textAlign: "center", padding: "12px 0", borderRight: i < 1 ? `1px solid ${T.borderLight}` : "none", cursor: "pointer" }}>
+                <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 16, fontWeight: 700, color: "#111111" }}>{s[0]}</div>
+                <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, color: "#999999", marginTop: 2 }}>{s[1]}</div>
               </div>
             ))}
-          </Crd>
+          </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 16 }}>
             {[["Захиалга", "order-list", <IcOrder />, T.accent], ["Хадгалсан", "saved", <IcSaved />, T.yellow], ["Дагагч", "follows", <IcFollows />, T.green], ["Удирдах", "comm-manage", <IcCommission />, T.accent], ["Самбар", "dashboard", <IcDashboard />, "#666666"], ["Фийд", "feed", <IcFire />, "#F0A030"]].map(item => (
               <Crd key={item[0]} onClick={() => nav(item[1])} style={{ padding: "12px 8px", textAlign: "center", cursor: "pointer" }}>

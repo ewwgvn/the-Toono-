@@ -8,10 +8,8 @@ import Simple from "@/components/layout/Simple";
 export default function Dashboard({ nav, goBack }) {
   const totalSales = GS.myWorks.reduce((s, w) => s + (w.sales || 0), 0);
   const totalViews = GS.myWorks.reduce((s, w) => s + (typeof w.views === "number" ? w.views : parseInt(w.views) || 0), 0);
-  const totalRevenue = GS.orders.reduce((s, o) => s + (o.price || 0), 0) + totalSales * 50000;
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
-  const revenues = [totalRevenue * 0.4, totalRevenue * 0.6, totalRevenue * 0.3, totalRevenue * 0.8, totalRevenue * 0.5, totalRevenue];
-  const maxR = Math.max(...revenues, 1);
+  const totalRevenue = GS.orders.reduce((s, o) => s + (o.price || 0), 0);
+  // No chart — real monthly data not available yet
   const kpis = [
     { label: "Нийт орлого", value: "₮" + (totalRevenue || 0).toLocaleString(), sub: GS.myWorks.length + " бүтээлээс", color: T.green, bg: T.greenSub },
     { label: "Борлуулалт", value: totalSales + " ш", sub: "Бүтээл " + GS.myWorks.length + "·Захиалга " + (GS.receivedCommissions?.length || 0), color: T.accent, bg: T.accentSub },
@@ -30,50 +28,12 @@ export default function Dashboard({ nav, goBack }) {
           </div>
         ))}
       </div>
-      <Crd style={{ padding: "18px", marginBottom: 18 }}>
-        <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 14, fontWeight: 700, color: T.textH, marginBottom: 16 }}>Борлуулалтын график</div>
-        {/* SVG line chart */}
-        <div style={{ position: "relative", height: 110 }}>
-          <svg width="100%" height="110" viewBox={"0 0 " + (revenues.length * 60) + " 100"} preserveAspectRatio="none">
-            {/* Grid lines */}
-            {[0, 25, 50, 75].map(y => <line key={y} x1="0" y1={y} x2={revenues.length * 60} y2={y} stroke={T.border} strokeWidth="1" />)}
-            {/* Gradient fill */}
-            <defs>
-              <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={T.accent} stopOpacity="0.3" />
-                <stop offset="100%" stopColor={T.accent} stopOpacity="0" />
-              </linearGradient>
-            </defs>
-            {/* fill */}
-            <path
-              d={revenues.map((r, i) => `${i === 0 ? "M" : "L"} ${i * 60 + 30} ${100 - r / maxR * 90}`).join(" ") + " L " + ((revenues.length - 1) * 60 + 30) + " 100 L 30 100 Z"}
-              fill="url(#chartGrad)"
-            />
-            {/* Line */}
-            <polyline
-              points={revenues.map((r, i) => `${i * 60 + 30},${100 - r / maxR * 90}`).join(" ")}
-              fill="none" stroke={T.accent} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-            />
-            {/* Points */}
-            {revenues.map((r, i) => <circle key={i} cx={i * 60 + 30} cy={100 - r / maxR * 90} r={i === revenues.length - 1 ? "5" : "3"} fill={i === revenues.length - 1 ? T.accent : T.s1} stroke={T.accent} strokeWidth="2" />)}
-          </svg>
-          {/* X-axis labels */}
-          <div style={{ display: "flex", position: "absolute", bottom: -18, left: 0, right: 0 }}>
-            {["1", "2", "3", "4", "5", "6"].map((m, i) => <div key={i} style={{ flex: 1, textAlign: "center", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 9, color: T.textSub }}>{m}р</div>)}
-          </div>
-        </div>
-        <div style={{ height: 20 }} />
-        {/* Bar chart (legacy) */}
-        <div style={{ display: "none", alignItems: "flex-end", gap: 8, height: 100 }}>
-          {revenues.map((r, i) => (
-            <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-              <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 9, color: T.textSub }}>{Math.floor(r / 10)}K</div>
-              <div style={{ width: "100%", height: (r / maxR * 80) + "px", background: i === revenues.length - 1 ? T.accent : T.accentSub, borderRadius: "4px 4px 0 0", border: `1px solid ${i === revenues.length - 1 ? T.accent : T.accentGlow}` }} />
-              <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 9, color: T.textSub }}>{months[i]}</div>
-            </div>
-          ))}
-        </div>
-      </Crd>
+      {/* Revenue summary */}
+      <div style={{ border: `1px solid ${T.borderLight}`, borderRadius: 8, padding: 16, marginBottom: 16 }}>
+        <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 14, fontWeight: 600, color: "#111111", marginBottom: 8 }}>Revenue</div>
+        <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 24, fontWeight: 700, color: "#111111" }}>₮{(totalRevenue || 0).toLocaleString()}</div>
+        <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: "#999999", marginTop: 4 }}>{totalSales} sales · {GS.myWorks.length} works · {GS.receivedCommissions?.length || 0} commissions</div>
+      </div>
       {GS.orders.length > 0 ? GS.orders.slice(0, 5).map((o, i) => (
         <Crd key={o.id || i} style={{ padding: "14px 16px", marginBottom: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div><div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 16, fontWeight: 800, color: T.textH }}>₮{(o.price || 0).toLocaleString()}</div><div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.textSub }}>{o.date}</div></div>
@@ -85,15 +45,6 @@ export default function Dashboard({ nav, goBack }) {
           <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, color: T.textSub }}>Эхний борлуулалтын дараа энд харагдана</div>
         </div>
       )}
-      {false && [].map(r => (
-        <Crd key={r[0]} style={{ padding: "14px 16px", marginBottom: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div>
-            <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 14, fontWeight: 700, color: T.textH, marginBottom: 2 }}>{r[1]}</div>
-            <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.textSub }}>{r[0]} · {r[2]}</div>
-          </div>
-          <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, fontWeight: 700, color: T.green, background: T.greenSub, padding: "4px 10px", borderRadius: 8 }}>Тооцоо дууссан</span>
-        </Crd>
-      ))}
     </Simple>
   );
 }

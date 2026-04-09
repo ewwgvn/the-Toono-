@@ -278,6 +278,23 @@ create policy "Buyers create offers" on public.offers for insert with check (buy
 create policy "Own cart" on public.cart_items for all using (user_id = auth.uid());
 
 -- ══════════════════════════════════════
+-- RPC FUNCTIONS
+-- ══════════════════════════════════════
+create or replace function public.increment_likes(wid bigint)
+returns void as $$
+begin
+  update public.works set likes_count = likes_count + 1 where id = wid;
+end;
+$$ language plpgsql security definer;
+
+create or replace function public.decrement_likes(wid bigint)
+returns void as $$
+begin
+  update public.works set likes_count = greatest(0, likes_count - 1) where id = wid;
+end;
+$$ language plpgsql security definer;
+
+-- ══════════════════════════════════════
 -- MIGRATIONS (run if tables already exist)
 -- ══════════════════════════════════════
 -- alter table public.works add column if not exists duration text default '';

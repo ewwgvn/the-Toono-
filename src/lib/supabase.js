@@ -188,6 +188,18 @@ export const DB = {
     return count || 0;
   },
 
+  async getFollowers(userId) {
+    if (!isSupabaseReady()) return [];
+    const { data } = await supabase.from("follows").select("follower_id, profiles!follower_id(id, name, photo, field)").eq("following_id", userId);
+    return (data || []).map(d => ({ id: d.profiles?.id, name: d.profiles?.name || "", photo: d.profiles?.photo || null, field: d.profiles?.field || "" }));
+  },
+
+  async getFollowingList(userId) {
+    if (!isSupabaseReady()) return [];
+    const { data } = await supabase.from("follows").select("following_id, profiles!following_id(id, name, photo, field)").eq("follower_id", userId);
+    return (data || []).map(d => ({ id: d.profiles?.id, name: d.profiles?.name || "", photo: d.profiles?.photo || null, field: d.profiles?.field || "" }));
+  },
+
   async getMyLikes(userId) {
     if (!isSupabaseReady()) return [];
     const { data } = await supabase.from("likes").select("work_id").eq("user_id", userId);

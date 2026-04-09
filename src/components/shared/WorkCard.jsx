@@ -9,17 +9,17 @@ import Avt from "@/components/atoms/Avt";
 function timeAgo(dateStr) {
   if (!dateStr) return "";
   const sec = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
-  if (sec < 60) return "방금";
+  if (sec < 60) return "Сая";
   const min = Math.floor(sec / 60);
-  if (min < 60) return `${min}분`;
+  if (min < 60) return `${min}м`;
   const hr = Math.floor(min / 60);
-  if (hr < 24) return `${hr}시간`;
+  if (hr < 24) return `${hr}ц`;
   const day = Math.floor(hr / 24);
-  if (day < 7) return `${day}일`;
+  if (day < 7) return `${day}ө`;
   const wk = Math.floor(day / 7);
-  if (wk < 5) return `${wk}주`;
+  if (wk < 5) return `${wk}д`;
   const mo = Math.floor(day / 30);
-  return `${mo}개월`;
+  return `${mo}сар`;
 }
 
 const F = "'Helvetica Neue', Arial, sans-serif";
@@ -116,7 +116,7 @@ export default function WorkCard({ work: w, onClick, onCreatorClick, onToggleLik
           <span style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: "#111111" }}>{w.creator}</span>
           <span style={{ fontFamily: F, fontSize: 13, color: "#333333", marginLeft: 6 }}>{w.title}</span>
         </div>
-        {commentCount > 0 && <div onClick={onClick} style={{ padding: "4px 16px 0", fontFamily: F, fontSize: 13, color: "#999999", cursor: "pointer" }}>{commentCount}개 댓글 모두 보기</div>}
+        {commentCount > 0 && <div onClick={onClick} style={{ padding: "4px 16px 0", fontFamily: F, fontSize: 13, color: "#999999", cursor: "pointer" }}>{commentCount} сэтгэгдэл бүгдийг харах</div>}
         <div style={{ padding: "4px 16px 0", fontFamily: F, fontSize: 14, fontWeight: 600, color: "#111111" }}>{fmtP(w)}</div>
         <div style={{ padding: "8px 16px 12px", display: "flex", alignItems: "center", gap: 10 }}>
           {userPhoto !== undefined && <Avt size={24} photo={userPhoto} />}
@@ -127,7 +127,7 @@ export default function WorkCard({ work: w, onClick, onCreatorClick, onToggleLik
           />
           {commentText.trim() && (
             <button onClick={() => { if (onComment) { onComment(w.id, commentText.trim()); setCommentText(""); } }}
-              style={{ background: "none", border: "none", fontFamily: F, fontSize: 13, fontWeight: 600, color: "#111111", cursor: "pointer", padding: 0 }}>게시</button>
+              style={{ background: "none", border: "none", fontFamily: F, fontSize: 13, fontWeight: 600, color: "#111111", cursor: "pointer", padding: 0 }}>Post</button>
           )}
         </div>
       </div>

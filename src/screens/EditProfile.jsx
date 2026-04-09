@@ -12,8 +12,7 @@ export default function EditProfile({ nav, refresh, goBack }) {
   const [saving, setSaving] = useState(false);
   const [name, setName] = useState(GS.user.name);
   const [field, setField] = useState(GS.user.field);
-  // Dynamic follower count
-  GS.user.followers = String(GS.following?.size || 0);
+  // follower count is fetched from follows table, not set here
   const [bio, setBio] = useState(GS.user.bio);
   const [tags, setTags] = useState([...GS.user.tags]);
   const [newTag, setNewTag] = useState("");

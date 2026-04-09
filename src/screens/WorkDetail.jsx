@@ -129,7 +129,7 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
         <div style={{marginTop:4}}>
           <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:16,fontWeight:700,color:T.textH,marginBottom:12}}>Мөн бүтээлчийн Бүтээл</div>
           <div style={{display:"flex",gap:10,overflowX:"auto",scrollbarWidth:"none"}}>
-            {getAllWorks().filter(ww=>ww.id!==w.id).slice(0,3).map(ww=><div key={ww.id} onClick={()=>nav("work",{workId:ww.id})} style={{flexShrink:0,width:120,cursor:"pointer"}}>
+            {getAllWorks().filter(ww=>ww.id!==w.id&&(ww.creator_id===w.creator_id||ww.cid===w.cid)).slice(0,3).map(ww=><div key={ww.id} onClick={()=>nav("work",{workId:ww.id})} style={{flexShrink:0,width:120,cursor:"pointer"}}>
               <div style={{height:80,borderRadius:12,background:ww.accent+"18",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:6,overflow:"hidden"}}>
                 {ww.images?.[0] ? <img src={ww.images[0]} alt="" loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover"}}/> : <Toono size={44} color={ww.accent}/>}
               </div>

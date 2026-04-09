@@ -67,8 +67,20 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
     }
   },[creatorId]);
   const c=creator;
-  const following=GS.following.has(c.id);
-  const tFollow=()=>{following?GS.following.delete(c.id):GS.following.add(c.id);saveGS();refresh();if(GS.user.id&&c.id)DB.toggleFollow(GS.user.id,c.id);};
+  const [followerCount, setFollowerCount] = useState(parseInt(c.followers)||0);
+  const [followingCount, setFollowingCount] = useState(0);
+  const isFollowing=GS.following.has(c.id);
+  const tFollow=()=>{
+    if(isFollowing){GS.following.delete(c.id);setFollowerCount(p=>Math.max(0,p-1));}
+    else{GS.following.add(c.id);setFollowerCount(p=>p+1);}
+    saveGS();refresh();if(GS.user.id&&c.id)DB.toggleFollow(GS.user.id,c.id);
+  };
+  React.useEffect(()=>{
+    if(creatorId&&isSupabaseReady()){
+      DB.getFollowerCount(creatorId).then(n=>setFollowerCount(n));
+      DB.getFollowingCount(creatorId).then(n=>setFollowingCount(n));
+    }
+  },[creatorId]);
 
   return <div style={{height:"100%",display:"flex",flexDirection:"column",background:T.bg}}>
     <div style={{padding:"20px 20px 0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
@@ -98,7 +110,7 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
               }
               GS.activeChatId=convo.id;refresh();nav("chatroom");
             }} style={{background:T.s1,border:`1px solid ${T.border}`,borderRadius:10,padding:"8px 12px",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,fontWeight:600,color:T.textSub,cursor:"pointer"}}><IcMsg/></button>
-          <PBtn small secondary={following} onClick={tFollow}>{following?"Дагаж байна":"Дагах"}</PBtn>
+          <PBtn small secondary={isFollowing} onClick={tFollow}>{isFollowing?"Following":"Follow"}</PBtn>
         </div>
       </div>
       <div style={{padding:"12px 20px 0"}}>
@@ -112,12 +124,12 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
         {(c.tags||GS.user.tags||[]).length>0&&<div style={{display:"flex",gap:6,marginBottom:16,flexWrap:"wrap"}}>
           {(c.tags||GS.user.tags||[]).map(t=><Pill key={t}>{t}</Pill>)}
         </div>}
-        <Crd style={{display:"flex",marginBottom:16}}>
-          {[[String(c.works||GS.myWorks.length),"Бүтээл"],[c.followers||GS.user.followers||"0","Дагагч"],[String(GS.receivedCommissions.length),"Захиалга"],[c.rating>0?c.rating.toString():"—","Үнэлгээ"]].map((s,i)=><div key={s[1]} onClick={()=>s[1]==="Дагагч"&&nav("follows")} style={{flex:1,textAlign:"center",padding:"13px 0",borderRight:i<3?`1px solid ${T.border}`:"none",cursor:s[1]==="Дагагч"?"pointer":"default"}}>
-            <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:17,fontWeight:700,color:i===3?T.yellow:T.textH}}>{s[0]}</div>
-            <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:10,color:T.textSub,marginTop:1}}>{s[1]}</div>
+        <div style={{display:"flex",marginBottom:16,border:`1px solid ${T.borderLight}`,borderRadius:8}}>
+          {[[String(c.works||GS.myWorks.length),"Works"],[String(followerCount),"Followers"],[String(followingCount),"Following"]].map((s,i)=><div key={s[1]} onClick={()=>(s[1]==="Followers"||s[1]==="Following")&&nav("follows")} style={{flex:1,textAlign:"center",padding:"12px 0",borderRight:i<2?`1px solid ${T.borderLight}`:"none",cursor:(s[1]==="Followers"||s[1]==="Following")?"pointer":"default"}}>
+            <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:16,fontWeight:700,color:"#111111"}}>{s[0]}</div>
+            <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:11,color:"#999999",marginTop:2}}>{s[1]}</div>
           </div>)}
-        </Crd>
+        </div>
         {(c.bio||GS.user.bio)&&<div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,color:T.textB,lineHeight:1.8,marginBottom:16}}>{c.bio||GS.user.bio}</div>}
       </div>
       <div style={{height:1,background:T.border}}/>
