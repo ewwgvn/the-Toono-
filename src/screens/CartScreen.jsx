@@ -74,16 +74,6 @@ export default function CartScreen({ nav, refresh, goBack }) {
             </div>
           </Crd>)}
 
-          {/* Coupon */}
-          <Crd style={{ padding: "14px", marginBottom: 16 }}>
-            <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 700, color: T.textH, marginBottom: 10 }}><span style={{ display: "flex", marginRight: 4 }}><IcCoupon /></span>Купон хэрэглэх</div>
-            <div style={{ display: "flex", gap: 8 }}>
-              <input value={coupon} onChange={e => setCoupon(e.target.value.toUpperCase())} placeholder="THETOONO10 · MONGOL20 · FIRST15" disabled={couponApplied} style={{ flex: 1, background: T.s2, border: `1px solid ${couponApplied ? T.green : T.border}`, borderRadius: 11, padding: "10px 14px", fontFamily: "monospace", fontSize: 13, color: T.textH, outline: "none" }} />
-              <PBtn small onClick={applyCoupon} disabled={couponApplied}>{couponApplied ? "OK" : "Хэрэглэх"}</PBtn>
-            </div>
-            {couponApplied && <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.green, marginTop: 6 }}><span style={{ display: "flex", marginRight: 4 }}><IcCheck /></span>{Math.round(couponDiscount * 100)}% хөнгөлөлт хэрэглэгдлээ</div>}
-          </Crd>
-
           {/* Order summary */}
           <Crd style={{ padding: "16px", marginBottom: 16 }}>
             <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 14, fontWeight: 700, color: T.textH, marginBottom: 12 }}>Захиалгын дүн</div>
