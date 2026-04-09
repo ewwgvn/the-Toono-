@@ -24,7 +24,7 @@ export default function Explore({ nav, refresh, goBack }) {
   const debounceRef=React.useRef(null);
   const handleSearch=(val)=>{setQ(val);setVisibleCount(12);clearTimeout(debounceRef.current);debounceRef.current=setTimeout(()=>setDebouncedQ(val),300);};
   const [matFilter,setMatFilter]=useState("Бүгд");
-  const [recentSearches]=useState(["Загвар","Нэхмэл","Тэмээний ноос","Тотем"]);
+  const [recentSearches]=useState([]);
   const [visibleCount,setVisibleCount]=useState(12);
   const [tab,setTab]=useState("creators");
   const [cat,setCat]=useState("all");

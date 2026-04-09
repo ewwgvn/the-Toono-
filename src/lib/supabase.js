@@ -44,6 +44,11 @@ export const DB = {
     return { user: data?.user, error };
   },
 
+  async resetPassword(email) {
+    if (!isSupabaseReady()) return { error: { message: "Not connected" } };
+    return await supabase.auth.resetPasswordForEmail(email);
+  },
+
   async signOut() {
     if (isSupabaseReady()) await supabase.auth.signOut();
   },

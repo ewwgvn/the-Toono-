@@ -3,6 +3,7 @@ import { useState } from "react";
 import { T } from "@/theme/colors";
 import { GS, saveGS } from "@/lib/store";
 import { fmtP } from "@/lib/utils";
+import { DB, isSupabaseReady } from "@/lib/supabase";
 import { toast } from "@/components/layout/Toast";
 import {
   IcNotif, IcOrder, IcSaved, IcFollows, IcCommission, IcDashboard,
@@ -134,6 +135,8 @@ export default function MyProfile({ nav, refresh }) {
                           if (!window.confirm("Энэ бүтээлийг устгах уу?")) return;
                           GS.myWorks = GS.myWorks.filter(x => x.id !== w.id);
                           GS.user.works = GS.myWorks.length;
+                          saveGS();
+                          if (isSupabaseReady() && w.id) DB.deleteWork?.(w.id);
                           refresh();
                           toast("Бүтээл устгагдлаа", "info");
                         }

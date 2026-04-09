@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { T } from "@/theme/colors";
-import { GS } from "@/lib/store";
+import { GS, saveGS } from "@/lib/store";
 import { IcBack } from "@/components/icons";
 import PBtn from "@/components/atoms/PBtn";
 import { toast } from "@/components/layout/Toast";
@@ -25,7 +25,12 @@ export default function ReturnRequest({ nav, goBack }) {
         <textarea value={details} onChange={e => setDetails(e.target.value)} placeholder="Дэлгэрэнгүй тайлбар..." style={{ width: "100%", minHeight: 120, background: T.s1, border: `1px solid ${T.border}`, borderRadius: 14, padding: 16, fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 14, color: T.textH, outline: "none", resize: "none", lineHeight: 1.7, boxSizing: "border-box" }} />
       </div>
       <div style={{ marginTop: 20, paddingBottom: 40 }}>
-        <PBtn full disabled={!reason} onClick={() => { toast("Буцаалтын хүсэлт илгээгдлээ", "success"); goBack ? goBack() : nav("home"); }}>Хүсэлт илгээх</PBtn>
+        <PBtn full disabled={!reason} onClick={() => {
+          const order = GS.orders.find(o => o.id === GS.selectedOrderId);
+          if (order) { order.returnRequested = true; order.returnReason = reason; order.returnDetails = details; }
+          GS.notifications.unshift({ id: Date.now(), icon: "return", title: "Буцаалтын хүсэлт", desc: reason, time: "Сая", read: true, to: "order-detail" });
+          saveGS(); toast("Буцаалтын хүсэлт илгээгдлээ", "success"); goBack ? goBack() : nav("home");
+        }}>Хүсэлт илгээх</PBtn>
       </div>
     </div>
   </div>;

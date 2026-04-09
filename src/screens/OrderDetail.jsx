@@ -1,6 +1,6 @@
 "use client";
 import { T } from "@/theme/colors";
-import { GS } from "@/lib/store";
+import { GS, saveGS } from "@/lib/store";
 import { toast } from "@/components/layout/Toast";
 import { IcShield } from "@/components/icons";
 import PBtn from "@/components/atoms/PBtn";
@@ -84,7 +84,11 @@ export default function OrderDetail({ nav, refresh, goBack }) {
       </Crd>
       <div style={{ display: "flex", gap: 10 }}>
         <PBtn full secondary onClick={() => { GS.activeChatId = GS.conversations[0]?.id || null; nav("chatroom"); }}>Бүтээлчтэй зурвасаар холбогдох</PBtn>
-        <PBtn full secondary>Захиалга цуцлах</PBtn>
+        <PBtn full secondary onClick={() => {
+          if(!window.confirm("Захиалга цуцлах уу?")) return;
+          const o = GS.orders.find(o => o.id === GS.selectedOrderId);
+          if(o) { o.status = "cancelled"; saveGS(); refresh(); toast("Захиалга цуцлагдлаа","info"); }
+        }}>Захиалга цуцлах</PBtn>
       </div>
       {statusIdx >= 3 && (
         <div style={{ marginTop: 16 }}>

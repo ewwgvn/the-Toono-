@@ -5,6 +5,7 @@ import { T } from "@/theme/colors";
 import { GS, saveGS } from "@/lib/store";
 import { DB, isSupabaseReady } from "@/lib/supabase";
 import { getCreators } from "@/lib/utils";
+import { toast } from "@/components/layout/Toast";
 import {
   IcBack, IcShare, IcDots, IcMsg, IcCheck,
 } from "@/components/icons";
@@ -31,7 +32,7 @@ function TrustBadges({creator}) {
   return <div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:6}}>
     {c.level==="top"&&<span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:11,fontWeight:600,color:"#111111",background:"#F7F7F7",padding:"3px 8px",borderRadius:20}}>Top Creator</span>}
     {c.level==="verified"&&<span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:11,fontWeight:500,color:"#666666",background:"#F7F7F7",padding:"3px 8px",borderRadius:20}}>Verified</span>}
-    {c.comm&&<span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:11,fontWeight:500,color:"#666666",background:"#F7F7F7",padding:"3px 8px",borderRadius:20}}>Open for commissions</span>}
+    {c.comm&&<span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:11,fontWeight:500,color:"#666666",background:"#F7F7F7",padding:"3px 8px",borderRadius:20}}>Захиалга авна</span>}
   </div>;
 }
 
@@ -86,7 +87,7 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
     <div style={{padding:"20px 20px 0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
       <button onClick={()=>goBack?goBack():nav("home")} style={{background:"none",border:"none",color:T.textH,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}><IcBack/><span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:16,fontWeight:600}}>Буцах</span></button>
       <div style={{display:"flex",gap:8}}>
-        <button onClick={()=>{const url=`${location.origin}?creator=${c.id}`;navigator.clipboard?.writeText(url).catch(()=>{});if(typeof toast==="function")toast("Профайлын холбоос хуулагдлаа","success");}} style={{background:"none",border:"none",cursor:"pointer",color:T.textSub,display:"flex"}}><IcShare/></button>
+        <button onClick={()=>{const url=`${location.origin}?creator=${c.id}`;navigator.clipboard?.writeText(url).catch(()=>{});toast("Профайлын холбоос хуулагдлаа","success");}} style={{background:"none",border:"none",cursor:"pointer",color:T.textSub,display:"flex"}}><IcShare/></button>
         <button style={{background:"none",border:"none",cursor:"pointer",color:T.textSub,display:"flex"}}><IcDots/></button>
       </div>
     </div>
@@ -101,16 +102,20 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
           <TrustBadges creator={c}/>
         </div>
         <div style={{display:"flex",gap:8,flexShrink:0}}>
-          <button onClick={async ()=>{
-              let convo = GS.conversations.find(cv=>cv.name===c.name);
-              if(!convo){convo={id:Date.now(),creatorId:c.id||null,name:c.name,accent:c.accent||T.accent,online:false,unread:0,msgs:[]};GS.conversations.unshift(convo);}
-              if(isSupabaseReady()&&GS.user.id&&c.id&&GS.user.id!==c.id){
-                const dbConvo=await DB.getOrCreateConversation(GS.user.id,c.id);
-                if(dbConvo)convo.dbId=dbConvo.id;
-              }
-              GS.activeChatId=convo.id;refresh();nav("chatroom");
-            }} style={{background:T.s1,border:`1px solid ${T.border}`,borderRadius:10,padding:"8px 12px",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,fontWeight:600,color:T.textSub,cursor:"pointer"}}><IcMsg/></button>
-          <PBtn small secondary={isFollowing} onClick={tFollow}>{isFollowing?"Following":"Follow"}</PBtn>
+          {creatorId===GS.user.id
+            ?<PBtn small onClick={()=>nav("edit-profile")}>Профайл засах</PBtn>
+            :<>
+              <button onClick={async ()=>{
+                let convo = GS.conversations.find(cv=>cv.name===c.name);
+                if(!convo){convo={id:Date.now(),creatorId:c.id||null,name:c.name,accent:c.accent||T.accent,online:false,unread:0,msgs:[]};GS.conversations.unshift(convo);}
+                if(isSupabaseReady()&&GS.user.id&&c.id&&GS.user.id!==c.id){
+                  const dbConvo=await DB.getOrCreateConversation(GS.user.id,c.id);
+                  if(dbConvo)convo.dbId=dbConvo.id;
+                }
+                GS.activeChatId=convo.id;refresh();nav("chatroom");
+              }} style={{background:T.s1,border:`1px solid ${T.border}`,borderRadius:10,padding:"8px 12px",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,fontWeight:600,color:T.textSub,cursor:"pointer"}}><IcMsg/></button>
+              <PBtn small secondary={isFollowing} onClick={tFollow}>{isFollowing?"Дагаж байна":"Дагах"}</PBtn>
+            </>}
         </div>
       </div>
       <div style={{padding:"12px 20px 0"}}>
@@ -118,14 +123,11 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
           {c.id===GS.user.id&&GS.trustMetrics?.responseRate>=80&&<ResponseBadge hours={GS.trustMetrics.responseRate>=95?1:GS.trustMetrics.responseRate>=80?2:24}/>}
           {c.rating>=4.8&&<StarSellerBadge/>}
         </div>
-        {c.comm&&<div style={{display:"inline-flex",background:"#F7F7F7",borderRadius:20,padding:"5px 12px",marginBottom:12}}>
-          <span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,fontWeight:500,color:"#666666"}}>Open for commissions</span>
-        </div>}
         {(c.tags||GS.user.tags||[]).length>0&&<div style={{display:"flex",gap:6,marginBottom:16,flexWrap:"wrap"}}>
           {(c.tags||GS.user.tags||[]).map(t=><Pill key={t}>{t}</Pill>)}
         </div>}
         <div style={{display:"flex",marginBottom:16,border:`1px solid ${T.borderLight}`,borderRadius:8}}>
-          {[[String(c.works||GS.myWorks.length),"Works"],[String(followerCount),"Followers"],[String(followingCount),"Following"]].map((s,i)=><div key={s[1]} onClick={()=>(s[1]==="Followers"||s[1]==="Following")&&nav("follows")} style={{flex:1,textAlign:"center",padding:"12px 0",borderRight:i<2?`1px solid ${T.borderLight}`:"none",cursor:(s[1]==="Followers"||s[1]==="Following")?"pointer":"default"}}>
+          {[[String(creatorWorks?.length||c.works||0),"Бүтээл"],[String(followerCount),"Дагагч"],[String(followingCount),"Дагаж байна"]].map((s,i)=><div key={s[1]} onClick={()=>(i===1||i===2)&&nav("follows")} style={{flex:1,textAlign:"center",padding:"12px 0",borderRight:i<2?`1px solid ${T.borderLight}`:"none",cursor:(i===1||i===2)?"pointer":"default"}}>
             <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:16,fontWeight:700,color:"#111111"}}>{s[0]}</div>
             <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:11,color:"#999999",marginTop:2}}>{s[1]}</div>
           </div>)}

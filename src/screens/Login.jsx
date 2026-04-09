@@ -162,7 +162,13 @@ export default function Login({ nav }) {
         </div>
 
         <div style={{textAlign:"right",marginBottom:20}}>
-          <button onClick={() => toast("Нууц үг сэргээх имэйл илгээлээ","success")} style={{background:"none",border:"none",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.accent,cursor:"pointer"}}>Нууц үг мартсан уу?</button>
+          <button onClick={async () => {
+            if(!email){toast("Имэйл хаяг оруулна уу","error");return;}
+            if(isSupabaseReady()){
+              const {error}=await DB.resetPassword(email);
+              toast(error?"Алдаа гарлаа":"Нууц үг сэргээх имэйл илгээлээ",error?"error":"success");
+            } else { toast("Сервертэй холбогдоогүй байна","error"); }
+          }} style={{background:"none",border:"none",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.accent,cursor:"pointer"}}>Нууц үг мартсан уу?</button>
         </div>
 
         <PBtn full loading={loading} onClick={handleLogin}>Нэвтрэх</PBtn>
@@ -192,8 +198,8 @@ export default function Login({ nav }) {
         <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,color:T.textSub,marginBottom:20}}>{role==="creator"?"Үндсэн чиглэлээ сонгоно уу. Нэгээс олон сонгож болно.":"Ямар чиглэлийн бүтээлд сонирхолтой вэ?"}</div>
         <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:24}}>
           {(role==="creator"
-            ?[["Загварын дизайн",<IcFieldFashion/>],["Нэхмэл · Даавуу",<IcFieldTextile/>],["Урлаг · Зураг",<IcFieldArt/>],["Арт дирекшн",<IcFieldDirection/>],["График дизайн",<IcFieldGraphic/>],["Гэрэл зураг",<IcFieldPhoto/>],["3D · Дижитал",<IcField3D/>],["Орон зайн дизайн",<IcFieldSpace/>],["Үнэт эдлэл",<IcFieldJewelry/>],["Шаазан · Керамик",<IcFieldCeramic/>],["Модон урлал",<IcFieldWood/>],["Арьсан бүтээл",<IcFieldLeather/>]]
-            :[["Загвар",<IcFieldFashion/>],["Нэхмэл",<IcFieldTextile/>],["Урлаг",<IcFieldArt/>],["График",<IcFieldGraphic/>],["Гэрэл зураг",<IcFieldPhoto/>],["3D",<IcField3D/>],["Гэр ахуй",<IcFieldHome/>],["Үнэт эдлэл",<IcFieldJewelry/>]]
+            ?[["Fashion Design",<IcFieldFashion/>],["Textile Design",<IcFieldTextile/>],["Fine Art",<IcFieldArt/>],["Interior Design",<IcFieldDirection/>],["Graphic Design",<IcFieldGraphic/>],["Photography",<IcFieldPhoto/>],["3D Design",<IcField3D/>],["Industrial Design",<IcFieldSpace/>],["Jewelry Design",<IcFieldJewelry/>],["Ceramic",<IcFieldCeramic/>],["Woodcraft",<IcFieldWood/>],["Leatherwork",<IcFieldLeather/>]]
+            :[["Fashion Design",<IcFieldFashion/>],["Textile Design",<IcFieldTextile/>],["Fine Art",<IcFieldArt/>],["Graphic Design",<IcFieldGraphic/>],["Photography",<IcFieldPhoto/>],["3D Design",<IcField3D/>],["Jewelry Design",<IcFieldJewelry/>]]
           ).map(([label, icon]) => {
             const sel = signupField.includes(label);
             return <button key={label} onClick={() => setSignupField(sel?signupField.replace(label+", ","").replace(label,""):signupField?(signupField+", "+label):label)} style={{display:"flex",alignItems:"center",gap:8,padding:"12px 16px",borderRadius:14,cursor:"pointer",background:sel?T.accentSub:T.s1,border:`1.5px solid ${sel?T.accent:T.border}`,transition:"all .15s"}}>

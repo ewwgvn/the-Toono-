@@ -3,21 +3,15 @@
 import React, { useState } from "react";
 import { T } from "@/theme/colors";
 import { GS, saveGS } from "@/lib/store";
-import { isSupabaseReady, supabase } from "@/lib/supabase";
+import { DB, isSupabaseReady, supabase, SQ } from "@/lib/supabase";
+import { getCreators } from "@/lib/utils";
+import { toast } from "@/components/layout/Toast";
 import {
   IcBack, IcCheck, IcCamera, IcX,
 } from "@/components/icons";
 import PBtn from "@/components/atoms/PBtn";
 import Crd from "@/components/atoms/Crd";
 import Avt from "@/components/atoms/Avt";
-
-// SQ — sync queue helper (matches original pattern)
-const SQ = {
-  push(action, payload) {
-    GS.syncQueue.push({ action, payload, ts: Date.now() });
-    saveGS();
-  },
-};
 
 export default function CommissionScreen({ nav, goBack, refresh, creatorId }) {
   const [step,setStep]=useState(0);
@@ -28,7 +22,7 @@ export default function CommissionScreen({ nav, goBack, refresh, creatorId }) {
   const types=[["Загварын дизайн","Хувцас, загварын хөгжүүлэлт"],["Нэхмэлийн загвар","Даавуу, угалзын дизайн"],["Загварын зөвлөгөө","Концепц, дүр санал"],["График материал","Лого, савлагаа г.м."]];
 
   const budgets=["₮50,000~100,000","₮100,000~300,000","₮300,000~500,000","₮500,000 дээш тэмдэгт"];
-  const toast = typeof window !== "undefined" && window.toast ? window.toast : () => {};
+  const targetCreator = getCreators().find(c => c.id === creatorId) || { name: "Creator", field: "", photo: null };
   const next=()=>{
     if(step===0&&!form.type){toast("Захиалгын төрлийг сонгоно уу","error");return;}
     if(step===1&&!form.budget){toast("Төсвийг сонгоно уу","error");return;}
@@ -84,11 +78,11 @@ export default function CommissionScreen({ nav, goBack, refresh, creatorId }) {
       <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.textSub,marginTop:8}}>{step+1}/{steps.length} — {steps[step]}</div>
     </div>
     <div style={{flex:1,overflowY:"auto",scrollbarWidth:"none",padding:"0 20px"}}>
-      <Crd style={{padding:"12px 16px",display:"flex",alignItems:"center",gap:12,marginBottom:20}}>
-        <Avt size={40} color={T.accent}/>
+      <Crd onClick={() => creatorId && nav("profile", {creatorId})} style={{padding:"12px 16px",display:"flex",alignItems:"center",gap:12,marginBottom:20,cursor:"pointer"}}>
+        <Avt size={40} photo={targetCreator.photo}/>
         <div>
-          <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,fontWeight:700,color:T.textH}}>{GS.user.name}</div>
-          <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:"#666666"}}>Open for commissions</div>
+          <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,fontWeight:700,color:T.textH}}>{targetCreator.name}</div>
+          <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:"#666666"}}>{targetCreator.field || "Creator"}</div>
         </div>
       </Crd>
       {step===0&&<>
@@ -112,7 +106,7 @@ export default function CommissionScreen({ nav, goBack, refresh, creatorId }) {
           <div style={{flex:1}}>
             <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:11,color:T.textSub,marginBottom:6}}>Жил</div>
             <select value={(form.date||"").split("-")[0]||new Date().getFullYear()} onChange={e=>{const p=(form.date||`${new Date().getFullYear()}-01-01`).split("-");setForm({...form,date:`${e.target.value}-${p[1]||"01"}-${p[2]||"01"}`});}} style={{width:"100%",background:T.s1,border:`1px solid ${T.border}`,borderRadius:12,padding:"13px 12px",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,color:T.textH,outline:"none",appearance:"none",cursor:"pointer"}}>
-              {[2025,2026,2027].map(y=><option key={y} value={y} style={{background:T.s1}}>{y}</option>)}
+              {[2026,2027,2028].map(y=><option key={y} value={y} style={{background:T.s1}}>{y}</option>)}
             </select>
           </div>
           <div style={{flex:1}}>

@@ -14,11 +14,14 @@ export default function ReviewWrite({ nav, goBack }) {
   const submit = async () => {
     if (rating === 0) { toast("Одоор үнэлнэ үү", "error"); return; }
     setLoading(true);
-    setTimeout(() => {
+    try {
+      const review = { id: Date.now(), rating, text, date: new Date().toISOString().slice(0, 10), reviewer: GS.user.name };
+      GS.notifications.unshift({ id: Date.now(), icon: "review", title: "Сэтгэгдэл бичигдлээ", desc: `${rating} одоор үнэллээ`, time: "Сая", read: true, to: "me" });
+      saveGS();
       toast("Сэтгэгдэл амжилттай илгээгдлээ", "success");
-      setLoading(false);
       goBack ? goBack() : nav("home");
-    }, 800);
+    } catch (e) { toast("Алдаа гарлаа", "error"); }
+    finally { setLoading(false); }
   };
 
   return <div style={{ height: "100%", display: "flex", flexDirection: "column", background: T.bg }}>

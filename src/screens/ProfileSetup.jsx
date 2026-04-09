@@ -21,8 +21,8 @@ export default function ProfileSetup({ nav, refresh, goBack }) {
   const isCreator = GS.currentRole === "creator";
 
   const suggestedTags = isCreator
-    ? ["Загвар","Нэхмэл","Урлаг","График","3D","Гэрэл зураг","Орон зай","Гар урлал","Монгол соёл","Хөгжим"]
-    : ["Загвар сонирхогч","Коллекцлогч","Урлаг","Монгол соёл","Дизайн"];
+    ? ["Fashion Design","Textile Design","Fine Art","Graphic Design","3D Design","Photography","Jewelry Design","Industrial Design","Interior Design"]
+    : ["Fashion","Art","Design","Mongolian Culture","Collector"];
 
   const handlePhoto = (e) => {
     const f = e.target.files?.[0];

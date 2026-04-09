@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { T } from "@/theme/colors";
-import { GS } from "@/lib/store";
+import { GS, saveGS } from "@/lib/store";
 import { IcBack, IcBookmark, IcTrash, IcFilter, IcCheck, IcCoupon, IcCartEmpty } from "@/components/icons";
 import Crd from "@/components/atoms/Crd";
 import PBtn from "@/components/atoms/PBtn";
@@ -15,7 +15,7 @@ export default function CartScreen({ nav, refresh, goBack }) {
   const [couponDiscount, setCouponDiscount] = useState(0);
   const [qty, setQty] = useState({});
 
-  const cartItems = GS.cart.filter((item, index, self) => self.findIndex(i => i.id === item.id) === index);
+  const cartItems = GS.cart.filter((item, index, self) => self.findIndex(i => i.id === item.id && i.size === item.size && i.color === item.color) === index);
   const getQty = (id) => qty[id] || 1;
   const subtotal = cartItems.reduce((s, it) => s + (it.price * getQty(it.id)), 0);
   const discount = couponApplied ? Math.floor(subtotal * couponDiscount) : 0;
@@ -96,7 +96,11 @@ export default function CartScreen({ nav, refresh, goBack }) {
     </div>
 
     {cartItems.length > 0 && <div style={{ padding: "12px 20px 32px", borderTop: `1px solid ${T.border}` }}>
-      <PBtn full disabled={cartItems.length === 0} onClick={() => { GS.directBuyItem = null; nav("checkout"); }}>Захиалах — ₮{total.toLocaleString()}</PBtn>
+      <PBtn full disabled={cartItems.length === 0} onClick={() => {
+        // Update cart items with adjusted quantities
+        GS.cart = cartItems.map(it => ({...it, qty: getQty(it.id)}));
+        GS.directBuyItem = null; saveGS(); nav("checkout");
+      }}>Захиалах — ₮{total.toLocaleString()}</PBtn>
     </div>}
   </div>;
 }

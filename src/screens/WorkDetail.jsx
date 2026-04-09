@@ -15,6 +15,7 @@ import Avt from "@/components/atoms/Avt";
 import Pill from "@/components/atoms/Pill";
 import Toono from "@/components/atoms/Toono";
 import BottomSheet from "@/components/layout/BottomSheet";
+import { toast } from "@/components/layout/Toast";
 
 export default function WorkDetail({ nav, refresh, goBack, workId }) {
   const w=getAllWorks().find(x=>x.id===workId)||GS.myWorks[0]||{id:0,title:"—",creator:"—",price:0,accent:"#111111",likes:0,desc:"",sizes:[],colors:[],stock:0};
@@ -45,7 +46,7 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
       <div style={{display:"flex",gap:12,color:T.textSub}}>
         <button onClick={tLike} style={{background:"none",border:"none",cursor:"pointer",color:liked?T.red:T.textSub,display:"flex"}}><IcHeart filled={liked}/></button>
         <button onClick={tSave} style={{background:"none",border:"none",cursor:"pointer",color:saved?T.accent:T.textSub,display:"flex"}}><IcBookmark filled={saved}/></button>
-        <button onClick={()=>{navigator.clipboard?.writeText(`${location.origin}?work=${w.id}`).catch(()=>{});if(typeof toast==="function")toast("Холбоос хуулагдлаа","success");}} style={{background:"none",border:"none",cursor:"pointer",color:T.textSub,display:"flex"}}><IcShare/></button>
+        <button onClick={()=>{navigator.clipboard?.writeText(`${location.origin}?work=${w.id}`).catch(()=>{});toast("Холбоос хуулагдлаа","success");}} style={{background:"none",border:"none",cursor:"pointer",color:T.textSub,display:"flex"}}><IcShare/></button>
         <button onClick={()=>nav("report")} style={{background:"none",border:"none",cursor:"pointer",fontSize:16}}><IcReport/></button>
       </div>
     </div>
@@ -147,8 +148,9 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
       <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,fontWeight:600,color:T.textSub,marginBottom:6}}>Анхны үнэ: {fmtP(w)}</div>
       <input type="number" value={offerPrice} onChange={e=>setOfferPrice(e.target.value)} placeholder="Санал болгох үнэ (₮)" style={{width:"100%",background:T.s2,border:`1px solid ${T.border}`,borderRadius:13,padding:"14px 16px",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:16,fontWeight:700,color:T.textH,outline:"none",marginBottom:12,boxSizing:"border-box"}}/>
       <textarea value={offerMsg} onChange={e=>setOfferMsg(e.target.value)} placeholder="Зурвас (заавал биш)" rows={3} style={{width:"100%",background:T.s2,border:`1px solid ${T.border}`,borderRadius:13,padding:"12px 16px",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,color:T.textH,outline:"none",resize:"none",marginBottom:16,boxSizing:"border-box"}}/>
-      <PBtn full disabled={!offerPrice} onClick={async ()=>{
+      <PBtn full disabled={!offerPrice || Number(offerPrice) <= 0} onClick={async ()=>{
         const price = Number(offerPrice);
+        if(price<=0){toast("Үнэ зөв оруулна уу","error");return;}
         const newOffer = {id:Date.now(),workId:w.id,workTitle:w.title,price,msg:offerMsg,status:"pending",date:new Date().toLocaleDateString()};
         if(isSupabaseReady()&&GS.user.id&&w.id){
           const saved = await DB.createOffer({buyer_id:GS.user.id,work_id:w.id,price,message:offerMsg,status:"pending"});
@@ -157,7 +159,7 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
         GS.offers.push(newOffer);
         GS.notifications.unshift({id:Date.now(),icon:"comm",title:"Үнийн санал илгээлээ",desc:`${w.title} — ₮${price.toLocaleString()}`,time:"Сая",read:true,to:"me"});
         setOfferOpen(false);setOfferPrice("");setOfferMsg("");
-        refresh();if(typeof toast==="function")toast("Үнийн санал илгээлээ","success");
+        refresh();toast("Үнийн санал илгээлээ","success");
       }}>Санал илгээх</PBtn>
     </BottomSheet>
     {/* Size / Color / Qty Selectors */}
@@ -189,20 +191,22 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
         GS.activeChatId=convo.id;refresh();nav("chatroom");
       }} style={{width:44,height:44,background:T.accentSub,border:`1px solid ${T.accentGlow}`,borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",flexShrink:0,color:T.accent}}><IcMsg/></button>
       {w.price>0&&<button onClick={()=>setOfferOpen(true)} style={{width:44,height:44,background:T.s1,border:`1px solid ${T.border}`,borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",flexShrink:0,color:T.yellow,fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:11,fontWeight:700}}>₮?</button>}
-      {w.price>0&&(w.stock===undefined||w.stock>0)
-        ?<><button onClick={()=>{
-          const cartItem={...w,size:selSize,color:selColor,qty};
-          const exists=GS.cart.find(c=>c.id===w.id&&c.size===selSize&&c.color===selColor);
-          if(!exists){GS.cart.push(cartItem);saveGS();}
-          if(typeof toast==="function")toast(exists?"Сагсанд байна":"Сагсанд нэмэгдлээ",exists?"info":"success");refresh();
-        }} style={{flex:1,background:T.s1,border:`1px solid ${T.border}`,borderRadius:14,padding:14,fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,fontWeight:600,color:T.textH,cursor:"pointer"}}><span style={{display:"flex",marginRight:4}}><IcCart/></span>Сагс</button>
-           <button onClick={()=>{
-             GS.directBuyItem={...w,size:selSize,color:selColor,qty};
-             nav("checkout");
-           }} style={{flex:2,background:T.accent,border:"none",borderRadius:14,padding:14,fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:15,fontWeight:700,color:"#fff",cursor:"pointer"}}>Шууд авах — {fmtP(w)}</button></>
-        :w.price>0
-          ?<button onClick={()=>{if(typeof toast==="function")toast("Нөөц ирэхэд мэдэгдэл илгээнэ","success");}} style={{flex:1,background:T.s2,border:`1px solid ${T.border}`,borderRadius:14,padding:14,fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,fontWeight:600,color:T.textSub,cursor:"pointer"}}><span style={{display:"flex",marginRight:4}}><IcBell/></span>Нөөц ирэхэд мэдэгдэх</button>
-          :<button onClick={()=>nav("commission",{creatorId:w.creator_id})} style={{flex:1,background:T.accentSub,border:`1px solid ${T.accentGlow}`,borderRadius:14,padding:14,fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,fontWeight:600,color:T.accent,cursor:"pointer"}}>Захиалга өгөх</button>}
+      {(w.creator_id===GS.user.id||w.cid===GS.user.id)
+        ?<div style={{flex:1,textAlign:"center",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,color:"#999999",padding:14}}>Энэ таны бүтээл</div>
+        :w.price>0&&(w.stock===undefined||w.stock>0)
+          ?<><button onClick={()=>{
+              const cartItem={...w,size:selSize,color:selColor,qty};
+              const exists=GS.cart.find(c=>c.id===w.id&&c.size===selSize&&c.color===selColor);
+              if(!exists){GS.cart.push(cartItem);saveGS();}
+              toast(exists?"Сагсанд байна":"Сагсанд нэмэгдлээ",exists?"info":"success");refresh();
+            }} style={{flex:1,background:T.s1,border:`1px solid ${T.border}`,borderRadius:14,padding:14,fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,fontWeight:600,color:T.textH,cursor:"pointer"}}><span style={{display:"flex",marginRight:4}}><IcCart/></span>Сагс</button>
+            <button onClick={()=>{
+              GS.directBuyItem={...w,size:selSize,color:selColor,qty};
+              nav("checkout");
+            }} style={{flex:2,background:T.accent,border:"none",borderRadius:14,padding:14,fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:15,fontWeight:700,color:"#fff",cursor:"pointer"}}>Шууд авах — {fmtP(w)}</button></>
+          :w.price>0
+            ?<button onClick={()=>{toast("Нөөц ирэхэд мэдэгдэл илгээнэ","success");}} style={{flex:1,background:T.s2,border:`1px solid ${T.border}`,borderRadius:14,padding:14,fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,fontWeight:600,color:T.textSub,cursor:"pointer"}}><span style={{display:"flex",marginRight:4}}><IcBell/></span>Нөөц ирэхэд мэдэгдэх</button>
+            :<button onClick={()=>nav("commission",{creatorId:w.creator_id})} style={{flex:1,background:T.accentSub,border:`1px solid ${T.accentGlow}`,borderRadius:14,padding:14,fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,fontWeight:600,color:T.accent,cursor:"pointer"}}>Захиалга өгөх</button>}
     </div>
   </div>;
 }

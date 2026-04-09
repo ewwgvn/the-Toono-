@@ -29,7 +29,7 @@ export default function Onboarding({ nav }) {
     </div>
     <div style={{padding:"0 24px 48px",display:"flex",flexDirection:"column",gap:10,maxWidth:400,margin:"0 auto",width:"100%"}}>
       {step < 3 ? <PBtn full onClick={() => setStep(step + 1)}>Дараах</PBtn>
-                : <><PBtn full onClick={() => nav("login")}>Бүртгүүлэх</PBtn><PBtn full secondary onClick={() => nav("login")}>Нэвтрэх</PBtn></>}
+                : <><PBtn full onClick={() => nav("login",{mode:"signup"})}>Бүртгүүлэх</PBtn><PBtn full secondary onClick={() => nav("login",{mode:"login"})}>Нэвтрэх</PBtn></>}
     </div>
   </div>;
 }
