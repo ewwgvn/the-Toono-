@@ -43,48 +43,57 @@ export default function FeedScreen({ nav, refresh, goBack }) {
     const saved = GS.saved.has(w.id);
     const img = w.images?.[0] || null;
     const [imgLoaded, setImgLoaded] = useState(false);
-    return <div style={{ marginBottom: 0, borderBottom: `1px solid ${T.borderLight}` }}>
+    const F = "'Helvetica Neue', Arial, sans-serif";
+    return <div style={{ marginBottom: 4 }}>
       {/* Header */}
-      <div style={{ padding: "8px 14px", display: "flex", alignItems: "center", gap: 8 }}>
-        <div onClick={() => creator?.id && nav("profile", { creatorId: creator.id })} style={{ width: 28, height: 28, borderRadius: "50%", background: "#F7F7F7", border: "1px solid #E5E5E5", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", overflow: "hidden", flexShrink: 0 }}>
-          {creator?.photo ? <img src={creator.photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <Toono size={16} color="#111111" />}
+      <div style={{ padding: "10px 16px", display: "flex", alignItems: "center", gap: 10 }}>
+        <div onClick={() => creator?.id && nav("profile", { creatorId: creator.id })} style={{ width: 32, height: 32, borderRadius: "50%", background: "#F7F7F7", border: "1px solid #E5E5E5", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", overflow: "hidden", flexShrink: 0 }}>
+          {creator?.photo ? <img src={creator.photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <Toono size={18} color="#111111" />}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 600, color: "#111111", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{creator?.name || w.creator || "—"}</div>
+          <div style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: "#111111" }}>{creator?.name || w.creator || "—"}</div>
+          {creator?.field && <div style={{ fontFamily: F, fontSize: 11, color: "#999999" }}>{creator.field}</div>}
         </div>
-        <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: 600, color: "#111111" }}>{fmtP(w)}</span>
+        <button style={{ background: "none", border: "none", color: "#999999", cursor: "pointer", display: "flex", padding: 4, fontSize: 18 }}>···</button>
       </div>
 
-      {/* Image — compact */}
-      <div onClick={() => nav("work", { workId: w.id })} style={{ width: "100%", aspectRatio: "16/10", background: img ? "#F7F7F7" : "#F7F7F7", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", overflow: "hidden", position: "relative" }}>
+      {/* Image — Instagram 4:5 */}
+      <div onClick={() => nav("work", { workId: w.id })} style={{ width: "100%", aspectRatio: "4/5", background: "#F7F7F7", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", overflow: "hidden", position: "relative" }}>
         {img
           ? <img src={img} alt="" loading="lazy" onLoad={() => setImgLoaded(true)} style={{ width: "100%", height: "100%", objectFit: "cover", opacity: imgLoaded ? 1 : 0, transition: "opacity .3s" }} />
-          : <Toono size={48} color="#999999" />}
-        {!imgLoaded && img && <div style={{ position: "absolute", inset: 0, background: "#F7F7F7", display: "flex", alignItems: "center", justifyContent: "center" }}><Toono size={32} color="#999999" /></div>}
+          : <Toono size={60} color="#999999" />}
+        {!imgLoaded && img && <div style={{ position: "absolute", inset: 0, background: "#F7F7F7", display: "flex", alignItems: "center", justifyContent: "center" }}><Toono size={40} color="#999999" /></div>}
       </div>
 
-      {/* Actions */}
-      <div style={{ padding: "6px 14px 2px", display: "flex", alignItems: "center", gap: 4 }}>
-        <button onClick={() => tLike(w.id)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", padding: "4px 6px 4px 0", color: liked ? "#D32F2F" : "#111111" }}>
-          <IcHeart filled={liked} />
-        </button>
-        <div style={{ flex: 1 }} />
-        <button onClick={() => tSave(w.id)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", padding: "4px 0 4px 6px", color: saved ? "#111111" : "#999999" }}>
+      {/* Actions — Instagram style */}
+      <div style={{ padding: "10px 16px 4px", display: "flex", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 16, alignItems: "center", flex: 1 }}>
+          <button onClick={() => tLike(w.id)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", padding: 0, color: liked ? "#D32F2F" : "#111111" }}>
+            <IcHeart filled={liked} />
+          </button>
+          <button onClick={() => nav("work", { workId: w.id })} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", padding: 0, color: "#111111" }}>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2.5 3H17.5V13.5H11L8 16.5V13.5H2.5V3Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/></svg>
+          </button>
+          <button onClick={() => { if (navigator.share) navigator.share({ title: w.title, url: window.location.href }); }} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", padding: 0, color: "#111111" }}>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M15 7L10 2L5 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M10 2V13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><path d="M3 11V16H17V11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </button>
+        </div>
+        <button onClick={() => tSave(w.id)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", padding: 0, color: saved ? "#111111" : "#999999" }}>
           <IcBookmark filled={saved} />
         </button>
       </div>
 
-      {/* Caption */}
-      <div style={{ padding: "0 14px 10px" }}>
-        {w.likes_count > 0 && <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: 600, color: "#111111", marginBottom: 2 }}>{(w.likes_count || 0).toLocaleString()} таалагдсан</div>}
-        <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, color: "#333333", lineHeight: 1.5 }}>
-          <span style={{ fontWeight: 600, color: "#111111" }}>{creator?.name?.split(" ")[0] || w.creator || "—"} </span>
-          <span>{w.title}</span>
+      {/* Like count + Caption */}
+      <div style={{ padding: "0 16px 12px" }}>
+        {(w.likes_count || 0) > 0 && <div style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: "#111111", marginBottom: 4 }}>{(w.likes_count).toLocaleString()} таалагдсан</div>}
+        <div style={{ fontFamily: F, fontSize: 13, color: "#333333", lineHeight: 1.5 }}>
+          <span style={{ fontWeight: 600, color: "#111111" }}>{creator?.name || w.creator || "—"} </span>
+          {w.title}{w.description ? ` — ${w.description.slice(0, 60)}` : ""}
         </div>
-        {w.tags?.length > 0 && <div style={{ marginTop: 4, display: "flex", flexWrap: "wrap", gap: 4 }}>
-          {w.tags.slice(0, 4).map(t => <span key={t} style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, color: T.accent }}>#{t}</span>)}
+        {w.tags?.length > 0 && <div style={{ marginTop: 3 }}>
+          {w.tags.slice(0, 4).map(t => <span key={t} style={{ fontFamily: F, fontSize: 12, color: "#666666", marginRight: 4 }}>#{t}</span>)}
         </div>}
-        <button onClick={() => nav("work", { workId: w.id })} style={{ marginTop: 8, width: "100%", background: T.accent, border: "none", borderRadius: 10, padding: "9px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 700, color: "#fff", cursor: "pointer" }}>Авах</button>
+        <div style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: "#111111", marginTop: 6 }}>{fmtP(w)}</div>
       </div>
     </div>;
   };
