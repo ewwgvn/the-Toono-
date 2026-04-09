@@ -28,7 +28,7 @@ export default function Upload({ nav, goBack }) {
   const [duration, setDuration] = useState("");
   const [material, setMaterial] = useState("");
   const [tags, setTags] = useState("");
-  const cats = ["Загвар", "Нэхмэл", "Урлаг", "Орон зай", "График", "3D", "Гэрэл зураг", "Зурагт"];
+  const cats = ["Fashion Design", "Interior Design", "Jewelry Design", "Industrial Design", "Graphic Design", "Textile Design", "Fine Art", "3D Design", "Photography"];
   const stepL = ["Зураг/Видео", "Мэдээлэл", "Үнэ·Борлуулалт"];
 
   // Image picker

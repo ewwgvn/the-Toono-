@@ -176,6 +176,18 @@ export const DB = {
     }
   },
 
+  async getFollowerCount(userId) {
+    if (!isSupabaseReady()) return 0;
+    const { count } = await supabase.from("follows").select("follower_id", { count: "exact", head: true }).eq("following_id", userId);
+    return count || 0;
+  },
+
+  async getFollowingCount(userId) {
+    if (!isSupabaseReady()) return 0;
+    const { count } = await supabase.from("follows").select("following_id", { count: "exact", head: true }).eq("follower_id", userId);
+    return count || 0;
+  },
+
   async getMyLikes(userId) {
     if (!isSupabaseReady()) return [];
     const { data } = await supabase.from("likes").select("work_id").eq("user_id", userId);

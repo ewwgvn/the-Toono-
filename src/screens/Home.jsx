@@ -13,7 +13,7 @@ const F = "'Helvetica Neue', Arial, sans-serif";
 
 export default function Home({ nav, refresh }) {
   const [cat, setCat] = useState("all");
-  const cats = ["all", "Загвар", "Нэхмэл", "Урлаг", "График"];
+  const cats = ["all", "Fashion Design", "Interior Design", "Jewelry Design", "Industrial Design", "Graphic Design", "Textile Design", "Fine Art", "3D Design", "Photography"];
   const allW = getAllWorks();
   const filtered = cat === "all" ? allW : allW.filter(w => w.cat === cat);
   const tSave = id => { GS.saved.has(id) ? GS.saved.delete(id) : GS.saved.add(id); refresh(); if (GS.user.id) DB.toggleSave(GS.user.id, id); };

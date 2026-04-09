@@ -34,7 +34,7 @@ export default function Explore({ nav, refresh, goBack }) {
   const [price,setPrice]=useState("all");
   const [userResults,setUserResults]=useState([]);
   const [userLoading,setUserLoading]=useState(false);
-  const cats=["all","Загвар","Нэхмэл","Урлаг","Орон зай","График"];
+  const cats=["all","Fashion Design","Interior Design","Jewelry Design","Industrial Design","Graphic Design","Textile Design","Fine Art","3D Design","Photography"];
   const af=(cat!=="all"?1:0)+(price!=="all"?1:0)+(commOnly?1:0);
   const fc=getCreators().filter(c=>{
     if(debouncedQ&&!c.name.toLowerCase().includes(debouncedQ.toLowerCase())&&!c.field.includes(debouncedQ))return false;

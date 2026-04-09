@@ -57,8 +57,11 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
     }
     // Fetch from Supabase
     if(isSupabaseReady()) {
-      DB.getProfile(creatorId).then(p=>{
-        if(p) setCreator({id:p.id,name:p.name||"—",field:p.field||"Бүтээлч",photo:p.photo||null,followers:String(p.followers_count||0),works:0,comm:p.comm_open||false,rating:p.rating||0,accent:"#111111",bio:p.bio||"",tags:p.tags||[]});
+      DB.getProfile(creatorId).then(async p=>{
+        if(p) {
+          const fc = await DB.getFollowerCount(creatorId);
+          setCreator({id:p.id,name:p.name||"—",field:p.field||"Бүтээлч",photo:p.photo||null,followers:String(fc),works:0,comm:p.comm_open||false,rating:p.rating||0,accent:"#111111",bio:p.bio||"",tags:p.tags||[]});
+        }
       });
       DB.getWorks({creator_id:creatorId}).then(ws=>{
         setCreatorWorks(ws.map(w=>({...w,creator:w.profiles?.name||w.creator||"—"})));
