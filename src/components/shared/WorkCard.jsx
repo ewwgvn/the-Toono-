@@ -150,27 +150,31 @@ export default function WorkCard({ work: w, onClick, onCreatorClick, onToggleLik
     );
   }
 
-  // ── Default grid card (2-col, FruitsFamily style) ──
+  // ── Default grid card (FruitsFamily style) ──
+  const likeNum = w.likes || 0;
   return (
     <div onClick={onClick} style={{ cursor: "pointer" }}>
-      <div style={{ aspectRatio: "1", background: "#F7F7F7", borderRadius: 8, overflow: "hidden", marginBottom: 8, position: "relative" }}>
+      <div style={{ aspectRatio: "3/4", background: "#F7F7F7", overflow: "hidden", marginBottom: 8 }}>
         {thumb ? (
           <img src={thumb} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         ) : (
           <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#999999", fontSize: 12, fontFamily: F }}>No image</div>
         )}
-        {onToggleSave && (
-          <button onClick={(e) => { e.stopPropagation(); onToggleSave(w.id); }}
-            style={{ position: "absolute", top: 8, right: 8, background: "rgba(255,255,255,0.9)", border: "none", borderRadius: "50%", width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: saved ? "#111111" : "#999999" }}>
-            <IcBookmark filled={saved} />
-          </button>
-        )}
       </div>
-      <div style={{ fontFamily: F, fontSize: 13, fontWeight: 500, color: "#111111", lineHeight: 1.4, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 1 }}>
+        <div style={{ fontFamily: F, fontSize: 13, fontWeight: 700, color: "#111111", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{w.creator}</div>
+        {w.cat && <div style={{ fontFamily: F, fontSize: 11, color: "#999999", flexShrink: 0, marginLeft: 4 }}>{w.cat.split(" ")[0]}</div>}
+      </div>
+      <div style={{ fontFamily: F, fontSize: 12, color: "#666666", lineHeight: 1.4, marginBottom: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
         {w.title}
       </div>
-      <div style={{ fontFamily: F, fontSize: 12, color: "#666666", marginBottom: 2 }}>{w.creator}</div>
-      <div style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: "#111111" }}>{fmtP(w)}</div>
+      <div style={{ fontFamily: F, fontSize: 14, fontWeight: 700, color: "#111111", marginBottom: 4 }}>{fmtP(w)}</div>
+      {likeNum > 0 && (
+        <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
+          <IcHeart />
+          <span style={{ fontFamily: F, fontSize: 11, color: "#999999" }}>{likeNum}</span>
+        </div>
+      )}
     </div>
   );
 }

@@ -61,7 +61,7 @@ export default function Home({ nav, refresh }) {
       </div>
 
       {/* 2-col Grid */}
-      {filtered.length > 0 ? <div className="toono-grid-2" style={{ padding: "0 16px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 24 }}>
+      {filtered.length > 0 ? <div className="toono-grid-2" style={{ padding: "0 16px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px 14px", marginBottom: 24 }}>
         {filtered.map(w => <WorkCard key={w.id} work={w} onClick={() => nav("work", { workId: w.id })} onToggleSave={tSave} saved={GS.saved.has(w.id)} />)}
       </div>
       : <div style={{ padding: "60px 16px", textAlign: "center" }}>
