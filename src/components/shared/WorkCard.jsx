@@ -68,7 +68,7 @@ export default function WorkCard({ work: w, onClick, onCreatorClick, onToggleLik
           {w.createdAt && <div style={{ fontFamily: F, fontSize: 11, color: "#999999" }}>{timeAgo(w.createdAt)}</div>}
         </div>
         <div onClick={handleDoubleTap} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}
-          style={{ width: "100%", aspectRatio: "1", background: "#F7F7F7", cursor: "pointer", position: "relative", overflow: "hidden", userSelect: "none" }}>
+          style={{ width: "100%", aspectRatio: "4/5", background: "#F7F7F7", cursor: "pointer", position: "relative", overflow: "hidden", userSelect: "none" }}>
           {imgs.length > 0 ? (
             <img src={imgs[imgIdx]} alt="" loading="lazy" draggable={false} style={{ width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }} />
           ) : (

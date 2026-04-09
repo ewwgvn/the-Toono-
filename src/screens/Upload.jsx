@@ -146,7 +146,7 @@ export default function Upload({ nav, goBack }) {
           <div style={{ textAlign: "right", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, color: T.textSub, marginTop: 3 }}>{desc.length} тэмдэгт</div>
         </div>
         <Inp label="Материал" placeholder="Тэмээний ноос 60%, хонины ноос 40%" value={material} onChange={e => setMaterial(e.target.value)} />
-        <Inp label="Таг" placeholder="Тэнгэрийн шашин, Бөөгийн мөргөл, пальто" value={tags} onChange={e => setTags(e.target.value)} />
+        <Inp label="Таг" placeholder="Загвар, гар урлал, график..." value={tags} onChange={e => setTags(e.target.value)} />
         <div style={{ marginBottom: 14 }}>
           <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 600, color: T.textSub, marginBottom: 8 }}>Ангилал *</div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>

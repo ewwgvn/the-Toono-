@@ -58,7 +58,7 @@ export default function FeedScreen({ nav, refresh, goBack }) {
       </div>
 
       {/* Image */}
-      <div onClick={() => nav("work", { workId: w.id })} style={{ width: "100%", aspectRatio: "1/1", background: img ? T.s2 : `linear-gradient(145deg,${w.accent || "#111111"}18,${w.accent || "#111111"}06)`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", overflow: "hidden", position: "relative" }}>
+      <div onClick={() => nav("work", { workId: w.id })} style={{ width: "100%", aspectRatio: "4/5", background: img ? T.s2 : "#F7F7F7", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", overflow: "hidden", position: "relative" }}>
         {img
           ? <img src={img} alt="" loading="lazy" onLoad={() => setImgLoaded(true)} style={{ width: "100%", height: "100%", objectFit: "cover", opacity: imgLoaded ? 1 : 0, transition: "opacity .3s" }} />
           : <Toono size={80} color={w.accent || "#111111"} />}
