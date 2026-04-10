@@ -1,7 +1,7 @@
 "use client";
 import { T } from "@/theme/colors";
-import { GS, resetGS } from "@/lib/store";
-import { DB } from "@/lib/supabase";
+import { GS, resetGS, saveGS } from "@/lib/store";
+import { DB, isSupabaseReady } from "@/lib/supabase";
 import { toast } from "@/components/layout/Toast";
 import {
   IcEdit, IcPortfolio, IcDashboard, IcDispute,
@@ -46,6 +46,24 @@ export default function Settings({ nav, goBack, refresh }) {
         { icon: <IcOrder />, label: "Orders", action: () => nav("order-list") },
         { icon: <IcDispute />, label: "Disputes", action: () => nav("dispute") },
       ]} />}
+      <Sec title="Role" items={[
+        {
+          icon: <IcEdit />,
+          label: GS.currentRole === "creator" ? "Switch to Buyer" : "Switch to Creator",
+          sub: `Current: ${GS.currentRole || "buyer"}`,
+          action: () => {
+            if (!window.confirm(`Switch role to ${GS.currentRole === "creator" ? "buyer" : "creator"}?`)) return;
+            GS.currentRole = GS.currentRole === "creator" ? "buyer" : "creator";
+            if (GS.currentRole === "creator") GS.user.commOpen = true;
+            if (GS.user.id && isSupabaseReady()) {
+              DB.updateProfile?.(GS.user.id, { role: GS.currentRole });
+            }
+            saveGS();
+            refresh();
+            toast(`Switched to ${GS.currentRole}`, "success");
+          },
+        },
+      ]} />
       <Sec title="Info" items={[
         { icon: <IcInfo />, label: "Terms of Service", action: () => nav("terms") },
         { icon: <IcShield />, label: "Privacy Policy", action: () => nav("privacy") },

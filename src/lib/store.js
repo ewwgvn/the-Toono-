@@ -51,6 +51,7 @@ export const GS = {
   syncQueue: [],
   publicWorks: [],
   publicCreators: [],
+  disputes: [],
 };
 
 // ── Dynamic data arrays ──
@@ -95,6 +96,9 @@ export function saveGS() {
       offers: GS.offers || [],
       trustMetrics: GS.trustMetrics || {},
       syncQueue: GS.syncQueue || [],
+      publicWorks: GS.publicWorks || [],
+      publicCreators: GS.publicCreators || [],
+      disputes: GS.disputes || [],
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   } catch (e) { /* storage unavailable, silent fail */ }
@@ -127,6 +131,9 @@ export function loadGS() {
     GS.offers = data.offers || [];
     GS.trustMetrics = data.trustMetrics || { responseRate: 100, onTimeRate: 100, avgRating: 0, totalOrders: 0, memberSince: "" };
     GS.syncQueue = data.syncQueue || [];
+    GS.publicWorks = data.publicWorks || [];
+    GS.publicCreators = data.publicCreators || [];
+    GS.disputes = data.disputes || [];
     // Recompute badge counters from actual data
     GS.unreadChat = getUnreadChat();
     GS.unreadNotif = getUnreadNotif();

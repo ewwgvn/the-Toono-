@@ -5,6 +5,7 @@ import { T } from "@/theme/colors";
 import { GS, saveGS } from "@/lib/store";
 import { DB, isSupabaseReady } from "@/lib/supabase";
 import { IcBack, IcSend, IcX } from "@/components/icons";
+import { toast } from "@/components/layout/Toast";
 import PBtn from "@/components/atoms/PBtn";
 import Avt from "@/components/atoms/Avt";
 import Toono from "@/components/atoms/Toono";
@@ -124,16 +125,30 @@ export default function ChatRoom({ nav, refresh, goBack }) {
     <div style={{padding:"10px 16px 28px",borderTop:`1px solid ${T.border}`,display:"flex",gap:10,alignItems:"flex-end"}}>
       <label style={{width:38,height:38,borderRadius:"50%",background:T.s1,border:`1px solid ${T.border}`,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:T.textSub,flexShrink:0}}>
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="4" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.4"/><circle cx="9" cy="9" r="2.5" stroke="currentColor" strokeWidth="1.3"/></svg>
-        <input type="file" accept="image/*,video/*" onChange={e=>{
+        <input type="file" accept="image/*,video/*" onChange={async e=>{
           const f=e.target.files?.[0]; if(!f) return;
           const reader=new FileReader();
-          reader.onload=ev=>{
-            const newMsg = {id:Date.now(),mine:true,text:"",time:new Date().getHours()+":"+String(new Date().getMinutes()).padStart(2,"0"),img:true,imgSrc:ev.target.result,isVideo:f.type.startsWith("video/"),status:"sent"};
+          reader.onload=async ev=>{
+            let uploadedUrl = ev.target.result;
+            // Upload to Supabase Storage if available
+            if(isSupabaseReady()&&GS.user.id){
+              const ext = f.name.split(".").pop() || "jpg";
+              const path = `chat/${GS.user.id}/${Date.now()}.${ext}`;
+              const publicUrl = await DB.uploadFile("chat", path, ev.target.result);
+              if(publicUrl) uploadedUrl = publicUrl;
+            }
+            const newMsg = {id:Date.now(),mine:true,text:"",time:new Date().getHours()+":"+String(new Date().getMinutes()).padStart(2,"0"),img:true,imgSrc:uploadedUrl,isVideo:f.type.startsWith("video/"),status:"sent"};
             const updated = [...msgs,newMsg];
             setMsgs(updated);
             if(convo) convo.msgs = updated;
-            timersRef.current.push(setTimeout(()=>{newMsg.status="delivered";setMsgs(m=>[...m]);},500));
-            timersRef.current.push(setTimeout(()=>{newMsg.status="read";setMsgs(m=>[...m]);},1500));
+            saveGS();
+            // Send to Supabase with image URL
+            if(isSupabaseReady()&&GS.user.id&&convo?.dbId){
+              DB.sendMessage(convo.dbId, GS.user.id, "", uploadedUrl).then(()=>{
+                newMsg.status="delivered";
+                setMsgs(m=>[...m]);
+              });
+            }
             toast("Файл илгээлээ","success");
           };
           reader.readAsDataURL(f);

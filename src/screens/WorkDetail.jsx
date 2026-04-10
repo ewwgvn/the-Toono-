@@ -37,8 +37,24 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
   const [liked,setLiked]=useState(GS.liked.has(w.id));
   const [saved,setSaved]=useState(GS.saved.has(w.id));
   const [imgIdx,setImgIdx]=useState(0);
+  const [comments,setComments]=useState([]);
+  const [commentInput,setCommentInput]=useState("");
   const tLike=()=>{const v=!liked;if(v)GS.liked.add(w.id);else GS.liked.delete(w.id);setLiked(v);refresh();if(GS.user.id)DB.toggleLike(GS.user.id,w.id);};
   const tSave=()=>{const v=!saved;if(v)GS.saved.add(w.id);else GS.saved.delete(w.id);setSaved(v);refresh();if(GS.user.id)DB.toggleSave(GS.user.id,w.id);};
+
+  // Load comments
+  React.useEffect(()=>{
+    if(w?.id && isSupabaseReady()){
+      DB.getComments(w.id).then(list=>setComments(list||[]));
+    }
+  },[w?.id]);
+
+  const submitComment = async () => {
+    if(!commentInput.trim()||!GS.user.id) return;
+    const added = await DB.addComment(w.id, GS.user.id, commentInput.trim());
+    if(added) setComments(prev=>[added,...prev]);
+    setCommentInput("");
+  };
 
   return <div style={{height:"100%",display:"flex",flexDirection:"column",background:T.bg}}>
     <div style={{padding:"20px 20px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
@@ -126,6 +142,27 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
               <span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,fontWeight:500,color:T.textH}}>{r[1]}</span>
             </div>);
           })()}
+        </div>
+        {/* Comments section */}
+        <div style={{marginTop:4,marginBottom:24,borderTop:`1px solid ${T.borderLight}`,paddingTop:16}}>
+          <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:16,fontWeight:700,color:T.textH,marginBottom:12}}>Сэтгэгдэл {comments.length>0?`(${comments.length})`:""}</div>
+          {GS.user.id && <div style={{display:"flex",gap:10,marginBottom:16,alignItems:"center"}}>
+            <Avt size={32} photo={GS.user.photo}/>
+            <input value={commentInput} onChange={e=>setCommentInput(e.target.value)}
+              onKeyDown={e=>{if(e.key==="Enter"&&commentInput.trim())submitComment();}}
+              placeholder="Сэтгэгдэл бичих..." className="feed-comment-input"
+              style={{flex:1,background:"#F7F7F7",border:"1px solid #E5E5E5",borderRadius:20,padding:"10px 14px",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,color:"#111111",outline:"none"}}/>
+            {commentInput.trim() && <PBtn small onClick={submitComment}>Илгээх</PBtn>}
+          </div>}
+          {comments.length===0
+            ?<div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,color:"#999999",textAlign:"center",padding:"12px 0"}}>Сэтгэгдэл байхгүй</div>
+            :comments.map(c=><div key={c.id} style={{display:"flex",gap:10,padding:"10px 0",borderBottom:`1px solid ${T.borderLight}`}}>
+              <Avt size={32} photo={c.profiles?.photo}/>
+              <div style={{flex:1}}>
+                <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,fontWeight:600,color:"#111111",marginBottom:2}}>{c.profiles?.name||"User"}</div>
+                <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,color:"#333333",lineHeight:1.5}}>{c.text}</div>
+              </div>
+            </div>)}
         </div>
         <div style={{marginTop:4}}>
           <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:16,fontWeight:700,color:T.textH,marginBottom:12}}>Мөн бүтээлчийн Бүтээл</div>

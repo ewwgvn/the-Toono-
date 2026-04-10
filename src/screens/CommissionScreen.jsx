@@ -48,6 +48,7 @@ export default function CommissionScreen({ nav, goBack, refresh, creatorId }) {
             budget: form.budget || "",
             delivery_date: form.date || "",
             description: form.desc || "",
+            attachments: attachments.map(a => a.url),
             status: "pending",
           };
           if (isSupabaseReady()) {
@@ -130,13 +131,22 @@ export default function CommissionScreen({ nav, goBack, refresh, creatorId }) {
         <label style={{display:"flex",alignItems:"center",gap:10,cursor:"pointer",background:T.s1,border:`1px solid ${T.border}`,borderRadius:14,padding:"13px 16px"}}>
           <span style={{color:T.textSub,display:"flex"}}><IcCamera/></span>
           <span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,color:T.textSub}}>Лавлах зураг хавсаргах (заавал биш)</span>
-          <input type="file" accept="image/*,video/*" multiple onChange={e=>{
+          <input type="file" accept="image/*,video/*" multiple onChange={async e=>{
             const files = Array.from(e.target.files||[]);
-            files.forEach(f=>{
+            for(const f of files){
               const reader = new FileReader();
-              reader.onload = ev => setAttachments(prev=>[...prev,{url:ev.target.result,name:f.name,type:f.type}]);
+              reader.onload = async ev => {
+                let url = ev.target.result;
+                if(isSupabaseReady()&&GS.user.id){
+                  const ext = f.name.split(".").pop() || "jpg";
+                  const path = `commissions/${GS.user.id}/${Date.now()}-${Math.random().toString(36).slice(2,6)}.${ext}`;
+                  const publicUrl = await DB.uploadFile("works", path, ev.target.result);
+                  if(publicUrl) url = publicUrl;
+                }
+                setAttachments(prev=>[...prev,{url,name:f.name,type:f.type}]);
+              };
               reader.readAsDataURL(f);
-            });
+            }
             if(files.length>0) toast(files.length+" файл нэмэгдлээ","success");
           }} style={{display:"none"}}/>
         </label>

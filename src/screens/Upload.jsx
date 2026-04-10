@@ -21,21 +21,22 @@ export default function Upload({ nav, goBack }) {
       <PBtn onClick={() => goBack ? goBack() : nav("home")}>Буцах</PBtn>
     </div>;
   }
+  const editingWork = GS.editingWorkId ? GS.myWorks.find(w => w.id === GS.editingWorkId) : null;
   const [step, setStep] = useState(0);
-  const [cat, setCat] = useState("");
-  const [saleType, setSaleType] = useState("sale");
+  const [cat, setCat] = useState(editingWork?.cat || "");
+  const [saleType, setSaleType] = useState(editingWork?.saleType || "sale");
   const [loading, setLoading] = useState(false);
-  const [mediaFiles, setMediaFiles] = useState([]);
-  const [videoFile, setVideoFile] = useState(null);
+  const [mediaFiles, setMediaFiles] = useState(editingWork?.images?.map(img => ({ type: "image", url: img, name: "existing" })) || []);
+  const [videoFile, setVideoFile] = useState(editingWork?.video ? { url: editingWork.video, name: "existing" } : null);
   const [cropWorkSrc, setCropWorkSrc] = useState(null);
   const [cropWorkIdx, setCropWorkIdx] = useState(-1);
-  const [title, setTitle] = useState("");
-  const [desc, setDesc] = useState("");
-  const [price, setPrice] = useState("");
-  const [stock, setStock] = useState("1");
-  const [duration, setDuration] = useState("");
-  const [material, setMaterial] = useState("");
-  const [tags, setTags] = useState("");
+  const [title, setTitle] = useState(editingWork?.title || "");
+  const [desc, setDesc] = useState(editingWork?.desc || "");
+  const [price, setPrice] = useState(editingWork?.price ? String(editingWork.price) : "");
+  const [stock, setStock] = useState(editingWork?.stock ? String(editingWork.stock) : "1");
+  const [duration, setDuration] = useState(editingWork?.duration || "");
+  const [material, setMaterial] = useState(editingWork?.medium || editingWork?.material || "");
+  const [tags, setTags] = useState(editingWork?.tags?.join(", ") || "");
   const cats = ["Fashion Design", "Interior Design", "Jewelry Design", "Industrial Design", "Graphic Design", "Textile Design", "Fine Art", "3D Design", "Photography"];
   const stepL = ["Зураг/Видео", "Мэдээлэл", "Үнэ·Борлуулалт"];
 
@@ -54,13 +55,26 @@ export default function Upload({ nav, goBack }) {
   };
 
   // Video picker
-  const handleVideoPick = (e) => {
+  const handleVideoPick = async (e) => {
     const f = e.target.files?.[0];
     if (!f || !f.type.startsWith("video/")) return;
-    if (f.size > 200 * 1024 * 1024) { alert("Видео 200MB-аас бага байх ёстой"); return; }
-    const reader = new FileReader();
-    reader.onload = ev => setVideoFile({ url: ev.target.result, name: f.name, size: (f.size / 1024 / 1024).toFixed(1) });
-    reader.readAsDataURL(f);
+    if (f.size > 50 * 1024 * 1024) { alert("Видео 50MB-аас бага байх ёстой"); return; }
+    // For videos, upload to Storage directly (don't use base64 for large files)
+    if (isSupabaseReady() && GS.user.id) {
+      const reader = new FileReader();
+      reader.onload = async ev => {
+        const ext = f.name.split(".").pop() || "mp4";
+        const path = `videos/${GS.user.id}/${Date.now()}.${ext}`;
+        const publicUrl = await DB.uploadFile("works", path, ev.target.result);
+        if (publicUrl) setVideoFile({ url: publicUrl, name: f.name, size: (f.size / 1024 / 1024).toFixed(1) });
+        else setVideoFile({ url: ev.target.result, name: f.name, size: (f.size / 1024 / 1024).toFixed(1) });
+      };
+      reader.readAsDataURL(f);
+    } else {
+      const reader = new FileReader();
+      reader.onload = ev => setVideoFile({ url: ev.target.result, name: f.name, size: (f.size / 1024 / 1024).toFixed(1) });
+      reader.readAsDataURL(f);
+    }
   };
 
   const removeMedia = (idx) => setMediaFiles(prev => prev.filter((_, i) => i !== idx));
@@ -285,10 +299,17 @@ export default function Upload({ nav, goBack }) {
                 newWork._sqId = sqId;
               }
             }
-            GS.myWorks.unshift(newWork);
-            if (typeof WORKS !== "undefined") WORKS.unshift(newWork);
+            if (editingWork) {
+              // Update existing work
+              GS.myWorks = GS.myWorks.map(w => w.id === editingWork.id ? { ...w, ...newWork, id: editingWork.id } : w);
+              GS.notifications.unshift({ id: Date.now(), icon: "upload", title: "Бүтээл шинэчлэгдлээ", desc: `"${title}" амжилттай шинэчлэгдлээ.`, time: "Сая", read: true, to: "portfolio" });
+            } else {
+              GS.myWorks.unshift(newWork);
+              if (typeof WORKS !== "undefined") WORKS.unshift(newWork);
+              GS.notifications.unshift({ id: Date.now(), icon: "upload", title: "Бүтээл байршлаа", desc: `"${title}" амжилттай нийтлэгдлээ.`, time: "Сая", read: true, to: "portfolio" });
+            }
             GS.user.works = GS.myWorks.length;
-            GS.notifications.unshift({ id: Date.now(), icon: "upload", title: "Бүтээл байршлаа", desc: `"${title}" амжилттай нийтлэгдлээ.`, time: "Сая", read: true, to: "portfolio" });
+            GS.editingWorkId = null;
             saveGS();
             nav("me");
           } catch (e) {

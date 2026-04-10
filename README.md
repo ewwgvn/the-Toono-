@@ -3,33 +3,44 @@
 Монгол бүтээлчдийн гар урлалыг дэлхийд таниулах дижитал зах.
 
 ## 🌐 Live
-[https://YOUR_USERNAME.github.io/thetoono](https://YOUR_USERNAME.github.io/thetoono)
+[https://the-toono.vercel.app](https://the-toono.vercel.app)
 
 ## 🚀 Deploy
-1. GitHub repo → Settings → Pages → Source: `main` branch → `/ (root)`
-2. Save → 1~2분 후 자동 배포
+Auto-deploys to Vercel from `main` branch.
 
-## ⚡ Supabase 연동
-1. [supabase.com](https://supabase.com)에서 프로젝트 생성 (Seoul 리전)
-2. SQL Editor에서 `supabase-schema.sql` 복붙 → Run
-3. Storage에서 `avatars`(public) + `works`(public) 버킷 생성
-4. Settings → API에서 URL + anon key 복사
-5. `index.html`에서 교체:
-```js
-const SUPABASE_URL = "https://YOUR_PROJECT.supabase.co";
-const SUPABASE_ANON_KEY = "YOUR_ANON_KEY";
+```bash
+npm install
+npm run dev    # Local dev at http://localhost:3000
+npm run build  # Production build
 ```
 
-## 📱 Features
-- PWA (홈 화면 설치)
-- 다크/라이트 테마
-- 이미지 크롭 (1:1, 16:9, 4:3, 3:4, 9:16, 사용자 지정)
-- 실시간 채팅 (Supabase Realtime)
-- 주문 / 커미션 / 결제 시스템
-- 반응형 (모바일 + 데스크탑)
-- 50개 컴포넌트, 29개 화면
+Required env vars (`.env.local`):
+```
+NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_ANON_KEY
+```
 
-## 🛠 Tech
-React 18 (CDN) · Supabase · Single HTML · No build step
+## ⚡ Supabase Setup
+1. Create project at [supabase.com](https://supabase.com) (Seoul region)
+2. SQL Editor → paste `supabase-schema.sql` → Run
+3. Storage → create `avatars` (public) + `works` (public) buckets
+4. Settings → API → copy URL and anon key to `.env.local`
+
+## 📱 Features
+- PWA (install to home screen)
+- Mono Clean design (white/black, Helvetica Neue)
+- 33 screens, 82 custom Mongolian icons
+- Instagram-style feed + 2-column grid
+- Realtime chat (Supabase Realtime)
+- Commissions / orders / payments
+- Responsive (mobile + desktop)
+- Followers/following, likes, saves, comments
+
+## 🛠 Tech Stack
+- Next.js 16 (App Router)
+- React 19
+- Supabase (Auth + Postgres + Storage + Realtime)
+- CSS-in-JS (inline styles)
+- Vercel deployment
 
 © 2026 The TOONO

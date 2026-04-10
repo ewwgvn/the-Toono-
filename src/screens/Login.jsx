@@ -31,7 +31,7 @@ export default function Login({ nav }) {
   const validate = () => {
     const e = {};
     if (!email) e.email = "Имэйл оруулна уу";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = "Зөв имэйл оруулна уу";
+    else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) e.email = "Зөв имэйл оруулна уу";
     if (!pw) e.pw = "Нууц үг оруулна уу";
     else if (pw.length < 6) e.pw = "Нууц үг 6-аас дээш тэмдэгт байх ёстой";
     return e;
@@ -47,9 +47,16 @@ export default function Login({ nav }) {
       const { user, error } = await DB.signIn(email, pw);
       setLoading(false);
       if (error) {
-        if (error.message.includes("Invalid login")) setErrors({pw:"Имэйл эсвэл нууц үг буруу байна"});
-        else setErrors({email: error.message});
-        toast("Нэвтрэх мэдээлэл буруу байна","error");
+        const msg = error.message || "";
+        if (msg.includes("Invalid login") || msg.includes("credentials")) {
+          setErrors({ email: " ", pw: "Имэйл эсвэл нууц үг буруу байна" });
+        } else if (msg.includes("Email not confirmed")) {
+          setErrors({ email: "Имэйл хаяг баталгаажаагүй байна" });
+        } else if (msg.includes("not found") || msg.includes("User")) {
+          setErrors({ email: "Энэ имэйлээр бүртгэлгүй байна" });
+        } else {
+          setErrors({ email: msg });
+        }
         return;
       }
       const synced = await syncFromSupabase();

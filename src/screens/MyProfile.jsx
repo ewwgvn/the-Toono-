@@ -130,7 +130,7 @@ export default function MyProfile({ nav, refresh }) {
                     {["Засах", "Статистик", "Устгах"].map((btn, i) => (
                       <button type="button" key={btn} onClick={() => {
                         if (btn === "Статистик") nav("dashboard");
-                        else if (btn === "Засах") nav("upload");
+                        else if (btn === "Засах") { GS.editingWorkId = w.id; nav("upload"); }
                         else {
                           if (!window.confirm("Энэ бүтээлийг устгах уу?")) return;
                           GS.myWorks = GS.myWorks.filter(x => x.id !== w.id);

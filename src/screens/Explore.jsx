@@ -95,7 +95,7 @@ export default function Explore({ nav, refresh, goBack }) {
     <div style={{flex:1,overflowY:"auto",scrollbarWidth:"none",padding:"0 20px"}}>
       {tab==="creators"&&(fc.length===0
         ?<Empty icon={<IcSearchEmpty/>} title="Бүтээлч олдсонгүй"/>
-        :fc.map(c=><CreatorRow key={c.id} creator={c} onClick={()=>nav("profile",{creatorId:c.id})} onFollow={tFollow} showFollow/>))}
+        :fc.map(c=><CreatorRow key={c.id} creator={c} onClick={()=>nav("profile",{creatorId:c.id})} onFollow={tFollow} showFollow following={GS.following.has(c.id)}/>))}
       {tab==="works"&&(fw.length===0
         ?<Empty icon={<IcSearchEmpty/>} title="Бүтээл олдсонгүй"/>
         :<div>
