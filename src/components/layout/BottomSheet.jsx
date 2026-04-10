@@ -13,7 +13,7 @@ export default function BottomSheet({ open, onClose, title, children, height = "
         </div>
         <div style={{ padding: "12px 20px 8px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 16, fontWeight: 600, color: "#111111" }}>{title}</div>
-          <button type="button" onClick={onClose} style={{ background: "none", border: "none", color: "#999999", cursor: "pointer", display: "flex" }}>
+          <button type="button" aria-label="Close" onClick={onClose} style={{ background: "none", border: "none", color: "#999999", cursor: "pointer", display: "flex" }}>
             <IcX />
           </button>
         </div>

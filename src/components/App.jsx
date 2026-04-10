@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, lazy, Suspense } from "react";
 import { T } from "@/theme/colors";
 import { GS, saveGS, loadGS, resetGS, getUnreadChat, getUnreadNotif } from "@/lib/store";
 import { DB, isSupabaseReady, initSupabase, syncFromSupabase, fetchPublicData } from "@/lib/supabase";
@@ -11,39 +11,42 @@ import { toast } from "@/components/layout/Toast";
 import NetworkStatus from "@/components/layout/NetworkStatus";
 import PWAInstall from "@/components/shared/PWAInstall";
 
+// Critical screens — loaded eagerly
 import Splash from "@/screens/Splash";
 import Onboarding from "@/screens/Onboarding";
 import Login from "@/screens/Login";
-import ProfileSetup from "@/screens/ProfileSetup";
 import Home from "@/screens/Home";
 import Explore from "@/screens/Explore";
-import WorkDetail from "@/screens/WorkDetail";
-import CreatorProfile from "@/screens/CreatorProfile";
-import CommissionScreen from "@/screens/CommissionScreen";
-import Checkout from "@/screens/Checkout";
-import ChatList from "@/screens/ChatList";
-import ChatRoom from "@/screens/ChatRoom";
 import MyProfile from "@/screens/MyProfile";
-import Notifications from "@/screens/Notifications";
-import Settings from "@/screens/Settings";
-import EditProfile from "@/screens/EditProfile";
-import Dashboard from "@/screens/Dashboard";
-import OrderDetail from "@/screens/OrderDetail";
-import OrderList from "@/screens/OrderList";
-import SavedWorks from "@/screens/SavedWorks";
-import FollowList from "@/screens/FollowList";
-import Upload from "@/screens/Upload";
-import CommManage from "@/screens/CommManage";
-import CartScreen from "@/screens/CartScreen";
-import DisputeCenter from "@/screens/DisputeCenter";
-import Referral from "@/screens/Referral";
-import FeedScreen from "@/screens/FeedScreen";
-import Portfolio from "@/screens/Portfolio";
-import ReviewWrite from "@/screens/ReviewWrite";
-import ReturnRequest from "@/screens/ReturnRequest";
-import Report from "@/screens/Report";
-import Terms from "@/screens/Terms";
-import Privacy from "@/screens/Privacy";
+
+// Lazy-loaded screens — reduces initial bundle size
+const ProfileSetup = lazy(() => import("@/screens/ProfileSetup"));
+const WorkDetail = lazy(() => import("@/screens/WorkDetail"));
+const CreatorProfile = lazy(() => import("@/screens/CreatorProfile"));
+const CommissionScreen = lazy(() => import("@/screens/CommissionScreen"));
+const Checkout = lazy(() => import("@/screens/Checkout"));
+const ChatList = lazy(() => import("@/screens/ChatList"));
+const ChatRoom = lazy(() => import("@/screens/ChatRoom"));
+const Notifications = lazy(() => import("@/screens/Notifications"));
+const Settings = lazy(() => import("@/screens/Settings"));
+const EditProfile = lazy(() => import("@/screens/EditProfile"));
+const Dashboard = lazy(() => import("@/screens/Dashboard"));
+const OrderDetail = lazy(() => import("@/screens/OrderDetail"));
+const OrderList = lazy(() => import("@/screens/OrderList"));
+const SavedWorks = lazy(() => import("@/screens/SavedWorks"));
+const FollowList = lazy(() => import("@/screens/FollowList"));
+const Upload = lazy(() => import("@/screens/Upload"));
+const CommManage = lazy(() => import("@/screens/CommManage"));
+const CartScreen = lazy(() => import("@/screens/CartScreen"));
+const DisputeCenter = lazy(() => import("@/screens/DisputeCenter"));
+const Referral = lazy(() => import("@/screens/Referral"));
+const FeedScreen = lazy(() => import("@/screens/FeedScreen"));
+const Portfolio = lazy(() => import("@/screens/Portfolio"));
+const ReviewWrite = lazy(() => import("@/screens/ReviewWrite"));
+const ReturnRequest = lazy(() => import("@/screens/ReturnRequest"));
+const Report = lazy(() => import("@/screens/Report"));
+const Terms = lazy(() => import("@/screens/Terms"));
+const Privacy = lazy(() => import("@/screens/Privacy"));
 
 const F = "'Helvetica Neue', Arial, sans-serif";
 const APP_VERSION = "2.1.0";
@@ -86,8 +89,58 @@ export default function App() {
         if (GS.isLoggedIn && GS.user.name) setScreen("main");
         else { resetGS(); setScreen("onboarding"); }
       }
+
+      // Parse deep link query params after initial load
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const workId = params.get("work");
+        const creatorId = params.get("creator");
+        if (workId) { setSelectedWorkId(Number(workId) || workId); setScreen("work"); }
+        else if (creatorId) { setSelectedCreatorId(creatorId); setScreen("profile"); }
+      } catch (e) {}
     };
     init();
+
+    // Browser back button support
+    const handlePopState = (e) => {
+      if (e.state?.screen) {
+        setScreen(e.state.screen);
+        if (e.state.tab) setTab(e.state.tab);
+      }
+    };
+    window.addEventListener("popstate", handlePopState);
+
+    // Multi-tab sync via storage event
+    const handleStorage = (e) => {
+      if (e.key === "toono-app-state" && e.newValue) {
+        loadGS();
+        setTick(t => t + 1);
+      }
+    };
+    window.addEventListener("storage", handleStorage);
+
+    // Supabase auth state changes (JWT refresh, logout from other tabs)
+    let authSub = null;
+    if (isSupabaseReady()) {
+      import("@/lib/supabase").then(({ supabase }) => {
+        if (!supabase?.auth) return;
+        const { data } = supabase.auth.onAuthStateChange((event) => {
+          if (event === "SIGNED_OUT") {
+            resetGS();
+            setScreen("onboarding");
+          } else if (event === "TOKEN_REFRESHED") {
+            // Silent refresh, no action needed
+          }
+        });
+        authSub = data?.subscription;
+      });
+    }
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+      window.removeEventListener("storage", handleStorage);
+      authSub?.unsubscribe?.();
+    };
   }, []);
 
   const nav = useCallback((s, data) => {
@@ -110,6 +163,15 @@ export default function App() {
       setHistory(h => [...h, { screen, tab }]);
       setScreen(s);
     }
+
+    // Update browser URL for deep linking
+    try {
+      let url = "/";
+      if (s === "work" && data?.workId) url = `/?work=${data.workId}`;
+      else if (s === "profile" && data?.creatorId) url = `/?creator=${data.creatorId}`;
+      else if (tabs[s]) url = `/?tab=${s}`;
+      window.history.pushState({ screen: s, tab: tabs[s] ? s : tab }, "", url);
+    } catch (e) {}
 
     if (s === "home" && GS.isLoggedIn && isSupabaseReady()) {
       Promise.all([DB.getWorks().catch(() => []), DB.getCreators().catch(() => [])]).then(([ws, cs]) => {
@@ -229,12 +291,14 @@ export default function App() {
       {/* ── MAIN CONTENT ── */}
       <div className="toono-content" style={{ flex: 1, overflow: "hidden", position: "relative", width: "100%" }}>
         <div key={screen + tab} style={{ height: "100%", animation: "fadeIn .2s ease" }}>
-          {renderScreen()}
+          <Suspense fallback={<div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "#999", fontFamily: F, fontSize: 13 }}>Loading...</div>}>
+            {renderScreen()}
+          </Suspense>
         </div>
       </div>
 
       {/* ── MOBILE BOTTOM NAV ── */}
-      {isMain && <div className="toono-mobile-nav" style={{
+      {isMain && <nav role="navigation" aria-label="Main" className="toono-mobile-nav" style={{
         background: "#FFFFFF", borderTop: "1px solid #F0F0F0",
         paddingTop: 6, paddingLeft: 4, paddingRight: 4,
         paddingBottom: "calc(6px + env(safe-area-inset-bottom, 0px))",
@@ -243,7 +307,7 @@ export default function App() {
       }}>
         {navItems.map(item => {
           const active = tab === item.id && isMain;
-          return <button type="button" key={item.id} onClick={() => nav(item.id)} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, cursor: "pointer", background: "none", border: "none", padding: "4px 8px", minWidth: 48, minHeight: 44, justifyContent: "center", position: "relative" }}>
+          return <button type="button" key={item.id} aria-label={item.label || item.id} aria-current={active ? "page" : undefined} onClick={() => nav(item.id)} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, cursor: "pointer", background: "none", border: "none", padding: "4px 8px", minWidth: 48, minHeight: 44, justifyContent: "center", position: "relative" }}>
             {item.id === "upload"
               ? <div style={{ width: 44, height: 44, borderRadius: "50%", background: "#111111", display: "flex", alignItems: "center", justifyContent: "center", marginTop: -16 }}><IcPlus /></div>
               : <>
@@ -255,7 +319,7 @@ export default function App() {
               </>}
           </button>;
         })}
-      </div>}
+      </nav>}
 
       {/* Footer — desktop only */}
       {isMain && <div className="toono-desktop-only" style={{ textAlign: "center", padding: "12px 0", borderTop: "1px solid #F0F0F0" }}><span style={{ fontFamily: F, fontSize: 11, color: "#999999" }}>© 2026 The TOONO</span></div>}

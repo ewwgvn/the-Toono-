@@ -9,11 +9,20 @@ export const metadata = {
     url: "https://the-toono.vercel.app",
     siteName: "The TOONO",
     type: "website",
+    images: [
+      {
+        url: "https://the-toono.vercel.app/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "The TOONO",
+      },
+    ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "The TOONO",
     description: "Монгол бүтээлчдийн дижитал зах",
+    images: ["https://the-toono.vercel.app/og-image.png"],
   },
 };
 
@@ -32,6 +41,17 @@ export default function RootLayout({ children }) {
       </head>
       <body style={{ background: "#FFFFFF", fontFamily: "'Helvetica Neue', Arial, system-ui, sans-serif" }}>
         {children}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                  navigator.serviceWorker.register('/sw.js').catch(() => {});
+                });
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   );

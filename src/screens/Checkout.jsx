@@ -175,6 +175,27 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
         } else {
           setLoading(true);
           try {
+            // Server-side price & stock verification
+            if (isSupabaseReady()) {
+              for (const it of items) {
+                const { data: latestWork } = await supabase.from("works").select("price, stock").eq("id", it.id).single();
+                if (!latestWork) {
+                  const { toast } = await import("@/components/layout/Toast");
+                  toast("Бүтээл олдсонгүй", "error");
+                  setLoading(false); return;
+                }
+                if (latestWork.price !== it.price) {
+                  const { toast } = await import("@/components/layout/Toast");
+                  toast("Үнэ өөрчлөгдсөн. Дахин оролдоно уу", "error");
+                  setLoading(false); return;
+                }
+                if (latestWork.stock !== null && latestWork.stock < (it.qty || 1)) {
+                  const { toast } = await import("@/components/layout/Toast");
+                  toast("Нөөц хүрэлцэхгүй байна", "error");
+                  setLoading(false); return;
+                }
+              }
+            }
             const sellerId = items[0]?.creator_id || getAllWorks().find(wk => wk.id === items[0]?.id)?.creator_id || null;
             const newOrder = {
               id: Date.now(),

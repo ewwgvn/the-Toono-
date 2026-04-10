@@ -7,6 +7,8 @@ export default function Simple({ children, nav, title, back = "home", right, goB
     <div style={{ height: "100%", display: "flex", flexDirection: "column", background: T.bg }}>
       <div style={{ padding: "16px 16px 12px", display: "flex", alignItems: "center", gap: 12, flexShrink: 0, borderBottom: `1px solid ${T.borderLight}` }}>
         <button
+          type="button"
+          aria-label="Back"
           onClick={() => (goBack ? goBack() : nav(back))}
           style={{ width: 36, height: 36, borderRadius: 8, background: "transparent", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#111111", flexShrink: 0 }}
         >
