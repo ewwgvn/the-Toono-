@@ -127,7 +127,13 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
           {(c.tags||GS.user.tags||[]).map(t=><Pill key={t}>{t}</Pill>)}
         </div>}
         <div style={{display:"flex",marginBottom:16,border:`1px solid ${T.borderLight}`,borderRadius:8}}>
-          {[[String(creatorWorks?.length||c.works||0),"Бүтээл"],[String(followerCount),"Дагагч"],[String(followingCount),"Дагаж байна"]].map((s,i)=><div key={s[1]} onClick={()=>(i===1||i===2)&&nav("follows")} style={{flex:1,textAlign:"center",padding:"12px 0",borderRight:i<2?`1px solid ${T.borderLight}`:"none",cursor:(i===1||i===2)?"pointer":"default"}}>
+          {[[String(creatorWorks?.length||c.works||0),"Бүтээл"],[String(followerCount),"Дагагч"],[String(followingCount),"Дагаж байна"]].map((s,i)=><div key={s[1]} onClick={()=>{
+            if(i===1||i===2){
+              GS.viewingFollowsUserId = creatorId;
+              GS.viewingFollowsTab = i===1 ? "followers" : "following";
+              nav("follows");
+            }
+          }} style={{flex:1,textAlign:"center",padding:"12px 0",borderRight:i<2?`1px solid ${T.borderLight}`:"none",cursor:(i===1||i===2)?"pointer":"default"}}>
             <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:16,fontWeight:700,color:"#111111"}}>{s[0]}</div>
             <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:11,color:"#999999",marginTop:2}}>{s[1]}</div>
           </div>)}

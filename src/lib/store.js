@@ -52,6 +52,10 @@ export const GS = {
   publicWorks: [],
   publicCreators: [],
   disputes: [],
+  // Transient UI state for FollowList
+  viewingFollowsUserId: null,
+  viewingFollowsTab: null,
+  editingWorkId: null,
 };
 
 // ── Dynamic data arrays ──

@@ -79,8 +79,14 @@ export default function MyProfile({ nav, refresh }) {
             </button>
           )}
           <div style={{ display: "flex", marginBottom: 16, border: `1px solid ${T.borderLight}`, borderRadius: 8 }}>
-            {[[String(GS.myWorks.length), "Works"], [String(GS.following.size), "Following"]].map((s, i) => (
-              <div key={s[1]} onClick={() => nav("follows")} style={{ flex: 1, textAlign: "center", padding: "12px 0", borderRight: i < 1 ? `1px solid ${T.borderLight}` : "none", cursor: "pointer" }}>
+            {[[String(GS.myWorks.length), "Бүтээл"], [String(GS.following.size), "Дагаж байна"]].map((s, i) => (
+              <div key={s[1]} onClick={() => {
+                if (i === 1) {
+                  GS.viewingFollowsUserId = GS.user.id;
+                  GS.viewingFollowsTab = "following";
+                  nav("follows");
+                }
+              }} style={{ flex: 1, textAlign: "center", padding: "12px 0", borderRight: i < 1 ? `1px solid ${T.borderLight}` : "none", cursor: i === 1 ? "pointer" : "default" }}>
                 <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 16, fontWeight: 700, color: "#111111" }}>{s[0]}</div>
                 <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, color: "#999999", marginTop: 2 }}>{s[1]}</div>
               </div>
