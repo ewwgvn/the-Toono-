@@ -31,7 +31,7 @@ export default function PWAInstall() {
       >
         Суулгах
       </button>
-      <button onClick={() => setShow(false)} style={{ background: "none", border: "none", color: "#999999", cursor: "pointer", display: "flex" }}>
+      <button type="button" onClick={() => setShow(false)} style={{ background: "none", border: "none", color: "#999999", cursor: "pointer", display: "flex" }}>
         <IcX />
       </button>
     </div>

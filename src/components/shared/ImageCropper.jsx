@@ -138,11 +138,11 @@ export default function ImageCropper({ src, onDone, onCancel, aspect = "square",
     <div style={{ position: "fixed", inset: 0, zIndex: 10000, background: "rgba(0,0,0,0.96)", display: "flex", flexDirection: "column", touchAction: "none" }}>
       {/* Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", flexShrink: 0 }}>
-        <button onClick={onCancel} style={{ background: "none", border: "none", fontFamily: "system-ui", fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.7)", cursor: "pointer", padding: "8px" }}>
+        <button type="button" onClick={onCancel} style={{ background: "none", border: "none", fontFamily: "system-ui", fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.7)", cursor: "pointer", padding: "8px" }}>
           Цуцлах
         </button>
         <div style={{ fontFamily: "system-ui", fontSize: 16, fontWeight: 700, color: "#fff" }}>Зураг тайрах</div>
-        <button onClick={doCrop} style={{ background: T.accent, border: "none", borderRadius: 10, padding: "8px 20px", fontFamily: "system-ui", fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer" }}>
+        <button type="button" onClick={doCrop} style={{ background: T.accent, border: "none", borderRadius: 10, padding: "8px 20px", fontFamily: "system-ui", fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer" }}>
           Хадгалах
         </button>
       </div>

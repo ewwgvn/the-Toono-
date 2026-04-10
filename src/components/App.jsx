@@ -192,7 +192,7 @@ export default function App() {
             </div>
             <div style={{ display: "flex", gap: 4 }}>
               {[["home", "Нүүр"], ["explore", "Хайлт"], ["feed", "Фийд"]].map(([id, label]) =>
-                <button key={id} onClick={() => nav(id)} style={{
+                <button type="button" key={id} onClick={() => nav(id)} style={{
                   background: "transparent", border: "none", padding: "8px 14px",
                   fontFamily: F, fontSize: 13, fontWeight: tab === id ? 600 : 400,
                   color: tab === id ? "#111111" : "#999999", cursor: "pointer",
@@ -208,18 +208,18 @@ export default function App() {
             </div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            {GS.currentRole === "creator" && <button onClick={() => nav("upload")} style={{ display: "flex", alignItems: "center", gap: 6, background: "#111111", border: "none", borderRadius: 20, padding: "8px 18px", fontFamily: F, fontSize: 13, fontWeight: 600, color: "#FFFFFF", cursor: "pointer" }}><IcPlus /> Байршуулах</button>}
+            {GS.currentRole === "creator" && <button type="button" onClick={() => nav("upload")} style={{ display: "flex", alignItems: "center", gap: 6, background: "#111111", border: "none", borderRadius: 20, padding: "8px 18px", fontFamily: F, fontSize: 13, fontWeight: 600, color: "#FFFFFF", cursor: "pointer" }}><IcPlus /> Байршуулах</button>}
             {[
               { action: "cart", Ic: IcCart, badge: GS.cart.length },
               { action: "notifications", Ic: IcBell, badge: getUnreadNotif() },
               { action: "chat", Ic: IcMsg, badge: getUnreadChat() },
             ].map(({ action, Ic, badge }) => (
-              <button key={action} onClick={() => nav(action)} style={{ position: "relative", width: 36, height: 36, borderRadius: 8, background: "transparent", border: "1px solid #E5E5E5", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#111111" }}>
+              <button type="button" key={action} onClick={() => nav(action)} style={{ position: "relative", width: 36, height: 36, borderRadius: 8, background: "transparent", border: "1px solid #E5E5E5", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#111111" }}>
                 <Ic />
                 {badge > 0 && <div style={{ position: "absolute", top: -3, right: -3, minWidth: 14, height: 14, borderRadius: 7, background: "#D32F2F", display: "flex", alignItems: "center", justifyContent: "center" }}><span style={{ fontSize: 9, fontWeight: 600, color: "#fff" }}>{badge}</span></div>}
               </button>
             ))}
-            <button onClick={() => nav("me")} style={{ width: 32, height: 32, borderRadius: "50%", background: "#F7F7F7", border: "1px solid #E5E5E5", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", overflow: "hidden" }}>
+            <button type="button" onClick={() => nav("me")} style={{ width: 32, height: 32, borderRadius: "50%", background: "#F7F7F7", border: "1px solid #E5E5E5", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", overflow: "hidden" }}>
               {GS.user.photo ? <img src={GS.user.photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ color: "#111111", fontSize: 11, fontWeight: 600 }}>{(GS.user.name || "?")[0]}</span>}
             </button>
           </div>
@@ -243,7 +243,7 @@ export default function App() {
       }}>
         {navItems.map(item => {
           const active = tab === item.id && isMain;
-          return <button key={item.id} onClick={() => nav(item.id)} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, cursor: "pointer", background: "none", border: "none", padding: "4px 8px", minWidth: 48, minHeight: 44, justifyContent: "center", position: "relative" }}>
+          return <button type="button" key={item.id} onClick={() => nav(item.id)} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, cursor: "pointer", background: "none", border: "none", padding: "4px 8px", minWidth: 48, minHeight: 44, justifyContent: "center", position: "relative" }}>
             {item.id === "upload"
               ? <div style={{ width: 44, height: 44, borderRadius: "50%", background: "#111111", display: "flex", alignItems: "center", justifyContent: "center", marginTop: -16 }}><IcPlus /></div>
               : <>

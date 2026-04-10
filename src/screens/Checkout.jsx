@@ -53,7 +53,7 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
   return <div style={{ height: "100%", display: "flex", flexDirection: "column", background: "#FFFFFF" }}>
     {/* Header */}
     <div style={{ padding: "16px 16px 12px", display: "flex", alignItems: "center", gap: 12, borderBottom: "1px solid #F0F0F0" }}>
-      <button onClick={() => step === 0 ? (goBack ? goBack() : nav("home")) : setStep(step - 1)} style={{ background: "none", border: "none", color: "#111111", cursor: "pointer", display: "flex" }}><IcBack /></button>
+      <button type="button" onClick={() => step === 0 ? (goBack ? goBack() : nav("home")) : setStep(step - 1)} style={{ background: "none", border: "none", color: "#111111", cursor: "pointer", display: "flex" }}><IcBack /></button>
       <div style={{ fontFamily: F, fontSize: 16, fontWeight: 600, color: "#111111" }}>Checkout</div>
       <div style={{ marginLeft: "auto", fontFamily: F, fontSize: 12, color: "#999999" }}>{step + 1}/{stepL.length}</div>
     </div>
@@ -124,7 +124,7 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
       {/* Step 1: Payment method */}
       {step === 1 && <>
         <div style={{ fontFamily: F, fontSize: 14, fontWeight: 600, color: "#111111", marginBottom: 12 }}>Төлбөрийн хэлбэр</div>
-        {methods.map(m => <button key={m[0]} onClick={() => setMethod(m[0])} style={{
+        {methods.map(m => <button type="button" key={m[0]} onClick={() => setMethod(m[0])} style={{
           width: "100%", background: method === m[0] ? "#F7F7F7" : "#FFFFFF",
           border: `1px solid ${method === m[0] ? "#111111" : "#E5E5E5"}`,
           borderRadius: 8, padding: "14px 16px", cursor: "pointer",
@@ -207,6 +207,11 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
             }
             GS.orders.unshift(newOrder);
             GS.selectedOrderId = newOrder.id;
+            // Deduct stock
+            items.forEach(it => {
+              const work = getAllWorks().find(wk => wk.id === it.id);
+              if (work && work.stock > 0) work.stock = Math.max(0, work.stock - (it.qty || 1));
+            });
             if (directItem) GS.directBuyItem = null;
             else GS.cart = [];
             GS.notifications.unshift({ id: Date.now(), icon: "sale", title: "Захиалга баталгаажлаа", desc: `"${w.title}" амжилттай захиалагдлаа.`, time: "Сая", read: false, to: "order-detail" });

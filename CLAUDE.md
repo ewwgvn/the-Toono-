@@ -1,76 +1,60 @@
-# The TOONO — 프로젝트 컨텍스트
+# The TOONO — Project Context
 
-## 이 파일은 Claude에게 프로젝트를 설명하는 파일입니다.
-## Claude Code나 VS Code에서 작업할 때 이 파일을 먼저 읽게 하세요.
-
-## 프로젝트 개요
-- Монгол бүтээлчдийн дижитал зах (몽골 크리에이터 마켓플레이스)
-- Single HTML file (index.html) — React 18 + Supabase
-- 5,200+ lines, 50 components, 29 screens
-
-## 기술 스택
-- React 18 (CDN, Babel in-browser)
-- Supabase (Auth + PostgreSQL + Storage + Realtime)
-- CSS-in-JS (inline styles)
+## Project Overview
+- Mongolian creator marketplace (Монгол бүтээлчдийн дижитал зах)
+- Next.js 16 + React 19 + Supabase
+- Mono Clean design (white bg, black accents, Helvetica Neue)
 - PWA ready
 
-## 파일 구조
+## Tech Stack
+- Next.js 16.2 (App Router, client-side rendering via `dynamic(() => import(...), { ssr: false })`)
+- React 19 (hooks, functional components)
+- Supabase (Auth + PostgreSQL + Storage + Realtime)
+- CSS-in-JS (inline styles, mono clean system)
+- Deployed on Vercel (auto-deploy from main)
+
+## File Structure
 ```
-index.html          — 앱 전체 (유일한 소스 파일)
-supabase-schema.sql — DB 테이블 + RLS
-SUPABASE-SETUP.md   — Supabase 설정 가이드
-README.md           — 프로젝트 설명
-CLAUDE.md           — 이 파일 (Claude 컨텍스트)
+src/
+├── app/
+│   ├── layout.jsx        — Root layout (fonts, meta, OG tags)
+│   ├── page.jsx           — Entry (dynamic import of App, SSR disabled)
+│   └── globals.css        — Global styles, responsive breakpoints
+├── components/
+│   ├── App.jsx            — Main router, nav, screen rendering
+│   ├── atoms/             — PBtn, Crd, Avt, Inp, Pill, Empty, Toono
+│   ├── layout/            — Toast, BottomSheet, Simple, NetworkStatus
+│   ├── shared/            — WorkCard, CreatorRow, ImageCropper, PWAInstall
+│   └── icons/             — 82 custom Mongolian-motif SVG icons
+├── screens/               — 33 screen components (all "use client")
+├── lib/
+│   ├── store.js           — Global state (GS), persistence (saveGS/loadGS)
+│   ├── supabase.js        — DB layer (40+ methods), sync queue (SQ)
+│   └── utils.js           — getAllWorks, getCreators, fmtP, compressImage
+└── theme/
+    └── colors.js          — Mono clean color system (#FFF/#111/#666)
 ```
 
-## index.html 코드 구조 (순서대로)
-1. **Theme** (line ~3) — DARK/LIGHT 테마 객체
-2. **Supabase Config** (line ~50) — URL + anon key
-3. **DB Layer** (line ~67) — Supabase API 래퍼 (30+ methods)
-4. **Global State (GS)** (line ~415) — 앱 전체 상태
-5. **Persistence** (line ~460) — saveGS/loadGS
-6. **Icons** (line ~575) — 61개 커스텀 SVG 아이콘
-7. **Atoms** (line ~1120) — PBtn, Crd, Avt, Inp, Pill, Toono 등
-8. **ImageCropper** (line ~1254) — 이미지 크롭 (비율 선택 + 핀치줌)
-9. **Toast/Loading/PWA** (line ~1350) — 유틸리티 컴포넌트
-10. **Splash → Onboarding → Login → ProfileSetup** (line ~1620)
-11. **Home** (line ~1940)
-12. **Explore** (line ~2250)
-13. **WorkDetail** (line ~2370)
-14. **CreatorProfile** (line ~2550)
-15. **Commission** (line ~2650)
-16. **ChatList → ChatRoom** (line ~2800)
-17. **MyProfile** (line ~2970)
-18. **Notifications** (line ~3170)
-19. **Settings** (line ~3220)
-20. **EditProfile** (line ~3290)
-21. **Dashboard** (line ~3390)
-22. **OrderDetail → OrderList** (line ~3470)
-23. **SavedWorks → Follows** (line ~3600)
-24. **Checkout** (line ~3710)
-25. **Upload** (line ~3830)
-26. **CommManage** (line ~4130)
-27. **CartScreen** (line ~4350)
-28. **DisputeCenter** (line ~4690)
-29. **Referral** (line ~4770)
-30. **FeedScreen** (line ~4840)
-31. **Portfolio** (line ~4920)
-32. **App (main)** (line ~5090) — 라우터, nav(), 반응형 레이아웃
+## Key Patterns
+- `GS.xxx` — Global state direct access
+- `refresh()` — Force re-render after GS mutation
+- `saveGS()` — Persist to localStorage (MUST call after GS changes)
+- `nav("screen")` — Screen navigation
+- `toast("msg", "type")` — Import from `@/components/layout/Toast`
+- `T.xxx` — Theme colors from `@/theme/colors`
+- `DB.method()` — Supabase API wrapper from `@/lib/supabase`
 
-## 주요 패턴
-- `GS.xxx` — 글로벌 상태 직접 접근 (useState 아님)
-- `refresh()` — 강제 리렌더 (GS 변경 후)
-- `saveGS()` — localStorage + window.storage에 저장
-- `nav("screen")` — 화면 전환
-- `toast("메시지", "success"|"error"|"info")` — 알림
-- `T.accent`, `T.bg`, `T.textH` — 테마 색상
+## Design System: Mono Clean
+- Colors: #FFFFFF bg, #111111 accent/text, #666666 secondary, #999999 tertiary
+- Font: 'Helvetica Neue', Arial, sans-serif
+- Card: border-radius 8px, no shadows. Button: border-radius 20px
+- No gradients, no colorful accents (error #D32F2F, success #2E7D32 only)
 
-## 브랜드
-- 이름: The TOONO
-- 몽골어: Тооно (게르 천창)
-- 주 색상: #5B8FE8 (accent blue)
+## Categories (English, unified across all screens)
+Fashion Design, Interior Design, Jewelry Design, Industrial Design,
+Graphic Design, Textile Design, Fine Art, 3D Design, Photography
 
-## 배포
+## Brand
+- Name: The TOONO / Тооно (ger skylight)
+- URL: the-toono.vercel.app
 - GitHub: ewwgvn/the-Toono-
-- Vercel: the-toono.vercel.app
-- Supabase: The Toono project

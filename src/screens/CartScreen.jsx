@@ -32,7 +32,7 @@ export default function CartScreen({ nav, refresh, goBack }) {
 
   return <div style={{ height: "100%", display: "flex", flexDirection: "column", background: T.bg }}>
     <div style={{ padding: "20px 20px 14px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-      <button onClick={() => goBack ? goBack() : nav("home")} style={{ background: "none", border: "none", color: T.textH, cursor: "pointer", display: "flex" }}><IcBack /></button>
+      <button type="button" onClick={() => goBack ? goBack() : nav("home")} style={{ background: "none", border: "none", color: T.textH, cursor: "pointer", display: "flex" }}><IcBack /></button>
       <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 20, fontWeight: 800, color: T.textH }}>Сагс</div>
       <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, color: T.textSub }}>{cartItems.length} бүтээл</div>
     </div>
@@ -43,8 +43,8 @@ export default function CartScreen({ nav, refresh, goBack }) {
         : <>
           {cartItems.map(item => <Crd key={item.id} style={{ marginBottom: 12, padding: 0, overflow: "hidden" }}>
             <div style={{ display: "flex", gap: 0 }}>
-              <div style={{ width: 90, background: item.accent + "18", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, position: "relative" }}>
-                <Toono size={48} color={item.accent} />
+              <div style={{ width: 90, background: "#F7F7F7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, position: "relative", overflow: "hidden" }}>
+                {item.images?.[0] ? <img src={item.images[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <Toono size={36} color="#999999" />}
                 {item.digital && <div style={{ position: "absolute", bottom: 6, left: "50%", transform: "translateX(-50%)", background: "rgba(136,80,212,0.9)", borderRadius: 6, padding: "2px 6px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 8, fontWeight: 700, color: "#fff" }}>
                   <svg width="9" height="10" viewBox="0 0 9 10" fill="none"><path d="M4.5 1V7M1.5 4.5L4.5 7.5L7.5 4.5" stroke="white" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /><path d="M1 9H8" stroke="white" strokeWidth="1.2" strokeLinecap="round" /></svg> Дижитал
                 </div>}
@@ -61,16 +61,16 @@ export default function CartScreen({ nav, refresh, goBack }) {
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 15, fontWeight: 700, color: T.accent }}>₮{(item.price * getQty(item.id)).toLocaleString()}</div>
                   {!item.digital && <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <button onClick={() => setQty(q => ({ ...q, [item.id]: Math.max(1, getQty(item.id) - 1) }))} style={{ width: 28, height: 28, borderRadius: 8, background: T.s2, border: `1px solid ${T.border}`, color: T.textH, cursor: "pointer", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>−</button>
+                    <button type="button" onClick={() => setQty(q => ({ ...q, [item.id]: Math.max(1, getQty(item.id) - 1) }))} style={{ width: 28, height: 28, borderRadius: 8, background: T.s2, border: `1px solid ${T.border}`, color: T.textH, cursor: "pointer", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>−</button>
                     <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 14, fontWeight: 700, color: T.textH, minWidth: 16, textAlign: "center" }}>{getQty(item.id)}</span>
-                    <button onClick={() => setQty(q => ({ ...q, [item.id]: Math.min(item.stock, getQty(item.id) + 1) }))} style={{ width: 28, height: 28, borderRadius: 8, background: T.s2, border: `1px solid ${T.border}`, color: T.textH, cursor: "pointer", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>+</button>
+                    <button type="button" onClick={() => setQty(q => ({ ...q, [item.id]: Math.min(item.stock, getQty(item.id) + 1) }))} style={{ width: 28, height: 28, borderRadius: 8, background: T.s2, border: `1px solid ${T.border}`, color: T.textH, cursor: "pointer", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>+</button>
                   </div>}
                 </div>
               </div>
             </div>
             <div style={{ borderTop: `1px solid ${T.border}`, padding: "8px 14px", display: "flex", justifyContent: "space-between" }}>
-              <button onClick={() => { GS.saved.add(item.id); GS.cart = GS.cart.filter(c => c.id !== item.id); refresh(); }} style={{ background: "none", border: "none", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.accent, cursor: "pointer" }}><span style={{ display: "flex" }}><IcBookmark /></span> Хадгалах</button>
-              <button onClick={() => { GS.cart = GS.cart.filter(c => c.id !== item.id); refresh(); }} style={{ background: "none", border: "none", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.red, cursor: "pointer" }}><span style={{ display: "flex" }}><IcTrash /></span> Хасах</button>
+              <button type="button" onClick={() => { GS.saved.add(item.id); GS.cart = GS.cart.filter(c => c.id !== item.id); refresh(); }} style={{ background: "none", border: "none", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.accent, cursor: "pointer" }}><span style={{ display: "flex" }}><IcBookmark /></span> Хадгалах</button>
+              <button type="button" onClick={() => { GS.cart = GS.cart.filter(c => c.id !== item.id); refresh(); }} style={{ background: "none", border: "none", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.red, cursor: "pointer" }}><span style={{ display: "flex" }}><IcTrash /></span> Хасах</button>
             </div>
           </Crd>)}
 

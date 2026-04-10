@@ -46,7 +46,7 @@ export default function FollowList({ nav, refresh }) {
   return <Simple nav={nav} title={tab === "following" ? "Following" : "Followers"} back="me">
     <div style={{ display: "flex", marginBottom: 8, borderBottom: `1px solid ${T.borderLight}` }}>
       {[["following", `Following ${following.length}`], ["followers", `Followers ${followers.length}`]].map(t =>
-        <button key={t[0]} onClick={() => setTab(t[0])} style={{
+        <button type="button" key={t[0]} onClick={() => setTab(t[0])} style={{
           flex: 1, padding: "12px 0", background: "none", border: "none",
           fontFamily: F, fontSize: 13, fontWeight: tab === t[0] ? 600 : 400,
           color: tab === t[0] ? "#111111" : "#999999",

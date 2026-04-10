@@ -84,10 +84,10 @@ export default function ProfileSetup({ nav, refresh, goBack }) {
     <div style={{padding:"20px 20px 14px"}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
         <div style={{display:"flex",alignItems:"center",gap:10}}>
-          <button onClick={() => goBack?goBack():nav("login")} style={{width:36,height:36,borderRadius:10,background:T.s1,border:`1px solid ${T.border}`,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:T.textH,flexShrink:0}}><IcBack/></button>
+          <button type="button" onClick={() => goBack?goBack():nav("login")} style={{width:36,height:36,borderRadius:10,background:T.s1,border:`1px solid ${T.border}`,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:T.textH,flexShrink:0}}><IcBack/></button>
           <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:22,fontWeight:800,color:T.textH}}>Профайл тохируулах</div>
         </div>
-        <button onClick={skip} style={{background:"none",border:"none",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,color:T.textSub,cursor:"pointer"}}>Алгасах →</button>
+        <button type="button" onClick={skip} style={{background:"none",border:"none",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,color:T.textSub,cursor:"pointer"}}>Алгасах →</button>
       </div>
       <div style={{display:"flex",gap:5,marginBottom:6}}>
         {[0,1,2].map(i => <div key={i} style={{flex:1,height:4,borderRadius:2,background:i<=step?T.accent:T.border}}/>)}
@@ -135,7 +135,7 @@ export default function ProfileSetup({ nav, refresh, goBack }) {
         <div style={{display:"flex",flexWrap:"wrap",gap:10}}>
           {suggestedTags.map(t => {
             const sel = tags.includes(t);
-            return <button key={t} onClick={() => setTags(sel?tags.filter(x => x!==t):[...tags,t])} style={{padding:"10px 18px",borderRadius:20,cursor:"pointer",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,fontWeight:600,background:sel?T.accent:T.s1,border:`1.5px solid ${sel?T.accent:T.border}`,color:sel?"#fff":T.textSub,transition:"all .12s"}}>{t}</button>;
+            return <button type="button" key={t} onClick={() => setTags(sel?tags.filter(x => x!==t):[...tags,t])} style={{padding:"10px 18px",borderRadius:20,cursor:"pointer",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,fontWeight:600,background:sel?T.accent:T.s1,border:`1.5px solid ${sel?T.accent:T.border}`,color:sel?"#fff":T.textSub,transition:"all .12s"}}>{t}</button>;
           })}
         </div>
         {tags.length>0&&<div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.accent,marginTop:12}}>{tags.length} сонгогдлоо</div>}

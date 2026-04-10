@@ -27,20 +27,20 @@ export default function Home({ nav, refresh }) {
         <div style={{ fontFamily: F, fontSize: 16, fontWeight: 700, color: "#111111", letterSpacing: "0.05em", textTransform: "uppercase" }}>The TOONO</div>
       </div>
       <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-        <button onClick={() => nav("cart")} style={{ position: "relative", width: 32, height: 32, borderRadius: 8, background: "transparent", border: "1px solid #E5E5E5", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#111111" }}>
+        <button type="button" onClick={() => nav("cart")} style={{ position: "relative", width: 32, height: 32, borderRadius: 8, background: "transparent", border: "1px solid #E5E5E5", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#111111" }}>
           <IcCart />
           {GS.cart.length > 0 && <div style={{ position: "absolute", top: -3, right: -3, minWidth: 14, height: 14, borderRadius: 7, background: "#D32F2F", display: "flex", alignItems: "center", justifyContent: "center" }}><span style={{ fontFamily: F, fontSize: 8, fontWeight: 600, color: "#fff" }}>{GS.cart.length}</span></div>}
         </button>
-        <button onClick={() => nav("notifications")} style={{ position: "relative", width: 32, height: 32, borderRadius: 8, background: "transparent", border: "1px solid #E5E5E5", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#111111" }}>
+        <button type="button" onClick={() => nav("notifications")} style={{ position: "relative", width: 32, height: 32, borderRadius: 8, background: "transparent", border: "1px solid #E5E5E5", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#111111" }}>
           <IcBell />
           {GS.unreadNotif > 0 && <div style={{ position: "absolute", top: -3, right: -3, width: 6, height: 6, borderRadius: 3, background: "#D32F2F" }} />}
         </button>
       </div>
     </div>
 
-    {/* Search bar */}
-    <div style={{ padding: "12px 16px" }}>
-      <button onClick={() => nav("explore")} style={{ width: "100%", background: "#F7F7F7", border: "1px solid #E5E5E5", borderRadius: 8, padding: "10px 14px", display: "flex", alignItems: "center", gap: 8, cursor: "pointer", textAlign: "left" }}>
+    {/* Search bar — mobile only (desktop has search in top nav) */}
+    <div className="toono-mobile-only" style={{ padding: "12px 16px" }}>
+      <button type="button" onClick={() => nav("explore")} style={{ width: "100%", background: "#F7F7F7", border: "1px solid #E5E5E5", borderRadius: 8, padding: "10px 14px", display: "flex", alignItems: "center", gap: 8, cursor: "pointer", textAlign: "left" }}>
         <span style={{ color: "#999999", display: "flex" }}><IcSearch /></span>
         <span style={{ fontFamily: F, fontSize: 13, color: "#999999" }}>Хайлт...</span>
       </button>
@@ -50,7 +50,7 @@ export default function Home({ nav, refresh }) {
 
       {/* Category filter */}
       <div style={{ padding: "0 16px 16px", display: "flex", gap: 6, overflowX: "auto", scrollbarWidth: "none" }}>
-        {cats.map(c => <button key={c} onClick={() => setCat(c)} style={{
+        {cats.map(c => <button type="button" key={c} onClick={() => setCat(c)} style={{
           flexShrink: 0, padding: "6px 14px", borderRadius: 20, cursor: "pointer",
           fontFamily: F, fontSize: 13, fontWeight: 500,
           background: cat === c ? "#111111" : "transparent",
@@ -77,7 +77,7 @@ export default function Home({ nav, refresh }) {
       <div style={{ padding: "0 16px 8px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
           <div style={{ fontFamily: F, fontSize: 16, fontWeight: 600, color: "#111111" }}>Бүтээлчид</div>
-          <button onClick={() => nav("explore")} style={{ background: "none", border: "none", fontFamily: F, fontSize: 13, color: "#666666", cursor: "pointer" }}>Бүгдийг харах</button>
+          <button type="button" onClick={() => nav("explore")} style={{ background: "none", border: "none", fontFamily: F, fontSize: 13, color: "#666666", cursor: "pointer" }}>Бүгдийг харах</button>
         </div>
         <div style={{ display: "flex", gap: 16, overflowX: "auto", scrollbarWidth: "none", paddingBottom: 4 }}>
           {getCreators().slice(0, 6).map(c => <div key={c.id} onClick={() => nav("profile", { creatorId: c.id })} style={{ flexShrink: 0, textAlign: "center", cursor: "pointer", width: 64 }}>

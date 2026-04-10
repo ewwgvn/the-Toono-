@@ -86,7 +86,7 @@ export default function ChatRoom({ nav, refresh, goBack }) {
 
   return <div style={{height:"100%",display:"flex",flexDirection:"column",background:T.bg}}>
     <div style={{padding:"20px 20px 12px",display:"flex",alignItems:"center",gap:12,borderBottom:`1px solid ${T.border}`}}>
-      <button onClick={()=>{GS.activeChatId=null;nav("chat");}} style={{background:"none",border:"none",color:T.textH,cursor:"pointer",display:"flex"}}><IcBack/></button>
+      <button type="button" onClick={()=>{GS.activeChatId=null;nav("chat");}} style={{background:"none",border:"none",color:T.textH,cursor:"pointer",display:"flex"}}><IcBack/></button>
       <Avt size={38} color={convo?.accent||T.accent} photo={convo?.photo} onClick={()=>convo?.creatorId&&nav("profile",{creatorId:convo.creatorId})}/>
       <div style={{flex:1}}>
         <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:15,fontWeight:700,color:T.textH}}>{convo?.name||"The TOONO"}</div>
@@ -143,7 +143,7 @@ export default function ChatRoom({ nav, refresh, goBack }) {
       <div style={{flex:1,background:T.s1,border:`1px solid ${T.border}`,borderRadius:20,padding:"10px 14px",display:"flex",alignItems:"center"}}>
         <input value={msg} onChange={e=>setMsg(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}}} placeholder="Зурвасийг оруулна уу..." style={{background:"none",border:"none",outline:"none",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,color:T.textH,flex:1}}/>
       </div>
-      <button onClick={send} style={{width:42,height:42,borderRadius:"50%",background:msg.trim()?T.accent:T.s1,border:`1px solid ${msg.trim()?T.accent:T.border}`,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"background .15s",flexShrink:0,color:msg.trim()?"#fff":T.textSub}}><IcSend/></button>
+      <button type="button" onClick={send} style={{width:42,height:42,borderRadius:"50%",background:msg.trim()?T.accent:T.s1,border:`1px solid ${msg.trim()?T.accent:T.border}`,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"background .15s",flexShrink:0,color:msg.trim()?"#fff":T.textSub}}><IcSend/></button>
     </div>
   </div>;
 }

@@ -71,7 +71,7 @@ export default function Portfolio({ nav, goBack }) {
     <div style={{ padding: "20px 20px 12px", flexShrink: 0 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <button onClick={() => goBack ? goBack() : nav("me")} style={{ background: "none", border: "none", color: T.textH, cursor: "pointer", display: "flex" }}><IcBack /></button>
+          <button type="button" onClick={() => goBack ? goBack() : nav("me")} style={{ background: "none", border: "none", color: T.textH, cursor: "pointer", display: "flex" }}><IcBack /></button>
           <div>
             <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 26, fontWeight: 600, color: T.textH, letterSpacing: "-.01em" }}>Архив</div>
             <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, color: T.textSub, marginTop: 2 }}>Миний бүтээлийн архив</div>
@@ -79,12 +79,12 @@ export default function Portfolio({ nav, goBack }) {
         </div>
         <div style={{ display: "flex", gap: 8 }}>
           {bulkMode
-            ? <><button onClick={() => { setBulkMode(false); setSelected(new Set()); }} style={{ background: T.s1, border: `1px solid ${T.border}`, borderRadius: 10, padding: "8px 14px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: 600, color: T.textSub, cursor: "pointer" }}>Цуцлах</button>
+            ? <><button type="button" onClick={() => { setBulkMode(false); setSelected(new Set()); }} style={{ background: T.s1, border: `1px solid ${T.border}`, borderRadius: 10, padding: "8px 14px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: 600, color: T.textSub, cursor: "pointer" }}>Цуцлах</button>
               {selected.size > 0 && <PBtn small danger onClick={() => { toast(selected.size + "ш бүтээл архивлагдлаа", "success"); setBulkMode(false); setSelected(new Set()); }}>Архивлах ({selected.size})</PBtn>}</>
-            : <><button onClick={() => nav("upload")} style={{ width: 38, height: 38, borderRadius: "50%", background: T.accent, border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#fff" }}>
+            : <><button type="button" onClick={() => nav("upload")} style={{ width: 38, height: 38, borderRadius: "50%", background: T.accent, border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#fff" }}>
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3V15M3 9H15" stroke="white" strokeWidth="2" strokeLinecap="round" /></svg>
             </button>
-              <button onClick={() => setBulkMode(true)} style={{ width: 38, height: 38, borderRadius: "50%", background: T.s1, border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: T.textSub }}>
+              <button type="button" onClick={() => setBulkMode(true)} style={{ width: 38, height: 38, borderRadius: "50%", background: T.s1, border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: T.textSub }}>
                 <IcDots />
               </button></>}
         </div>
@@ -107,7 +107,7 @@ export default function Portfolio({ nav, goBack }) {
       <div style={{ background: T.s1, border: `1px solid ${T.border}`, borderRadius: 13, padding: "10px 14px", display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
         <IcSearch />
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Бүтээл, таг хайх..." style={{ background: "none", border: "none", outline: "none", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 14, color: T.textH, flex: 1 }} />
-        {search && <button onClick={() => setSearch("")} style={{ background: "none", border: "none", cursor: "pointer", color: T.textSub, display: "flex" }}><IcX /></button>}
+        {search && <button type="button" onClick={() => setSearch("")} style={{ background: "none", border: "none", cursor: "pointer", color: T.textSub, display: "flex" }}><IcX /></button>}
       </div>
     </div>
 
@@ -120,7 +120,7 @@ export default function Portfolio({ nav, goBack }) {
           ["draft", "Ноорог"],
           ["archived", "Архив"],
           ["digital", "Дижитал"],
-        ].map(f => <button key={f[0]} onClick={() => setFilter(f[0])} style={{ flexShrink: 0, padding: "6px 13px", borderRadius: 20, cursor: "pointer", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: 600, background: filter === f[0] ? T.accent : T.s1, border: `1px solid ${filter === f[0] ? T.accent : T.border}`, color: filter === f[0] ? "#fff" : T.textSub, transition: "all .15s" }}>{f[1]}</button>)}
+        ].map(f => <button type="button" key={f[0]} onClick={() => setFilter(f[0])} style={{ flexShrink: 0, padding: "6px 13px", borderRadius: 20, cursor: "pointer", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: 600, background: filter === f[0] ? T.accent : T.s1, border: `1px solid ${filter === f[0] ? T.accent : T.border}`, color: filter === f[0] ? "#fff" : T.textSub, transition: "all .15s" }}>{f[1]}</button>)}
       </div>
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -136,7 +136,7 @@ export default function Portfolio({ nav, goBack }) {
             ["grid", <svg key="g" width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.3" /><rect x="9" y="1" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.3" /><rect x="1" y="9" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.3" /><rect x="9" y="9" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.3" /></svg>],
             ["list", <svg key="l" width="14" height="14" viewBox="0 0 16 16" fill="none"><line x1="1" y1="4" x2="15" y2="4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /><line x1="1" y1="8" x2="15" y2="8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /><line x1="1" y1="12" x2="15" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>],
             ["timeline", <svg key="t" width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="3" cy="4" r="2" stroke="currentColor" strokeWidth="1.3" /><circle cx="3" cy="12" r="2" stroke="currentColor" strokeWidth="1.3" /><line x1="3" y1="6" x2="3" y2="10" stroke="currentColor" strokeWidth="1.3" /><line x1="6" y1="4" x2="15" y2="4" stroke="currentColor" strokeWidth="1.3" /><line x1="6" y1="12" x2="15" y2="12" stroke="currentColor" strokeWidth="1.3" /></svg>],
-          ].map(([v, icon]) => <button key={v} onClick={() => setView(v)} style={{ width: 32, height: 32, borderRadius: 8, background: view === v ? T.accent : T.s1, border: `1px solid ${view === v ? T.accent : T.border}`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: view === v ? "#fff" : T.textSub }}>{icon}</button>)}
+          ].map(([v, icon]) => <button type="button" key={v} onClick={() => setView(v)} style={{ width: 32, height: 32, borderRadius: 8, background: view === v ? T.accent : T.s1, border: `1px solid ${view === v ? T.accent : T.border}`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: view === v ? "#fff" : T.textSub }}>{icon}</button>)}
         </div>
       </div>
     </div>
@@ -164,7 +164,7 @@ export default function Portfolio({ nav, goBack }) {
             {w.digital && <div style={{ position: "absolute", bottom: 5, right: 5, background: "rgba(136,80,212,0.85)", borderRadius: 4, padding: "1px 5px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 7, fontWeight: 700, color: "#fff" }}>⬇</div>}
           </div>;
         })}
-        <button onClick={() => nav("upload")} style={{ aspectRatio: "1", borderRadius: 14, background: T.s1, border: `2px dashed ${T.border}`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", gap: 4 }}>
+        <button type="button" onClick={() => nav("upload")} style={{ aspectRatio: "1", borderRadius: 14, background: T.s1, border: `2px dashed ${T.border}`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", gap: 4 }}>
           <div style={{ width: 30, height: 30, borderRadius: 10, background: T.accentSub, display: "flex", alignItems: "center", justifyContent: "center", color: T.accent, fontSize: 18 }}>+</div>
           <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 9, color: T.textSub }}>Нэмэх</span>
         </button>
@@ -202,7 +202,7 @@ export default function Portfolio({ nav, goBack }) {
               <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 700, color: (w.price||0) > 0 ? T.accent : T.textSub }}>
                 {(w.price||0) > 0 ? "₮" + ((w.price||0) / 1000).toFixed(0) + "K" : "–"}
               </div>
-              <button onClick={e => { e.stopPropagation(); setActiveWork(w); }} style={{ background: "none", border: "none", cursor: "pointer", color: T.textSub, marginTop: 4, display: "flex" }}>
+              <button type="button" onClick={e => { e.stopPropagation(); setActiveWork(w); }} style={{ background: "none", border: "none", cursor: "pointer", color: T.textSub, marginTop: 4, display: "flex" }}>
                 <IcChevron />
               </button>
             </div>

@@ -13,6 +13,14 @@ import Inp from "@/components/atoms/Inp";
 import ImageCropper from "@/components/shared/ImageCropper";
 
 export default function Upload({ nav, goBack }) {
+  // Buyer guard
+  if (GS.currentRole !== "creator") {
+    return <div style={{height:"100%",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:"#FFFFFF",padding:32}}>
+      <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:16,fontWeight:600,color:"#111111",marginBottom:8}}>Бүтээлч эрхээр нэвтэрнэ үү</div>
+      <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,color:"#999999",marginBottom:20,textAlign:"center"}}>Бүтээл байршуулахын тулд бүтээлч бүртгэлтэй байх шаардлагатай</div>
+      <PBtn onClick={() => goBack ? goBack() : nav("home")}>Буцах</PBtn>
+    </div>;
+  }
   const [step, setStep] = useState(0);
   const [cat, setCat] = useState("");
   const [saleType, setSaleType] = useState("sale");
@@ -64,7 +72,7 @@ export default function Upload({ nav, goBack }) {
       setCropWorkSrc(null); setCropWorkIdx(-1);
     }} onCancel={() => { setCropWorkSrc(null); setCropWorkIdx(-1); }} />}
     <div style={{ padding: "20px 20px 14px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-      <button onClick={() => {
+      <button type="button" onClick={() => {
         if (step > 0) setStep(step - 1);
         else if (title || desc || mediaFiles.length > 0) {
           if (window.confirm("Хадгалаагүй мэдээлэл байна. Гарах уу?")) goBack ? goBack() : nav("me");
@@ -76,7 +84,7 @@ export default function Upload({ nav, goBack }) {
 
     {/* Step indicator */}
     <div style={{ display: "flex", borderBottom: `1px solid ${T.border}` }}>
-      {stepL.map((s, i) => <button key={i} onClick={() => setStep(i)} style={{ flex: 1, padding: "11px 0", background: "none", border: "none", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: step === i ? 700 : 500, color: step === i ? T.accent : T.textSub, borderBottom: `2px solid ${step === i ? T.accent : "transparent"}`, cursor: "pointer" }}>{s}</button>)}
+      {stepL.map((s, i) => <button type="button" key={i} onClick={() => setStep(i)} style={{ flex: 1, padding: "11px 0", background: "none", border: "none", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: step === i ? 700 : 500, color: step === i ? T.accent : T.textSub, borderBottom: `2px solid ${step === i ? T.accent : "transparent"}`, cursor: "pointer" }}>{s}</button>)}
     </div>
 
     <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", padding: "16px 20px 0" }}>
@@ -94,8 +102,8 @@ export default function Upload({ nav, goBack }) {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8 }}>
             {mediaFiles.map((f, idx) => <div key={idx} style={{ position: "relative", aspectRatio: "1", borderRadius: 12, overflow: "hidden", background: T.s2 }}>
               <img src={f.url} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} onClick={() => { setCropWorkIdx(idx); setCropWorkSrc(f.url); }} />
-              <button onClick={() => removeMedia(idx)} style={{ position: "absolute", top: 4, right: 4, width: 22, height: 22, borderRadius: "50%", background: "rgba(0,0,0,0.6)", border: "none", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10 }}><IcX /></button>
-              <button onClick={() => { setCropWorkIdx(idx); setCropWorkSrc(f.url); }} style={{ position: "absolute", bottom: 4, right: 4, padding: "3px 8px", borderRadius: 6, background: "rgba(0,0,0,0.6)", border: "none", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 9, fontWeight: 600, color: "#fff", cursor: "pointer" }}>Тайрах</button>
+              <button type="button" onClick={() => removeMedia(idx)} style={{ position: "absolute", top: 4, right: 4, width: 22, height: 22, borderRadius: "50%", background: "rgba(0,0,0,0.6)", border: "none", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10 }}><IcX /></button>
+              <button type="button" onClick={() => { setCropWorkIdx(idx); setCropWorkSrc(f.url); }} style={{ position: "absolute", bottom: 4, right: 4, padding: "3px 8px", borderRadius: 6, background: "rgba(0,0,0,0.6)", border: "none", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 9, fontWeight: 600, color: "#fff", cursor: "pointer" }}>Тайрах</button>
               {idx === 0 && <div style={{ position: "absolute", bottom: 4, left: 4, background: T.accent, borderRadius: 4, padding: "2px 6px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 9, fontWeight: 700, color: "#fff" }}>Гол</div>}
             </div>)}
 
@@ -120,7 +128,7 @@ export default function Upload({ nav, goBack }) {
                   <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 600, color: T.textH }}>{videoFile.name}</div>
                   <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, color: T.textSub }}>{videoFile.size} MB</div>
                 </div>
-                <button onClick={() => setVideoFile(null)} style={{ background: T.redSub, border: `1px solid ${T.red}40`, borderRadius: 8, padding: "6px 12px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.red, cursor: "pointer" }}>Устгах</button>
+                <button type="button" onClick={() => setVideoFile(null)} style={{ background: T.redSub, border: `1px solid ${T.red}40`, borderRadius: 8, padding: "6px 12px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.red, cursor: "pointer" }}>Устгах</button>
               </div>
             </div>
             : <label style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, padding: "24px", borderRadius: 14, background: T.s1, border: `2px dashed ${T.border}`, cursor: "pointer" }}>
@@ -150,12 +158,12 @@ export default function Upload({ nav, goBack }) {
         <div style={{ marginBottom: 14 }}>
           <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 600, color: T.textSub, marginBottom: 8 }}>Ангилал *</div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-            {cats.map(c => <button key={c} onClick={() => setCat(c)} style={{ padding: "7px 15px", borderRadius: 20, cursor: "pointer", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: 600, background: cat === c ? T.accent : T.s1, border: `1px solid ${cat === c ? T.accent : T.border}`, color: cat === c ? "#fff" : T.textSub }}>{c}</button>)}
+            {cats.map(c => <button type="button" key={c} onClick={() => setCat(c)} style={{ padding: "7px 15px", borderRadius: 20, cursor: "pointer", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: 600, background: cat === c ? T.accent : T.s1, border: `1px solid ${cat === c ? T.accent : T.border}`, color: cat === c ? "#fff" : T.textSub }}>{c}</button>)}
           </div>
         </div>
         <div style={{ marginBottom: 16 }}>
           <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 600, color: T.textSub, marginBottom: 10 }}>Нийтлэлийн төрөл</div>
-          {[["sale", "Борлуулалт боломжтой", "Үнэ тохируулсны дараа зарах"], ["portfolio", "Зөвхөн портфолио", "Зарахгүй нийтэлх"], ["sample", "Захиалгын жишээ", "Захиалгын лавлагаа"]].map(t => <button key={t[0]} onClick={() => setSaleType(t[0])} style={{ width: "100%", background: saleType === t[0] ? T.accentSub : T.s1, border: `1.5px solid ${saleType === t[0] ? T.accent : T.border}`, borderRadius: 13, padding: "13px 16px", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+          {[["sale", "Борлуулалт боломжтой", "Үнэ тохируулсны дараа зарах"], ["portfolio", "Зөвхөн портфолио", "Зарахгүй нийтэлх"], ["sample", "Захиалгын жишээ", "Захиалгын лавлагаа"]].map(t => <button type="button" key={t[0]} onClick={() => setSaleType(t[0])} style={{ width: "100%", background: saleType === t[0] ? T.accentSub : T.s1, border: `1.5px solid ${saleType === t[0] ? T.accent : T.border}`, borderRadius: 13, padding: "13px 16px", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
             <div>
               <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 14, fontWeight: 600, color: T.textH }}>{t[1]}</div>
               <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.textSub, marginTop: 2 }}>{t[2]}</div>

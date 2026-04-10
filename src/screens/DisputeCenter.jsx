@@ -21,7 +21,7 @@ export default function DisputeCenter({ nav, goBack }) {
 
   return <div style={{ height: "100%", display: "flex", flexDirection: "column", background: T.bg }}>
     <div style={{ padding: "20px 20px 14px", display: "flex", alignItems: "center", gap: 10 }}>
-      <button onClick={() => goBack ? goBack() : nav("me")} style={{ background: "none", border: "none", color: T.textH, cursor: "pointer", display: "flex" }}><IcBack /></button>
+      <button type="button" onClick={() => goBack ? goBack() : nav("me")} style={{ background: "none", border: "none", color: T.textH, cursor: "pointer", display: "flex" }}><IcBack /></button>
       <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 20, fontWeight: 800, color: T.textH }}>Гомдол, буцаалт</div>
     </div>
 
@@ -56,7 +56,7 @@ export default function DisputeCenter({ nav, goBack }) {
       <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 15, fontWeight: 700, color: T.textH, marginBottom: 14 }}>Шинэ маргаан нээх</div>
 
       {step === 0 && <>
-        {types.map(t => <button key={t[0]} onClick={() => { setType(t[0]); setStep(1); }} style={{ width: "100%", background: type === t[0] ? T.accentSub : T.s1, border: `1.5px solid ${type === t[0] ? T.accent : T.border}`, borderRadius: 16, padding: "14px 16px", cursor: "pointer", display: "flex", alignItems: "center", gap: 14, textAlign: "left", marginBottom: 10 }}>
+        {types.map(t => <button type="button" key={t[0]} onClick={() => { setType(t[0]); setStep(1); }} style={{ width: "100%", background: type === t[0] ? T.accentSub : T.s1, border: `1.5px solid ${type === t[0] ? T.accent : T.border}`, borderRadius: 16, padding: "14px 16px", cursor: "pointer", display: "flex", alignItems: "center", gap: 14, textAlign: "left", marginBottom: 10 }}>
           <div style={{ fontSize: 26, flexShrink: 0 }}>{t[1]}</div>
           <div>
             <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 14, fontWeight: 600, color: T.textH }}>{t[2]}</div>

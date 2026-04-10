@@ -54,7 +54,7 @@ export default function FeedScreen({ nav, refresh, goBack }) {
           <div style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: "#111111" }}>{creator?.name || w.creator || "—"}</div>
           {creator?.field && <div style={{ fontFamily: F, fontSize: 11, color: "#999999" }}>{creator.field}</div>}
         </div>
-        <button style={{ background: "none", border: "none", color: "#999999", cursor: "pointer", display: "flex", padding: 4, fontSize: 18 }}>···</button>
+        <button type="button" style={{ background: "none", border: "none", color: "#999999", cursor: "pointer", display: "flex", padding: 4, fontSize: 18 }}>···</button>
       </div>
 
       {/* Image — Instagram 4:5 */}
@@ -68,17 +68,17 @@ export default function FeedScreen({ nav, refresh, goBack }) {
       {/* Actions — Instagram style */}
       <div style={{ padding: "10px 16px 4px", display: "flex", alignItems: "center" }}>
         <div style={{ display: "flex", gap: 16, alignItems: "center", flex: 1 }}>
-          <button onClick={() => tLike(w.id)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", padding: 0, color: liked ? "#D32F2F" : "#111111" }}>
+          <button type="button" onClick={() => tLike(w.id)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", padding: 0, color: liked ? "#D32F2F" : "#111111" }}>
             <IcHeart filled={liked} />
           </button>
-          <button onClick={() => nav("work", { workId: w.id })} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", padding: 0, color: "#111111" }}>
+          <button type="button" onClick={() => nav("work", { workId: w.id })} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", padding: 0, color: "#111111" }}>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2.5 3H17.5V13.5H11L8 16.5V13.5H2.5V3Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/></svg>
           </button>
-          <button onClick={() => { if (navigator.share) navigator.share({ title: w.title, url: window.location.href }); }} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", padding: 0, color: "#111111" }}>
+          <button type="button" onClick={() => { const url = `${window.location.origin}?work=${w.id}`; if (navigator.share) navigator.share({ title: w.title, url }); else if (navigator.clipboard) navigator.clipboard.writeText(url); }} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", padding: 0, color: "#111111" }}>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M15 7L10 2L5 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M10 2V13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><path d="M3 11V16H17V11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </button>
         </div>
-        <button onClick={() => tSave(w.id)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", padding: 0, color: saved ? "#111111" : "#999999" }}>
+        <button type="button" onClick={() => tSave(w.id)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", padding: 0, color: saved ? "#111111" : "#999999" }}>
           <IcBookmark filled={saved} />
         </button>
       </div>
@@ -103,8 +103,8 @@ export default function FeedScreen({ nav, refresh, goBack }) {
     <div style={{ padding: "16px 16px 10px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: `1px solid ${T.border}`, flexShrink: 0 }}>
       <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 24, fontWeight: 700, color: T.textH, letterSpacing: "-.5px" }}>toono</div>
       <div style={{ display: "flex", gap: 4 }}>
-        <button onClick={() => nav("explore")} style={{ background: "none", border: "none", color: T.textH, cursor: "pointer", display: "flex", padding: 6 }}><IcSearch /></button>
-        <button onClick={() => nav("notifications")} style={{ background: "none", border: "none", color: T.textH, cursor: "pointer", display: "flex", padding: 6, position: "relative" }}>
+        <button type="button" onClick={() => nav("explore")} style={{ background: "none", border: "none", color: T.textH, cursor: "pointer", display: "flex", padding: 6 }}><IcSearch /></button>
+        <button type="button" onClick={() => nav("notifications")} style={{ background: "none", border: "none", color: T.textH, cursor: "pointer", display: "flex", padding: 6, position: "relative" }}>
           <IcBell />
           {GS.unreadNotif > 0 && <span style={{ position: "absolute", top: 4, right: 4, width: 7, height: 7, borderRadius: "50%", background: T.red }} />}
         </button>

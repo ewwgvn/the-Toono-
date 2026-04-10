@@ -25,7 +25,9 @@ export default function Notifications({ nav, refresh }) {
       setNotis([...notis]);
       refresh();
     }
-    nav(n.to);
+    // Set context before navigating
+    if (n.to === "order-detail" && n.orderId) GS.selectedOrderId = n.orderId;
+    if (n.to) nav(n.to);
   };
 
   const markAll = () => {
@@ -38,7 +40,7 @@ export default function Notifications({ nav, refresh }) {
   };
 
   return (
-    <Simple nav={nav} title={"Мэдэгдэл" + (unread > 0 ? " (" + unread + ")" : "")} back="me" right={unread > 0 && <button onClick={markAll} style={{ background: "none", border: "none", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 600, color: T.accent, cursor: "pointer" }}>Бүгдийг уншсан</button>}>
+    <Simple nav={nav} title={"Мэдэгдэл" + (unread > 0 ? " (" + unread + ")" : "")} back="me" right={unread > 0 && <button type="button" onClick={markAll} style={{ background: "none", border: "none", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 600, color: T.accent, cursor: "pointer" }}>Бүгдийг уншсан</button>}>
       {notis.length === 0
         ? <Empty icon={<IcBell />} title="Мэдэгдэл байхгүй" sub="Шинэ мэдэгдэл ирэхэд энд харагдана" />
         : notis.map(n => (

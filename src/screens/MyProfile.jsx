@@ -48,11 +48,11 @@ export default function MyProfile({ nav, refresh }) {
         </div>
         <div style={{ display: "flex", gap: 8 }}>
           {GS.unreadNotif > 0 && (
-            <button onClick={() => nav("notifications")} style={{ width: 38, height: 38, borderRadius: "50%", background: T.accentSub, border: `1px solid ${T.accentGlow}`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: T.accent }}>
+            <button type="button" onClick={() => nav("notifications")} style={{ width: 38, height: 38, borderRadius: "50%", background: T.accentSub, border: `1px solid ${T.accentGlow}`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: T.accent }}>
               <IcNotif />
             </button>
           )}
-          <button onClick={() => nav("settings")} style={{ width: 38, height: 38, borderRadius: "50%", background: T.s1, border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: T.textSub }}>
+          <button type="button" onClick={() => nav("settings")} style={{ width: 38, height: 38, borderRadius: "50%", background: T.s1, border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: T.textSub }}>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" strokeWidth="1.5" /><path d="M10 2V4M10 16V18M2 10H4M16 10H18M4.6 4.6L6 6M14 14L15.4 15.4M4.6 15.4L6 14M14 6L15.4 4.6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
           </button>
         </div>
@@ -74,7 +74,7 @@ export default function MyProfile({ nav, refresh }) {
             </div>
           )}
           {!GS.user.commOpen && GS.currentRole === "creator" && (
-            <button onClick={() => { GS.user.commOpen = true; refresh(); toast("Захиалга идэвхжлээ", "success"); }} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: T.s1, border: `1px solid ${T.border}`, borderRadius: 10, padding: "5px 12px", marginBottom: 14, cursor: "pointer", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: 600, color: T.textSub }}>
+            <button type="button" onClick={() => { GS.user.commOpen = true; refresh(); toast("Захиалга идэвхжлээ", "success"); }} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: T.s1, border: `1px solid ${T.border}`, borderRadius: 10, padding: "5px 12px", marginBottom: 14, cursor: "pointer", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: 600, color: T.textSub }}>
               Захиалга идэвхжүүлэх
             </button>
           )}
@@ -97,7 +97,7 @@ export default function MyProfile({ nav, refresh }) {
         </div>
         <div style={{ display: "flex", borderBottom: `1px solid ${T.border}` }}>
           {[["works", "Бүтээл" + (GS.myWorks.length > 0 ? " " + GS.myWorks.length : "")], ["orders", "Авалт" + (GS.orders.length > 0 ? " " + GS.orders.length : "")], ["commissions", "Захиалга" + (GS.myCommissions.length > 0 ? " " + GS.myCommissions.length : "")], ["reviews", "Үнэлгээ" + (reviews.length > 0 ? " " + reviews.length : "")]].map(t => (
-            <button key={t[0]} onClick={() => setSub(t[0])} style={{ flex: 1, padding: "12px 0", background: "none", border: "none", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: sub === t[0] ? 700 : 500, color: sub === t[0] ? T.accent : T.textSub, borderBottom: `2px solid ${sub === t[0] ? T.accent : "transparent"}`, cursor: "pointer" }}>{t[1]}</button>
+            <button type="button" key={t[0]} onClick={() => setSub(t[0])} style={{ flex: 1, padding: "12px 0", background: "none", border: "none", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: sub === t[0] ? 700 : 500, color: sub === t[0] ? T.accent : T.textSub, borderBottom: `2px solid ${sub === t[0] ? T.accent : "transparent"}`, cursor: "pointer" }}>{t[1]}</button>
           ))}
         </div>
         {sub === "works" && (
@@ -128,7 +128,7 @@ export default function MyProfile({ nav, refresh }) {
                   </div>
                   <div style={{ borderTop: `1px solid ${T.border}`, display: "flex" }}>
                     {["Засах", "Статистик", "Устгах"].map((btn, i) => (
-                      <button key={btn} onClick={() => {
+                      <button type="button" key={btn} onClick={() => {
                         if (btn === "Статистик") nav("dashboard");
                         else if (btn === "Засах") nav("upload");
                         else {
@@ -151,7 +151,7 @@ export default function MyProfile({ nav, refresh }) {
           <div style={{ padding: "14px 20px 0" }}>
             {myOrders.length > 0 && (
               <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}>
-                <button onClick={() => nav("order-list")} style={{ background: "none", border: "none", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 600, color: T.accent, cursor: "pointer" }}>Бүгд харах →</button>
+                <button type="button" onClick={() => nav("order-list")} style={{ background: "none", border: "none", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 600, color: T.accent, cursor: "pointer" }}>Бүгд харах →</button>
               </div>
             )}
             {myOrders.length === 0

@@ -28,6 +28,21 @@ export default function CommManage({ nav, goBack }) {
     if (isSupabaseReady() && r.id) DB.updateCommission(r.id, { status: "rejected" });
     saveGS(); setTick(t => t + 1);
   };
+
+  const openChatWith = async (r) => {
+    const buyerId = r.buyer_id || null;
+    const buyerName = r.buyer || "Buyer";
+    let convo = GS.conversations.find(cv => cv.creatorId === buyerId || cv.name === buyerName);
+    if (!convo) {
+      convo = { id: Date.now(), creatorId: buyerId, name: buyerName, accent: "#111111", online: false, unread: 0, msgs: [] };
+      GS.conversations.unshift(convo);
+    }
+    if (isSupabaseReady() && GS.user.id && buyerId && GS.user.id !== buyerId) {
+      const dbConvo = await DB.getOrCreateConversation(GS.user.id, buyerId);
+      if (dbConvo) convo.dbId = dbConvo.id;
+    }
+    GS.activeChatId = convo.id; saveGS(); nav("chatroom");
+  };
   const advanceStep = (r) => {
     const nextStep = (r.step || 1) + 1;
     const nextStatus = nextStep >= 4 ? "delivered" : "ongoing";
@@ -38,11 +53,11 @@ export default function CommManage({ nav, goBack }) {
 
   return <div style={{ height: "100%", display: "flex", flexDirection: "column", background: T.bg }}>
     <div style={{ padding: "20px 20px 0", display: "flex", alignItems: "center", gap: 10 }}>
-      <button onClick={() => goBack ? goBack() : nav("me")} style={{ background: "none", border: "none", color: T.textH, cursor: "pointer", display: "flex" }}><IcBack /></button>
+      <button type="button" onClick={() => goBack ? goBack() : nav("me")} style={{ background: "none", border: "none", color: T.textH, cursor: "pointer", display: "flex" }}><IcBack /></button>
       <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 20, fontWeight: 800, color: T.textH }}>Захиалга удирдах</div>
     </div>
     <div style={{ display: "flex", borderBottom: `1px solid ${T.border}` }}>
-      {[["pending", "Хүлээгдэж байна " + allPending.length], ["ongoing", "Явагдаж байна " + ongoing.length], ["done", "Дууссан " + done.length]].map(t => <button key={t[0]} onClick={() => setTab(t[0])} style={{ flex: 1, padding: "12px 0", background: "none", border: "none", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: tab === t[0] ? 700 : 500, color: tab === t[0] ? T.accent : T.textSub, borderBottom: `2px solid ${tab === t[0] ? T.accent : "transparent"}`, cursor: "pointer" }}>{t[1]}</button>)}
+      {[["pending", "Хүлээгдэж байна " + allPending.length], ["ongoing", "Явагдаж байна " + ongoing.length], ["done", "Дууссан " + done.length]].map(t => <button type="button" key={t[0]} onClick={() => setTab(t[0])} style={{ flex: 1, padding: "12px 0", background: "none", border: "none", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: tab === t[0] ? 700 : 500, color: tab === t[0] ? T.accent : T.textSub, borderBottom: `2px solid ${tab === t[0] ? T.accent : "transparent"}`, cursor: "pointer" }}>{t[1]}</button>)}
     </div>
     <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", padding: "14px 20px 0" }}>
       {tab === "pending" && (allPending.length === 0
@@ -58,7 +73,7 @@ export default function CommManage({ nav, goBack }) {
           <Crd style={{ padding: "10px 12px", marginBottom: 12, background: T.s2, border: "none", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, color: T.textB, lineHeight: 1.5 }}>{r.msg}</Crd>
           <div style={{ display: "flex", gap: 8 }}>
             <PBtn full secondary danger onClick={() => rejectComm(r)}>Татгалзах</PBtn>
-            <PBtn full secondary onClick={() => { GS.activeChatId = GS.conversations[0]?.id || null; nav("chatroom"); }}>Асуулт</PBtn>
+            <PBtn full secondary onClick={() => { openChatWith(r); }}>Асуулт</PBtn>
             <PBtn full onClick={() => acceptComm(r)}>Зөвшөөрөх</PBtn>
           </div>
         </Crd>))}
@@ -75,7 +90,7 @@ export default function CommManage({ nav, goBack }) {
         </div>
         <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, color: T.textSub, marginBottom: 12 }}>{stepL[r.step - 1]}</div>
         <div style={{ display: "flex", gap: 8 }}>
-          <PBtn full secondary onClick={() => { GS.activeChatId = GS.conversations[0]?.id || null; nav("chatroom"); }}>Харилцаа</PBtn>
+          <PBtn full secondary onClick={() => { openChatWith(r); }}>Харилцаа</PBtn>
           {r.step < 4 && <PBtn full onClick={() => advanceStep(r)}>Дараах шат</PBtn>}
         </div>
       </Crd>)}

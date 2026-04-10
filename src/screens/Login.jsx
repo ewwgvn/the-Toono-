@@ -109,7 +109,7 @@ export default function Login({ nav }) {
   return <div style={{height:"100%",display:"flex",flexDirection:"column",background:T.bg,alignItems:"center"}}>
     <div style={{width:"100%",maxWidth:480,height:"100%",display:"flex",flexDirection:"column"}}>
     <div style={{padding:"20px 20px 0",display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
-      <button onClick={() => step > 0 ? setStep(step - 1) : nav("onboarding")} style={{background:"none",border:"none",color:T.textH,cursor:"pointer",display:"flex"}}><IcBack/></button>
+      <button type="button" onClick={() => step > 0 ? setStep(step - 1) : nav("onboarding")} style={{background:"none",border:"none",color:T.textH,cursor:"pointer",display:"flex"}}><IcBack/></button>
       <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:18,fontWeight:700,color:T.textH}}>{mode==="login"?"Нэвтрэх":"Бүртгүүлэх"}</div>
     </div>
 
@@ -147,13 +147,13 @@ export default function Login({ nav }) {
               onKeyDown={e => e.key==="Enter"&&handleLogin()}
               style={{width:"100%",background:T.s1,border:`1.5px solid ${errors.pw?T.red:T.border}`,borderRadius:13,padding:"13px 44px 13px 16px",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,color:T.textH,outline:"none",boxSizing:"border-box",transition:"border-color .15s"}}
             />
-            <button onClick={() => setShowPw(!showPw)} style={{position:"absolute",right:14,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",color:T.textSub,fontSize:16,padding:2}}>{showPw?<IcEyeOff/>:<IcEye/>}</button>
+            <button type="button" onClick={() => setShowPw(!showPw)} style={{position:"absolute",right:14,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",color:T.textSub,fontSize:16,padding:2}}>{showPw?<IcEyeOff/>:<IcEye/>}</button>
           </div>
           {errors.pw&&<div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:11,color:T.red,marginTop:5,display:"flex",alignItems:"center",gap:4}}><span style={{display:"flex"}}><IcWarning/></span>{errors.pw}</div>}
         </div>
 
         <div style={{textAlign:"right",marginBottom:20}}>
-          <button onClick={async () => {
+          <button type="button" onClick={async () => {
             if(!email){toast("Имэйл хаяг оруулна уу","error");return;}
             if(isSupabaseReady()){
               const {error}=await DB.resetPassword(email);
@@ -166,21 +166,21 @@ export default function Login({ nav }) {
 
         <div style={{textAlign:"center",marginTop:8,marginBottom:20}}>
           <span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,color:T.textSub}}>Бүртгэлгүй юу? </span>
-          <button onClick={() => {setMode("signup");setStep(0);setErrors({});}} style={{background:"none",border:"none",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,fontWeight:700,color:T.accent,cursor:"pointer"}}>Бүртгүүлэх</button>
+          <button type="button" onClick={() => {setMode("signup");setStep(0);setErrors({});}} style={{background:"none",border:"none",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,fontWeight:700,color:T.accent,cursor:"pointer"}}>Бүртгүүлэх</button>
         </div>
       </>}
 
       {mode==="signup"&&step===0&&<>
         <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:17,fontWeight:700,color:T.textH,marginBottom:6}}>Та ямар зорилгоор ашиглах вэ?</div>
         <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,color:T.textSub,marginBottom:20}}>Дараа өөрчилж болно.</div>
-        {[["creator","Бүтээлч","Бүтээл байршуулах · зарах · захиалга авах"],["buyer","Худалдан авагч","Үзэх · худалдаж авах · захиалах"]].map(r => <button key={r[0]} onClick={() => setRole(r[0])} style={{width:"100%",background:role===r[0]?T.accentSub:T.s1,border:`1.5px solid ${role===r[0]?T.accent:T.border}`,borderRadius:16,padding:"18px",cursor:"pointer",textAlign:"left",marginBottom:12,display:"flex",gap:14,alignItems:"center"}}>
+        {[["creator","Бүтээлч","Бүтээл байршуулах · зарах · захиалга авах"],["buyer","Худалдан авагч","Үзэх · худалдаж авах · захиалах"]].map(r => <button type="button" key={r[0]} onClick={() => setRole(r[0])} style={{width:"100%",background:role===r[0]?T.accentSub:T.s1,border:`1.5px solid ${role===r[0]?T.accent:T.border}`,borderRadius:16,padding:"18px",cursor:"pointer",textAlign:"left",marginBottom:12,display:"flex",gap:14,alignItems:"center"}}>
           <div style={{flex:1}}><div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:16,fontWeight:700,color:T.textH,marginBottom:3}}>{r[1]}</div><div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.textSub}}>{r[2]}</div></div>
           {role===r[0]&&<span style={{color:T.accent}}><IcCheck/></span>}
         </button>)}
         <PBtn full disabled={!role} onClick={() => role&&setStep(1)}>Дараах</PBtn>
         <div style={{textAlign:"center",marginTop:14,marginBottom:20}}>
           <span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,color:T.textSub}}>Бүртгэлтэй юу? </span>
-          <button onClick={() => {setMode("login");setErrors({});}} style={{background:"none",border:"none",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,fontWeight:700,color:T.accent,cursor:"pointer"}}>Нэвтрэх</button>
+          <button type="button" onClick={() => {setMode("login");setErrors({});}} style={{background:"none",border:"none",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,fontWeight:700,color:T.accent,cursor:"pointer"}}>Нэвтрэх</button>
         </div>
       </>}
 
@@ -193,7 +193,7 @@ export default function Login({ nav }) {
             :[["Fashion Design",<IcFieldFashion/>],["Textile Design",<IcFieldTextile/>],["Fine Art",<IcFieldArt/>],["Graphic Design",<IcFieldGraphic/>],["Photography",<IcFieldPhoto/>],["3D Design",<IcField3D/>],["Jewelry Design",<IcFieldJewelry/>]]
           ).map(([label, icon]) => {
             const sel = signupField.includes(label);
-            return <button key={label} onClick={() => setSignupField(sel?signupField.replace(label+", ","").replace(label,""):signupField?(signupField+", "+label):label)} style={{display:"flex",alignItems:"center",gap:8,padding:"12px 16px",borderRadius:14,cursor:"pointer",background:sel?T.accentSub:T.s1,border:`1.5px solid ${sel?T.accent:T.border}`,transition:"all .15s"}}>
+            return <button type="button" key={label} onClick={() => setSignupField(sel?signupField.replace(label+", ","").replace(label,""):signupField?(signupField+", "+label):label)} style={{display:"flex",alignItems:"center",gap:8,padding:"12px 16px",borderRadius:14,cursor:"pointer",background:sel?T.accentSub:T.s1,border:`1.5px solid ${sel?T.accent:T.border}`,transition:"all .15s"}}>
               <span style={{display:"flex",color:sel?T.accent:T.textSub,flexShrink:0}}>{icon}</span>
               <span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,fontWeight:sel?700:500,color:sel?T.accent:T.textH}}>{label}</span>
               {sel&&<span style={{color:T.accent,marginLeft:4}}><IcCheck/></span>}
@@ -203,7 +203,7 @@ export default function Login({ nav }) {
         {signupField&&<div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.accent,marginBottom:12}}>{signupField.split(", ").length} чиглэл сонгогдлоо</div>}
         <PBtn full disabled={!signupField} onClick={() => setStep(2)}>Дараах</PBtn>
         <div style={{textAlign:"center",marginTop:10}}>
-          <button onClick={() => setStep(0)} style={{background:"none",border:"none",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,color:T.textSub,cursor:"pointer"}}>← Буцах</button>
+          <button type="button" onClick={() => setStep(0)} style={{background:"none",border:"none",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,color:T.textSub,cursor:"pointer"}}>← Буцах</button>
         </div>
       </>}
 
@@ -225,7 +225,7 @@ export default function Login({ nav }) {
           <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,fontWeight:600,color:T.textSub,marginBottom:7}}>Нууц үг</div>
           <div style={{position:"relative"}}>
             <input type={showPw?"text":"password"} value={pw} onChange={e => {setPw(e.target.value);setErrors(er => ({...er,pw:""}));}} placeholder="6-аас дээш тэмдэгт" style={{width:"100%",background:T.s1,border:`1.5px solid ${errors.pw?T.red:T.border}`,borderRadius:13,padding:"13px 44px 13px 16px",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,color:T.textH,outline:"none",boxSizing:"border-box"}}/>
-            <button onClick={() => setShowPw(!showPw)} style={{position:"absolute",right:14,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",color:T.textSub,fontSize:16}}>
+            <button type="button" onClick={() => setShowPw(!showPw)} style={{position:"absolute",right:14,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",color:T.textSub,fontSize:16}}>
               {showPw?<IcEyeOff/>:<IcEye/>}
             </button>
           </div>
@@ -252,7 +252,7 @@ export default function Login({ nav }) {
           ].map(item => <div key={item.key} style={{display:"flex",alignItems:"center",gap:10,padding:"7px 0",borderBottom:`1px solid ${T.border}`}}>
             <input type="checkbox" checked={!!agreeItems[item.key]} onChange={e => setAgreeItems(prev => ({...prev,[item.key]:e.target.checked}))} style={{accentColor:T.accent,width:16,height:16,flexShrink:0,cursor:"pointer"}}/>
             <span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:item.required?T.textB:T.textSub,flex:1,lineHeight:1.5}}>{item.label}</span>
-            {item.link&&<button onClick={() => nav(item.link)} style={{background:"none",border:"none",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:11,color:T.accent,cursor:"pointer",flexShrink:0}}>Үзэх</button>}
+            {item.link&&<button type="button" onClick={() => nav(item.link)} style={{background:"none",border:"none",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:11,color:T.accent,cursor:"pointer",flexShrink:0}}>Үзэх</button>}
           </div>)}
           <div style={{display:"flex",alignItems:"center",gap:10,marginTop:10}}>
             <input type="checkbox" checked={agreeItems.terms && agreeItems.privacy && agreeItems.age && agreeItems.marketing} onChange={e => {const v=e.target.checked; setAgreeItems({terms:v,privacy:v,age:v,marketing:v});}} style={{accentColor:T.accent,width:18,height:18,flexShrink:0,cursor:"pointer"}}/>

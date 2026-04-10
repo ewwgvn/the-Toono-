@@ -94,19 +94,19 @@ export default function WorkCard({ work: w, onClick, onCreatorClick, onToggleLik
         </div>
         <div style={{ padding: "10px 16px 2px", display: "flex", alignItems: "center" }}>
           <div style={{ display: "flex", gap: 16, alignItems: "center", flex: 1 }}>
-            <button onClick={(e) => { e.stopPropagation(); onToggleLike && onToggleLike(w.id); }}
+            <button type="button" onClick={(e) => { e.stopPropagation(); onToggleLike && onToggleLike(w.id); }}
               style={{ background: "none", border: "none", cursor: "pointer", color: liked ? "#D32F2F" : "#111111", display: "flex", padding: 2 }}>
               <IcHeart filled={liked} />
             </button>
-            <button onClick={onClick} style={{ background: "none", border: "none", cursor: "pointer", color: "#111111", display: "flex", padding: 2 }}>
+            <button type="button" onClick={onClick} style={{ background: "none", border: "none", cursor: "pointer", color: "#111111", display: "flex", padding: 2 }}>
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2.5 3H17.5V13.5H11L8 16.5V13.5H2.5V3Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/></svg>
             </button>
-            <button onClick={(e) => { e.stopPropagation(); if (navigator.share) navigator.share({ title: w.title, url: window.location.href }); }}
+            <button type="button" onClick={(e) => { e.stopPropagation(); const url = `${window.location.origin}?work=${w.id}`; if (navigator.share) navigator.share({ title: w.title, url }); else if (navigator.clipboard) navigator.clipboard.writeText(url); }}
               style={{ background: "none", border: "none", cursor: "pointer", color: "#111111", display: "flex", padding: 2 }}>
               <IcShare />
             </button>
           </div>
-          <button onClick={(e) => { e.stopPropagation(); onToggleSave && onToggleSave(w.id); }}
+          <button type="button" onClick={(e) => { e.stopPropagation(); onToggleSave && onToggleSave(w.id); }}
             style={{ background: "none", border: "none", cursor: "pointer", color: saved ? "#111111" : "#999999", display: "flex", padding: 2 }}>
             <IcBookmark filled={saved} />
           </button>
@@ -126,7 +126,7 @@ export default function WorkCard({ work: w, onClick, onCreatorClick, onToggleLik
             style={{ flex: 1, background: "none", border: "none", outline: "none", fontFamily: F, fontSize: 13, color: "#333333", padding: 0 }}
           />
           {commentText.trim() && (
-            <button onClick={() => { if (onComment) { onComment(w.id, commentText.trim()); setCommentText(""); } }}
+            <button type="button" onClick={() => { if (onComment) { onComment(w.id, commentText.trim()); setCommentText(""); } }}
               style={{ background: "none", border: "none", fontFamily: F, fontSize: 13, fontWeight: 600, color: "#111111", cursor: "pointer", padding: 0 }}>Post</button>
           )}
         </div>

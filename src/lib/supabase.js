@@ -312,7 +312,15 @@ export const DB = {
   async sendMessage(conversationId, senderId, text, image = null) {
     if (!isSupabaseReady()) return;
     await supabase.from("messages").insert({ conversation_id: conversationId, sender_id: senderId, text, image });
-    await supabase.from("conversations").update({ last_message: text || "Зураг", last_at: new Date().toISOString() }).eq("id", conversationId);
+    // Increment recipient's unread counter
+    const { data: conv } = await supabase.from("conversations").select("user_a, user_b, unread_a, unread_b").eq("id", conversationId).single();
+    if (conv) {
+      const isA = conv.user_a === senderId;
+      const update = { last_message: text || "Зураг", last_at: new Date().toISOString() };
+      if (isA) update.unread_b = (conv.unread_b || 0) + 1;
+      else update.unread_a = (conv.unread_a || 0) + 1;
+      await supabase.from("conversations").update(update).eq("id", conversationId);
+    }
   },
 
   // Realtime subscriptions

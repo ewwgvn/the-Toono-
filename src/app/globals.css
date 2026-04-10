@@ -45,6 +45,10 @@ input:focus, textarea:focus { border-color: #111111 !important; outline: none; }
 
 ::placeholder { color: #999999; }
 
+/* Broken image fallback */
+img { font-size: 0; color: transparent; }
+img:not([src]), img[src=""], img[src*="undefined"] { display: none; }
+
 @keyframes shimmer { 0% { background-position: 200% 0; } to { background-position: -200% 0; } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }

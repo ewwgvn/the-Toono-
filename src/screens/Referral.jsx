@@ -35,7 +35,7 @@ export default function Referral({ nav, goBack }) {
     <Crd style={{ padding: "16px", marginBottom: 20 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <div style={{ flex: 1, background: T.s2, borderRadius: 10, padding: "12px 16px", fontFamily: "monospace", fontSize: 18, fontWeight: 800, color: T.accent, letterSpacing: 2 }}>{myCode}</div>
-        <button onClick={doCopy} style={{ background: copied ? T.green : T.accent, border: "none", borderRadius: 12, padding: "12px 18px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 700, color: "#fff", cursor: "pointer", flexShrink: 0 }}>{copied ? <><span style={{ display: "flex", marginRight: 3 }}><IcCheck /></span>Хуулагдлаа</> : "Хуулах"}</button>
+        <button type="button" onClick={doCopy} style={{ background: copied ? T.green : T.accent, border: "none", borderRadius: 12, padding: "12px 18px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 700, color: "#fff", cursor: "pointer", flexShrink: 0 }}>{copied ? <><span style={{ display: "flex", marginRight: 3 }}><IcCheck /></span>Хуулагдлаа</> : "Хуулах"}</button>
       </div>
       <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.textSub, marginTop: 10, textAlign: "center" }}>Эсвэл холбоосыг хуваалцаарай</div>
       <PBtn full secondary onClick={() => { }} style={{ marginTop: 8 }}><span style={{ display: "flex", marginRight: 4 }}><IcLink /></span>Холбоос хуваалцах</PBtn>

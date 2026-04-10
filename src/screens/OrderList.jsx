@@ -19,7 +19,7 @@ export default function OrderList({ nav, refresh, goBack }) {
       {/* Filter tabs */}
       <div style={{ display: "flex", gap: 6, overflowX: "auto", scrollbarWidth: "none", marginBottom: 16 }}>
         {[["all", "Бүгд"], ["pending", "Хүлээгдэж"], ["making", "Хийж байна"], ["shipped", "Хүргэгдэж"], ["delivered", "Ирсэн"]].map(([k, l]) =>
-          <button key={k} onClick={() => setFilter(k)} style={{ flexShrink: 0, padding: "7px 14px", borderRadius: 20, fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: filter === k ? 700 : 500, background: filter === k ? T.accentSub : T.s1, border: `1px solid ${filter === k ? T.accent + "60" : T.border}`, color: filter === k ? T.accent : T.textSub, cursor: "pointer" }}>{l}{k === "all" ? " (" + GS.orders.length + ")" : ""}</button>
+          <button type="button" key={k} onClick={() => setFilter(k)} style={{ flexShrink: 0, padding: "7px 14px", borderRadius: 20, fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: filter === k ? 700 : 500, background: filter === k ? T.accentSub : T.s1, border: `1px solid ${filter === k ? T.accent + "60" : T.border}`, color: filter === k ? T.accent : T.textSub, cursor: "pointer" }}>{l}{k === "all" ? " (" + GS.orders.length + ")" : ""}</button>
         )}
       </div>
 

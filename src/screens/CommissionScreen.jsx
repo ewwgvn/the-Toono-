@@ -69,7 +69,7 @@ export default function CommissionScreen({ nav, goBack, refresh, creatorId }) {
   return <div style={{height:"100%",display:"flex",flexDirection:"column",background:T.bg}}>
     <div style={{padding:"20px 20px 14px"}}>
       <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:20}}>
-        <button onClick={()=>step===0?(goBack?goBack():nav("home")):setStep(step-1)} style={{background:"none",border:"none",color:T.textH,cursor:"pointer",display:"flex"}}><IcBack/></button>
+        <button type="button" onClick={()=>step===0?(goBack?goBack():nav("home")):setStep(step-1)} style={{background:"none",border:"none",color:T.textH,cursor:"pointer",display:"flex"}}><IcBack/></button>
         <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:20,fontWeight:800,color:T.textH}}>Захиалга өгөх</div>
       </div>
       <div style={{display:"flex",gap:5}}>
@@ -87,7 +87,7 @@ export default function CommissionScreen({ nav, goBack, refresh, creatorId }) {
       </Crd>
       {step===0&&<>
         <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:15,fontWeight:700,color:T.textH,marginBottom:12}}>Захиалгын төрөл</div>
-        {types.map(t=><button key={t[0]} onClick={()=>setForm({...form,type:t[0]})} style={{width:"100%",background:form.type===t[0]?T.accentSub:T.s1,border:`1.5px solid ${form.type===t[0]?T.accent:T.border}`,borderRadius:16,padding:"15px 18px",cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",textAlign:"left",marginBottom:10}}>
+        {types.map(t=><button type="button" key={t[0]} onClick={()=>setForm({...form,type:t[0]})} style={{width:"100%",background:form.type===t[0]?T.accentSub:T.s1,border:`1.5px solid ${form.type===t[0]?T.accent:T.border}`,borderRadius:16,padding:"15px 18px",cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",textAlign:"left",marginBottom:10}}>
           <div>
             <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:15,fontWeight:600,color:T.textH}}>{t[0]}</div>
             <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.textSub,marginTop:3}}>{t[1]}</div>
@@ -97,7 +97,7 @@ export default function CommissionScreen({ nav, goBack, refresh, creatorId }) {
       </>}
       {step===1&&<>
         <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:16,fontWeight:700,color:T.textH,marginBottom:14}}>Төсвийн хэмжээгээ сонгоно уу</div>
-        {budgets.map(b=><button key={b} onClick={()=>setForm({...form,budget:b})} style={{width:"100%",background:form.budget===b?T.accentSub:T.s1,border:`1.5px solid ${form.budget===b?T.accent:T.border}`,borderRadius:14,padding:"14px 18px",cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+        {budgets.map(b=><button type="button" key={b} onClick={()=>setForm({...form,budget:b})} style={{width:"100%",background:form.budget===b?T.accentSub:T.s1,border:`1.5px solid ${form.budget===b?T.accent:T.border}`,borderRadius:14,padding:"14px 18px",cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
           <span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,fontWeight:600,color:T.textH}}>{b}</span>
           {form.budget===b&&<span style={{color:T.accent}}><IcCheck/></span>}
         </button>)}
@@ -145,7 +145,7 @@ export default function CommissionScreen({ nav, goBack, refresh, creatorId }) {
             {att.type.startsWith("video/")
               ?<video src={att.url} style={{width:80,height:80,borderRadius:10,objectFit:"cover",display:"block",background:T.s2}}/>
               :<img src={att.url} alt="" style={{width:80,height:80,borderRadius:10,objectFit:"cover",display:"block"}}/>}
-            <button onClick={()=>setAttachments(a=>a.filter((_,j)=>j!==i))} style={{position:"absolute",top:2,right:2,width:18,height:18,borderRadius:"50%",background:"rgba(0,0,0,0.6)",border:"none",color:"#fff",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9}}><IcX/></button>
+            <button type="button" onClick={()=>setAttachments(a=>a.filter((_,j)=>j!==i))} style={{position:"absolute",top:2,right:2,width:18,height:18,borderRadius:"50%",background:"rgba(0,0,0,0.6)",border:"none",color:"#fff",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9}}><IcX/></button>
           </div>)}
         </div>}
       </>}

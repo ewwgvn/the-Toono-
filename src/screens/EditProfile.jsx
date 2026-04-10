@@ -75,7 +75,7 @@ export default function EditProfile({ nav, refresh, goBack }) {
     <div style={{ height: "100%", display: "flex", flexDirection: "column", background: T.bg }}>
       {cropSrc && <ImageCropper src={cropSrc} aspect="circle" onDone={(cropped) => { setPhoto(cropped); setCropSrc(null); }} onCancel={() => setCropSrc(null)} />}
       <div style={{ padding: "20px 20px 14px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <button onClick={() => { goBack ? goBack() : nav("me"); }} style={{ background: "none", border: "none", color: T.textH, cursor: "pointer", display: "flex" }}><IcBack /></button>
+        <button type="button" onClick={() => { goBack ? goBack() : nav("me"); }} style={{ background: "none", border: "none", color: T.textH, cursor: "pointer", display: "flex" }}><IcBack /></button>
         <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 18, fontWeight: 700, color: T.textH }}>Профайл засах</div>
         <PBtn small loading={loading} onClick={save}>Хадгалах</PBtn>
       </div>
@@ -122,7 +122,7 @@ export default function EditProfile({ nav, refresh, goBack }) {
             {tags.map((t, i) => (
               <div key={i} style={{ display: "flex", alignItems: "center", gap: 5, background: T.accentSub, border: `1px solid ${T.accentGlow}`, borderRadius: 20, padding: "5px 12px" }}>
                 <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: 600, color: T.accent }}>{t}</span>
-                <button onClick={() => setTags(tags.filter((_, j) => j !== i))} style={{ background: "none", border: "none", cursor: "pointer", color: T.accent, display: "flex", padding: 0, lineHeight: 1 }}><IcX /></button>
+                <button type="button" onClick={() => setTags(tags.filter((_, j) => j !== i))} style={{ background: "none", border: "none", cursor: "pointer", color: T.accent, display: "flex", padding: 0, lineHeight: 1 }}><IcX /></button>
               </div>
             ))}
           </div>

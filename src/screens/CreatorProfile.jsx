@@ -85,10 +85,10 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
 
   return <div style={{height:"100%",display:"flex",flexDirection:"column",background:T.bg}}>
     <div style={{padding:"20px 20px 0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-      <button onClick={()=>goBack?goBack():nav("home")} style={{background:"none",border:"none",color:T.textH,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}><IcBack/><span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:16,fontWeight:600}}>Буцах</span></button>
+      <button type="button" onClick={()=>goBack?goBack():nav("home")} style={{background:"none",border:"none",color:T.textH,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}><IcBack/><span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:16,fontWeight:600}}>Буцах</span></button>
       <div style={{display:"flex",gap:8}}>
-        <button onClick={()=>{const url=`${location.origin}?creator=${c.id}`;navigator.clipboard?.writeText(url).catch(()=>{});toast("Профайлын холбоос хуулагдлаа","success");}} style={{background:"none",border:"none",cursor:"pointer",color:T.textSub,display:"flex"}}><IcShare/></button>
-        <button style={{background:"none",border:"none",cursor:"pointer",color:T.textSub,display:"flex"}}><IcDots/></button>
+        <button type="button" onClick={()=>{const url=`${location.origin}?creator=${c.id}`;navigator.clipboard?.writeText(url).catch(()=>{});toast("Профайлын холбоос хуулагдлаа","success");}} style={{background:"none",border:"none",cursor:"pointer",color:T.textSub,display:"flex"}}><IcShare/></button>
+        <button type="button" style={{background:"none",border:"none",cursor:"pointer",color:T.textSub,display:"flex"}}><IcDots/></button>
       </div>
     </div>
     <div style={{flex:1,overflowY:"auto",scrollbarWidth:"none"}}>
@@ -105,7 +105,7 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
           {creatorId===GS.user.id
             ?<PBtn small onClick={()=>nav("edit-profile")}>Профайл засах</PBtn>
             :<>
-              <button onClick={async ()=>{
+              <button type="button" onClick={async ()=>{
                 let convo = GS.conversations.find(cv=>cv.name===c.name);
                 if(!convo){convo={id:Date.now(),creatorId:c.id||null,name:c.name,accent:c.accent||T.accent,online:false,unread:0,msgs:[]};GS.conversations.unshift(convo);}
                 if(isSupabaseReady()&&GS.user.id&&c.id&&GS.user.id!==c.id){
@@ -136,12 +136,12 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
       </div>
       <div style={{height:1,background:T.border}}/>
       <div style={{display:"flex",borderBottom:`1px solid ${T.border}`}}>
-        {[["works","Бүтээл"],["commission","Захиалга"],["about","Тухай"]].map(t=><button key={t[0]} onClick={()=>setTab(t[0])} style={{flex:1,padding:"13px 0",background:"none",border:"none",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,fontWeight:tab===t[0]?700:500,color:tab===t[0]?T.accent:T.textSub,borderBottom:`2px solid ${tab===t[0]?T.accent:"transparent"}`,cursor:"pointer"}}>{t[1]}</button>)}
+        {[["works","Бүтээл"],["commission","Захиалга"],["about","Тухай"]].map(t=><button type="button" key={t[0]} onClick={()=>setTab(t[0])} style={{flex:1,padding:"13px 0",background:"none",border:"none",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,fontWeight:tab===t[0]?700:500,color:tab===t[0]?T.accent:T.textSub,borderBottom:`2px solid ${tab===t[0]?T.accent:"transparent"}`,cursor:"pointer"}}>{t[1]}</button>)}
       </div>
       {tab==="works"&&<div style={{padding:"14px 20px 0"}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
         <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.textSub}}>{c.works||0} бүтээл</div>
-        {c.id===GS.user.id&&<button onClick={()=>nav("portfolio")} style={{background:"none",border:"none",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,fontWeight:600,color:T.accent,cursor:"pointer"}}>Бүгдийг харах →</button>}
+        {c.id===GS.user.id&&<button type="button" onClick={()=>nav("portfolio")} style={{background:"none",border:"none",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,fontWeight:600,color:T.accent,cursor:"pointer"}}>Бүгдийг харах →</button>}
       </div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
         {creatorWorks===null

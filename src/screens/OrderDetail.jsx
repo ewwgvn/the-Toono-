@@ -61,7 +61,7 @@ export default function OrderDetail({ nav, refresh, goBack }) {
               <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: 600, color: T.green, marginBottom: 4 }}>Хүргэлтийн дугаар</div>
               <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 15, fontWeight: 700, color: T.textH, letterSpacing: ".05em" }}>{order.tracking}</div>
             </div>
-            <button onClick={() => { navigator.clipboard?.writeText(order.tracking); toast("Дугаар хуулагдлаа", "success"); }} style={{ background: T.green + "20", border: `1px solid ${T.green}40`, borderRadius: 10, padding: "8px 14px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: 600, color: T.green, cursor: "pointer" }}>Хуулах</button>
+            <button type="button" onClick={() => { navigator.clipboard?.writeText(order.tracking); toast("Дугаар хуулагдлаа", "success"); }} style={{ background: T.green + "20", border: `1px solid ${T.green}40`, borderRadius: 10, padding: "8px 14px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: 600, color: T.green, cursor: "pointer" }}>Хуулах</button>
           </div>
         </Crd>
       )}

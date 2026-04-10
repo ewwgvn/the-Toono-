@@ -3,6 +3,18 @@ import "./globals.css";
 export const metadata = {
   title: "The TOONO — Бүтээлчдийн Зах",
   description: "The TOONO — Монгол бүтээлчдийн дижитал зах",
+  openGraph: {
+    title: "The TOONO",
+    description: "Монгол бүтээлчдийн дижитал зах — Fashion, Art, Design",
+    url: "https://the-toono.vercel.app",
+    siteName: "The TOONO",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "The TOONO",
+    description: "Монгол бүтээлчдийн дижитал зах",
+  },
 };
 
 export const viewport = {

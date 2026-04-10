@@ -42,24 +42,24 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
 
   return <div style={{height:"100%",display:"flex",flexDirection:"column",background:T.bg}}>
     <div style={{padding:"20px 20px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-      <button onClick={()=>goBack?goBack():nav("home")} style={{background:"none",border:"none",color:T.textH,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}><IcBack/><span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:16,fontWeight:600}}>Буцах</span></button>
+      <button type="button" onClick={()=>goBack?goBack():nav("home")} style={{background:"none",border:"none",color:T.textH,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}><IcBack/><span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:16,fontWeight:600}}>Буцах</span></button>
       <div style={{display:"flex",gap:12,color:T.textSub}}>
-        <button onClick={tLike} style={{background:"none",border:"none",cursor:"pointer",color:liked?T.red:T.textSub,display:"flex"}}><IcHeart filled={liked}/></button>
-        <button onClick={tSave} style={{background:"none",border:"none",cursor:"pointer",color:saved?T.accent:T.textSub,display:"flex"}}><IcBookmark filled={saved}/></button>
-        <button onClick={()=>{navigator.clipboard?.writeText(`${location.origin}?work=${w.id}`).catch(()=>{});toast("Холбоос хуулагдлаа","success");}} style={{background:"none",border:"none",cursor:"pointer",color:T.textSub,display:"flex"}}><IcShare/></button>
-        <button onClick={()=>nav("report")} style={{background:"none",border:"none",cursor:"pointer",fontSize:16}}><IcReport/></button>
+        <button type="button" onClick={tLike} style={{background:"none",border:"none",cursor:"pointer",color:liked?T.red:T.textSub,display:"flex"}}><IcHeart filled={liked}/></button>
+        <button type="button" onClick={tSave} style={{background:"none",border:"none",cursor:"pointer",color:saved?T.accent:T.textSub,display:"flex"}}><IcBookmark filled={saved}/></button>
+        <button type="button" onClick={()=>{navigator.clipboard?.writeText(`${location.origin}?work=${w.id}`).catch(()=>{});toast("Холбоос хуулагдлаа","success");}} style={{background:"none",border:"none",cursor:"pointer",color:T.textSub,display:"flex"}}><IcShare/></button>
+        <button type="button" onClick={()=>nav("report")} style={{background:"none",border:"none",cursor:"pointer",fontSize:16}}><IcReport/></button>
       </div>
     </div>
     <div style={{flex:1,overflowY:"auto",scrollbarWidth:"none"}}>
       {/* Fullscreen zoom modal */}
       {zoomOpen&&<div onClick={()=>setZoomOpen(false)} style={{position:"fixed",inset:0,zIndex:1000,background:"rgba(0,0,0,0.95)",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column"}}>
-        <button onClick={()=>setZoomOpen(false)} style={{position:"absolute",top:20,right:20,background:"rgba(255,255,255,0.15)",border:"none",borderRadius:12,width:40,height:40,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:"#fff",zIndex:1001}}><IcX/></button>
+        <button type="button" onClick={()=>setZoomOpen(false)} style={{position:"absolute",top:20,right:20,background:"rgba(255,255,255,0.15)",border:"none",borderRadius:12,width:40,height:40,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:"#fff",zIndex:1001}}><IcX/></button>
         <img src={w.images[imgIdx||0]} alt="" style={{maxWidth:"95vw",maxHeight:"85vh",objectFit:"contain",borderRadius:8}}
           onTouchStart={e=>setTouchStart(e.touches[0].clientX)}
           onTouchEnd={e=>{if(!touchStart)return;const diff=e.changedTouches[0].clientX-touchStart;if(Math.abs(diff)>50){if(diff<0&&imgIdx<w.images.length-1)setImgIdx(imgIdx+1);if(diff>0&&imgIdx>0)setImgIdx(imgIdx-1);}setTouchStart(null);}}
         />
         {w.images.length>1&&<div style={{display:"flex",gap:8,marginTop:16}}>
-          {w.images.map((_,i)=><button key={i} onClick={e=>{e.stopPropagation();setImgIdx(i);}} style={{width:i===(imgIdx||0)?24:10,height:10,borderRadius:5,background:i===(imgIdx||0)?"#fff":"rgba(255,255,255,0.3)",border:"none",cursor:"pointer",transition:"all .2s"}}/>)}
+          {w.images.map((_,i)=><button type="button" key={i} onClick={e=>{e.stopPropagation();setImgIdx(i);}} style={{width:i===(imgIdx||0)?24:10,height:10,borderRadius:5,background:i===(imgIdx||0)?"#fff":"rgba(255,255,255,0.3)",border:"none",cursor:"pointer",transition:"all .2s"}}/>)}
         </div>}
         <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:"rgba(255,255,255,0.5)",marginTop:10}}>{(imgIdx||0)+1} / {w.images.length} · Зүүн баруун шудрах</div>
       </div>}
@@ -70,7 +70,7 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
           onTouchEnd={e=>{if(!touchStart)return;const diff=e.changedTouches[0].clientX-touchStart;if(Math.abs(diff)>50){e.stopPropagation();if(diff<0&&imgIdx<w.images.length-1)setImgIdx(imgIdx+1);if(diff>0&&imgIdx>0)setImgIdx(imgIdx-1);setZoomOpen(false);}setTouchStart(null);}}>
           <img src={w.images[imgIdx||0]} alt="" loading="lazy" style={{width:"100%",height:260,objectFit:"cover",display:"block",transition:"transform .3s"}}/>
           {w.images.length>1&&<div style={{position:"absolute",bottom:12,left:"50%",transform:"translateX(-50%)",display:"flex",gap:6}}>
-            {w.images.map((_,i)=><button key={i} onClick={e=>{e.stopPropagation();setImgIdx(i);}} style={{width:i===(imgIdx||0)?20:8,height:8,borderRadius:4,background:i===(imgIdx||0)?"#fff":"rgba(255,255,255,0.4)",border:"none",cursor:"pointer",transition:"all .2s"}}/>)}
+            {w.images.map((_,i)=><button type="button" key={i} onClick={e=>{e.stopPropagation();setImgIdx(i);}} style={{width:i===(imgIdx||0)?20:8,height:8,borderRadius:4,background:i===(imgIdx||0)?"#fff":"rgba(255,255,255,0.4)",border:"none",cursor:"pointer",transition:"all .2s"}}/>)}
           </div>}
           {w.badge&&<span style={{position:"absolute",top:14,left:14,fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,fontWeight:700,color:"#fff",background:"rgba(91,143,232,0.85)",padding:"5px 12px",borderRadius:10}}>{w.badge}</span>}
           {/* Swipe hint + count */}
@@ -166,22 +166,22 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
     <div style={{padding:"0 20px 0",background:T.bg}}>
       {w.sizes?.length>0&&<div style={{display:"flex",gap:6,marginBottom:10,flexWrap:"wrap"}}>
         <span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.textSub,width:"100%",marginBottom:2}}>Хэмжээ</span>
-        {w.sizes.map(s=><button key={s} onClick={()=>setSelSize(s)} style={{padding:"6px 14px",borderRadius:10,cursor:"pointer",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,fontWeight:600,background:selSize===s?T.accent:T.s1,border:`1px solid ${selSize===s?T.accent:T.border}`,color:selSize===s?"#fff":T.textSub}}>{s}</button>)}
+        {w.sizes.map(s=><button type="button" key={s} onClick={()=>setSelSize(s)} style={{padding:"6px 14px",borderRadius:10,cursor:"pointer",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,fontWeight:600,background:selSize===s?T.accent:T.s1,border:`1px solid ${selSize===s?T.accent:T.border}`,color:selSize===s?"#fff":T.textSub}}>{s}</button>)}
       </div>}
       {w.colors?.length>0&&<div style={{display:"flex",gap:8,marginBottom:10,alignItems:"center"}}>
         <span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.textSub}}>Өнгө</span>
-        {w.colors.map(cl=><button key={cl} onClick={()=>setSelColor(cl)} style={{width:28,height:28,borderRadius:14,background:cl,border:selColor===cl?`3px solid ${T.accent}`:`2px solid ${T.border}`,cursor:"pointer"}}/>)}
+        {w.colors.map(cl=><button type="button" key={cl} onClick={()=>setSelColor(cl)} style={{width:28,height:28,borderRadius:14,background:cl,border:selColor===cl?`3px solid ${T.accent}`:`2px solid ${T.border}`,cursor:"pointer"}}/>)}
       </div>}
       <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
         <span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.textSub}}>Тоо</span>
-        <button onClick={()=>setQty(Math.max(1,qty-1))} style={{width:30,height:30,borderRadius:8,background:T.s1,border:`1px solid ${T.border}`,color:T.textH,cursor:"pointer",fontWeight:700}}>−</button>
+        <button type="button" onClick={()=>setQty(Math.max(1,qty-1))} style={{width:30,height:30,borderRadius:8,background:T.s1,border:`1px solid ${T.border}`,color:T.textH,cursor:"pointer",fontWeight:700}}>−</button>
         <span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:15,fontWeight:700,color:T.textH,minWidth:24,textAlign:"center"}}>{qty}</span>
-        <button onClick={()=>setQty(Math.min(w.stock||99,qty+1))} style={{width:30,height:30,borderRadius:8,background:T.s1,border:`1px solid ${T.border}`,color:T.textH,cursor:"pointer",fontWeight:700}}>+</button>
+        <button type="button" onClick={()=>setQty(Math.min(w.stock||99,qty+1))} style={{width:30,height:30,borderRadius:8,background:T.s1,border:`1px solid ${T.border}`,color:T.textH,cursor:"pointer",fontWeight:700}}>+</button>
         {w.stock&&<span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:11,color:T.textSub,marginLeft:6}}>Үлдэгдэл {w.stock}ш</span>}
       </div>
     </div>
     <div style={{padding:"12px 20px 32px",background:T.bg,borderTop:`1px solid ${T.border}`,display:"flex",gap:8,alignItems:"center"}}>
-      <button onClick={async ()=>{
+      <button type="button" onClick={async ()=>{
         let convo = GS.conversations.find(cv=>cv.name===(w.creator||GS.user.name));
         if(!convo){convo={id:Date.now(),creatorId:w.creator_id||null,name:w.creator||"Бүтээлч",accent:w.accent||T.accent,online:false,unread:0,msgs:[]};GS.conversations.unshift(convo);}
         if(isSupabaseReady()&&GS.user.id&&w.creator_id&&GS.user.id!==w.creator_id){
@@ -190,23 +190,23 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
         }
         GS.activeChatId=convo.id;refresh();nav("chatroom");
       }} style={{width:44,height:44,background:T.accentSub,border:`1px solid ${T.accentGlow}`,borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",flexShrink:0,color:T.accent}}><IcMsg/></button>
-      {w.price>0&&<button onClick={()=>setOfferOpen(true)} style={{width:44,height:44,background:T.s1,border:`1px solid ${T.border}`,borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",flexShrink:0,color:T.yellow,fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:11,fontWeight:700}}>₮?</button>}
+      {w.price>0&&<button type="button" onClick={()=>setOfferOpen(true)} style={{width:44,height:44,background:T.s1,border:`1px solid ${T.border}`,borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",flexShrink:0,color:T.yellow,fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:11,fontWeight:700}}>₮?</button>}
       {(w.creator_id===GS.user.id||w.cid===GS.user.id)
         ?<div style={{flex:1,textAlign:"center",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,color:"#999999",padding:14}}>Энэ таны бүтээл</div>
         :w.price>0&&(w.stock===undefined||w.stock>0)
-          ?<><button onClick={()=>{
+          ?<><button type="button" onClick={()=>{
               const cartItem={...w,size:selSize,color:selColor,qty};
               const exists=GS.cart.find(c=>c.id===w.id&&c.size===selSize&&c.color===selColor);
               if(!exists){GS.cart.push(cartItem);saveGS();}
               toast(exists?"Сагсанд байна":"Сагсанд нэмэгдлээ",exists?"info":"success");refresh();
             }} style={{flex:1,background:T.s1,border:`1px solid ${T.border}`,borderRadius:14,padding:14,fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,fontWeight:600,color:T.textH,cursor:"pointer"}}><span style={{display:"flex",marginRight:4}}><IcCart/></span>Сагс</button>
-            <button onClick={()=>{
+            <button type="button" onClick={()=>{
               GS.directBuyItem={...w,size:selSize,color:selColor,qty};
               nav("checkout");
             }} style={{flex:2,background:T.accent,border:"none",borderRadius:14,padding:14,fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:15,fontWeight:700,color:"#fff",cursor:"pointer"}}>Шууд авах — {fmtP(w)}</button></>
           :w.price>0
-            ?<button onClick={()=>{toast("Нөөц ирэхэд мэдэгдэл илгээнэ","success");}} style={{flex:1,background:T.s2,border:`1px solid ${T.border}`,borderRadius:14,padding:14,fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,fontWeight:600,color:T.textSub,cursor:"pointer"}}><span style={{display:"flex",marginRight:4}}><IcBell/></span>Нөөц ирэхэд мэдэгдэх</button>
-            :<button onClick={()=>nav("commission",{creatorId:w.creator_id})} style={{flex:1,background:T.accentSub,border:`1px solid ${T.accentGlow}`,borderRadius:14,padding:14,fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,fontWeight:600,color:T.accent,cursor:"pointer"}}>Захиалга өгөх</button>}
+            ?<button type="button" onClick={()=>{toast("Нөөц ирэхэд мэдэгдэл илгээнэ","success");}} style={{flex:1,background:T.s2,border:`1px solid ${T.border}`,borderRadius:14,padding:14,fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,fontWeight:600,color:T.textSub,cursor:"pointer"}}><span style={{display:"flex",marginRight:4}}><IcBell/></span>Нөөц ирэхэд мэдэгдэх</button>
+            :<button type="button" onClick={()=>nav("commission",{creatorId:w.creator_id})} style={{flex:1,background:T.accentSub,border:`1px solid ${T.accentGlow}`,borderRadius:14,padding:14,fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,fontWeight:600,color:T.accent,cursor:"pointer"}}>Захиалга өгөх</button>}
     </div>
   </div>;
 }

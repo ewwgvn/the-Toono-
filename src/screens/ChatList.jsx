@@ -51,14 +51,14 @@ export default function ChatList({ nav, refresh, goBack }) {
           <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:24,fontWeight:800,color:T.textH}}>Зурвас</div>
           {total>0&&<div style={{minWidth:22,height:22,borderRadius:11,background:T.red,display:"flex",alignItems:"center",justifyContent:"center",padding:"0 5px"}}><span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:11,fontWeight:700,color:"#fff"}}>{total}</span></div>}
         </div>
-        <button onClick={()=>setShowNewChat(!showNewChat)} style={{width:38,height:38,borderRadius:"50%",background:T.s1,border:`1px solid ${T.border}`,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:T.textSub}}>
+        <button type="button" onClick={()=>setShowNewChat(!showNewChat)} style={{width:38,height:38,borderRadius:"50%",background:T.s1,border:`1px solid ${T.border}`,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:T.textSub}}>
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3V15M3 9H15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>
         </button>
       </div>
       <div style={{background:T.s1,border:`1px solid ${T.border}`,borderRadius:14,padding:"11px 14px",display:"flex",alignItems:"center",gap:10}}>
         <span style={{color:T.textSub,display:"flex"}}><IcSearch/></span>
         <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Хайх..." style={{background:"none",border:"none",outline:"none",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,color:T.textH,flex:1}}/>
-        {q&&<button onClick={()=>setQ("")} style={{background:"none",border:"none",color:T.textSub,cursor:"pointer",display:"flex"}}><IcX/></button>}
+        {q&&<button type="button" onClick={()=>setQ("")} style={{background:"none",border:"none",color:T.textSub,cursor:"pointer",display:"flex"}}><IcX/></button>}
       </div>
     </div>
     {/* New chat panel */}
@@ -68,7 +68,7 @@ export default function ChatList({ nav, refresh, goBack }) {
         <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.textSub,marginBottom:12}}>Бүтээлчийн нэрийг бичнэ үү</div>
         <div style={{display:"flex",gap:8}}>
           <input id="newChatName" placeholder="Нэр..." style={{flex:1,background:T.s2,border:`1px solid ${T.border}`,borderRadius:10,padding:"10px 14px",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,color:T.textH,outline:"none"}}/>
-          <button onClick={()=>{const inp=document.getElementById("newChatName");if(inp?.value.trim())startNewChat(inp.value.trim());else toast("Нэр оруулна уу","error");}} style={{background:T.accent,border:"none",borderRadius:10,padding:"10px 18px",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,fontWeight:600,color:"#fff",cursor:"pointer"}}>Эхлэх</button>
+          <button type="button" onClick={()=>{const inp=document.getElementById("newChatName");if(inp?.value.trim())startNewChat(inp.value.trim());else toast("Нэр оруулна уу","error");}} style={{background:T.accent,border:"none",borderRadius:10,padding:"10px 18px",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,fontWeight:600,color:"#fff",cursor:"pointer"}}>Эхлэх</button>
         </div>
       </Crd>
     </div>}
