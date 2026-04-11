@@ -80,7 +80,16 @@ export default function Portfolio({ nav, goBack }) {
         <div style={{ display: "flex", gap: 8 }}>
           {bulkMode
             ? <><button type="button" onClick={() => { setBulkMode(false); setSelected(new Set()); }} style={{ background: T.s1, border: `1px solid ${T.border}`, borderRadius: 10, padding: "8px 14px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: 600, color: T.textSub, cursor: "pointer" }}>Цуцлах</button>
-              {selected.size > 0 && <PBtn small danger onClick={() => { toast(selected.size + "ш бүтээл архивлагдлаа", "success"); setBulkMode(false); setSelected(new Set()); }}>Архивлах ({selected.size})</PBtn>}</>
+              {selected.size > 0 && <PBtn small danger onClick={() => {
+                const count = selected.size;
+                GS.myWorks = GS.myWorks.map(w => selected.has(w.id) ? { ...w, status: "archived" } : w);
+                if (isSupabaseReady()) {
+                  selected.forEach(id => DB.updateWork?.(id, { status: "archived" }));
+                }
+                saveGS();
+                toast(count + "ш бүтээл архивлагдлаа", "success");
+                setBulkMode(false); setSelected(new Set());
+              }}>Архивлах ({selected.size})</PBtn>}</>
             : <><button type="button" onClick={() => nav("upload")} style={{ width: 38, height: 38, borderRadius: "50%", background: T.accent, border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#fff" }}>
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3V15M3 9H15" stroke="white" strokeWidth="2" strokeLinecap="round" /></svg>
             </button>

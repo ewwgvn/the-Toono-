@@ -86,13 +86,13 @@ export default function Upload({ nav, goBack }) {
       setCropWorkSrc(null); setCropWorkIdx(-1);
     }} onCancel={() => { setCropWorkSrc(null); setCropWorkIdx(-1); }} />}
     <div style={{ padding: "20px 20px 14px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-      <button type="button" onClick={() => {
+      <button type="button" aria-label="Back" onClick={() => {
         if (step > 0) setStep(step - 1);
-        else if (title || desc || mediaFiles.length > 0) {
-          if (window.confirm("Хадгалаагүй мэдээлэл байна. Гарах уу?")) goBack ? goBack() : nav("me");
-        } else { goBack ? goBack() : nav("me"); }
+        else if (!editingWork && (title || desc || mediaFiles.length > 0)) {
+          if (window.confirm("Хадгалаагүй мэдээлэл байна. Гарах уу?")) { GS.editingWorkId = null; goBack ? goBack() : nav("me"); }
+        } else { GS.editingWorkId = null; goBack ? goBack() : nav("me"); }
       }} style={{ background: "none", border: "none", color: T.textH, cursor: "pointer", display: "flex" }}><IcBack /></button>
-      <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 18, fontWeight: 700, color: T.textH }}>Бүтээл байршуулах</div>
+      <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 18, fontWeight: 700, color: T.textH }}>{editingWork ? "Бүтээл засах" : "Бүтээл байршуулах"}</div>
       <PBtn small secondary onClick={() => { /* toast placeholder */ }}>Түр хадгалах</PBtn>
     </div>
 

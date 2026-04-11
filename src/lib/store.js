@@ -75,37 +75,69 @@ export function getUnreadNotif() {
 // ══════════════════════════════════════════
 const STORAGE_KEY = "toono-app-state";
 
+// Strip heavy base64 URLs from objects to fit in localStorage
+function stripBase64(obj) {
+  if (!obj) return obj;
+  if (typeof obj === "string") {
+    return obj.startsWith("data:") && obj.length > 10000 ? null : obj;
+  }
+  if (Array.isArray(obj)) return obj.map(stripBase64);
+  if (typeof obj === "object") {
+    const out = {};
+    for (const k in obj) out[k] = stripBase64(obj[k]);
+    return out;
+  }
+  return obj;
+}
+
 export function saveGS() {
+  const buildData = (lean = false) => ({
+    isLoggedIn: GS.isLoggedIn,
+    needsProfileSetup: GS.needsProfileSetup,
+    currentRole: GS.currentRole,
+    activeChatId: GS.activeChatId,
+    user: lean ? stripBase64({ ...GS.user }) : { ...GS.user, id: GS.user.id },
+    myWorks: lean ? stripBase64(GS.myWorks) : GS.myWorks,
+    orders: GS.orders,
+    myCommissions: GS.myCommissions,
+    receivedCommissions: GS.receivedCommissions,
+    notifications: GS.notifications,
+    conversations: lean ? stripBase64(GS.conversations) : GS.conversations,
+    cart: GS.cart,
+    seeded: GS.seeded,
+    liked: [...GS.liked],
+    saved: [...GS.saved],
+    following: [...GS.following],
+    notifRead: [...GS.notifRead],
+    recentlyViewed: GS.recentlyViewed?.slice(0, 20) || [],
+    wishlists: GS.wishlists || [],
+    offers: GS.offers || [],
+    trustMetrics: GS.trustMetrics || {},
+    syncQueue: GS.syncQueue || [],
+    publicWorks: lean ? [] : (GS.publicWorks || []),
+    publicCreators: lean ? [] : (GS.publicCreators || []),
+    disputes: GS.disputes || [],
+  });
+
   try {
-    const data = {
-      isLoggedIn: GS.isLoggedIn,
-      needsProfileSetup: GS.needsProfileSetup,
-      currentRole: GS.currentRole,
-      activeChatId: GS.activeChatId,
-      user: { ...GS.user, id: GS.user.id },
-      myWorks: GS.myWorks,
-      orders: GS.orders,
-      myCommissions: GS.myCommissions,
-      receivedCommissions: GS.receivedCommissions,
-      notifications: GS.notifications,
-      conversations: GS.conversations,
-      cart: GS.cart,
-      seeded: GS.seeded,
-      liked: [...GS.liked],
-      saved: [...GS.saved],
-      following: [...GS.following],
-      notifRead: [...GS.notifRead],
-      recentlyViewed: GS.recentlyViewed?.slice(0, 20) || [],
-      wishlists: GS.wishlists || [],
-      offers: GS.offers || [],
-      trustMetrics: GS.trustMetrics || {},
-      syncQueue: GS.syncQueue || [],
-      publicWorks: GS.publicWorks || [],
-      publicCreators: GS.publicCreators || [],
-      disputes: GS.disputes || [],
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch (e) { /* storage unavailable, silent fail */ }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(buildData(false)));
+  } catch (e) {
+    // Quota exceeded — retry with stripped base64 + no public caches
+    if (e?.name === "QuotaExceededError" || /quota/i.test(e?.message || "")) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(buildData(true)));
+        if (typeof console !== "undefined") console.warn("[store] Saved lean state (dropped base64 images + public caches)");
+      } catch (e2) {
+        // Still too big — drop publicWorks/publicCreators entirely and retry
+        try {
+          const minimal = buildData(true);
+          minimal.myWorks = [];
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(minimal));
+          if (typeof console !== "undefined") console.warn("[store] Saved minimal state (dropped myWorks)");
+        } catch (e3) { /* give up */ }
+      }
+    }
+  }
 }
 
 export function loadGS() {

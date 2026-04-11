@@ -74,11 +74,18 @@ export default function App() {
 
       initSupabase();
       if (isSupabaseReady()) {
-        const session = await DB.getSession();
-        if (session) {
-          const synced = await syncFromSupabase();
-          if (synced) { await fetchPublicData(); setScreen(GS.needsProfileSetup ? "profile-setup" : "main"); return; }
+        try {
+          const session = await DB.getSession();
+          if (session) {
+            const synced = await syncFromSupabase();
+            if (synced) { await fetchPublicData(); setScreen(GS.needsProfileSetup ? "profile-setup" : "main"); return; }
+          }
+        } catch (err) {
+          console.error("[App] Supabase sync error:", err);
+          setTimeout(() => toast("Сервертэй холбогдоход алдаа гарлаа", "error"), 2000);
         }
+      } else {
+        console.warn("[App] Supabase not configured — check NEXT_PUBLIC_SUPABASE_URL / ANON_KEY env vars");
       }
       const loaded = await loadGS();
       if (loaded && GS.isLoggedIn && GS.user.name) {
