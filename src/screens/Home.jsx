@@ -49,7 +49,7 @@ export default function Home({ nav, refresh }) {
     <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none" }}>
 
       {/* Category filter */}
-      <div style={{ padding: "0 16px 16px", display: "flex", gap: 6, overflowX: "auto", scrollbarWidth: "none" }}>
+      <div style={{ padding: "16px 16px 16px", display: "flex", gap: 6, overflowX: "auto", scrollbarWidth: "none" }}>
         {cats.map(c => <button type="button" key={c} onClick={() => setCat(c)} style={{
           flexShrink: 0, padding: "6px 14px", borderRadius: 20, cursor: "pointer",
           fontFamily: F, fontSize: 13, fontWeight: 500,
