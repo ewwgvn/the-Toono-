@@ -1,17 +1,16 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { T } from "@/theme/colors";
 import { GS, saveGS } from "@/lib/store";
 import { DB, isSupabaseReady } from "@/lib/supabase";
 import { getCreators } from "@/lib/utils";
 import { toast } from "@/components/layout/Toast";
 import {
-  IcBack, IcShare, IcDots, IcMsg, IcCheck,
+  IcBack, IcShare, IcDots, IcMsg,
 } from "@/components/icons";
 import PBtn from "@/components/atoms/PBtn";
 import Crd from "@/components/atoms/Crd";
-import Avt from "@/components/atoms/Avt";
 import Pill from "@/components/atoms/Pill";
 import Toono from "@/components/atoms/Toono";
 
@@ -34,10 +33,6 @@ function TrustBadges({creator}) {
     {c.level==="verified"&&<span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:11,fontWeight:500,color:"#666666",background:"#F7F7F7",padding:"3px 8px",borderRadius:20}}>Verified</span>}
     {c.comm&&<span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:11,fontWeight:500,color:"#666666",background:"#F7F7F7",padding:"3px 8px",borderRadius:20}}>Захиалга авна</span>}
   </div>;
-}
-
-function ResponseBadge() {
-  return null;
 }
 
 export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
@@ -119,10 +114,7 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
         </div>
       </div>
       <div style={{padding:"12px 20px 0"}}>
-        <div style={{display:"flex",gap:8,marginBottom:10}}>
-          {c.id===GS.user.id&&GS.trustMetrics?.responseRate>=80&&<ResponseBadge hours={GS.trustMetrics.responseRate>=95?1:GS.trustMetrics.responseRate>=80?2:24}/>}
-          {c.rating>=4.8&&<StarSellerBadge/>}
-        </div>
+        {c.rating>=4.8&&<div style={{marginBottom:10}}><StarSellerBadge/></div>}
         {(c.tags||GS.user.tags||[]).length>0&&<div style={{display:"flex",gap:6,marginBottom:16,flexWrap:"wrap"}}>
           {(c.tags||GS.user.tags||[]).map(t=><Pill key={t}>{t}</Pill>)}
         </div>}

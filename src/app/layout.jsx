@@ -39,6 +39,7 @@ export default function RootLayout({ children }) {
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" type="image/svg+xml" href="/icon.svg" />
         <link rel="apple-touch-icon" href="/icon.svg" />
+        <link rel="preload" href="/fonts/Stardom-Regular.otf" as="font" type="font/otf" crossOrigin="anonymous" />
       </head>
       <body style={{ background: "#FFFFFF", fontFamily: "'Helvetica Neue', Arial, system-ui, sans-serif" }}>
         {children}

@@ -15,7 +15,7 @@ export default function Splash() {
         <Toono size={72} color={T.accent}/>
       </div>
       <div style={{opacity:0,animation:"fadeUp .6s .4s ease forwards",textAlign:"center"}}>
-        <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:30,fontWeight:600,color:T.textH,letterSpacing:".05em"}}>The TOONO</div>
+        <div style={{fontFamily:"'Stardom','Helvetica Neue',Arial,sans-serif",fontSize:34,fontWeight:400,color:T.textH,letterSpacing:".02em"}}>The TOONO</div>
         <div style={{fontFamily:"monospace",fontSize:9,color:T.textSub,letterSpacing:".28em",marginTop:4}}>БҮТЭЭЛЧДИЙН ЗАХ</div>
       </div>
     </div>

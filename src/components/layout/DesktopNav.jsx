@@ -49,11 +49,11 @@ export default function DesktopNav({
             {ToonoLogo && <ToonoLogo size={28} color={T.accent} />}
             <span
               style={{
-                fontFamily: "'Helvetica Neue', Arial, sans-serif",
-                fontSize: 22,
-                fontWeight: 700,
+                fontFamily: "'Stardom','Helvetica Neue',Arial,sans-serif",
+                fontSize: 24,
+                fontWeight: 400,
                 color: T.textH,
-                letterSpacing: ".05em",
+                letterSpacing: ".02em",
               }}
             >
               The TOONO

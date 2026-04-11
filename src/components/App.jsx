@@ -257,7 +257,7 @@ export default function App() {
           <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
             <div onClick={() => nav("home")} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
               <Toono size={22} color="#111111" />
-              <span style={{ fontFamily: F, fontSize: 16, fontWeight: 700, color: "#111111", letterSpacing: "0.05em", textTransform: "uppercase" }}>The TOONO</span>
+              <span style={{ fontFamily: "'Stardom','Helvetica Neue',Arial,sans-serif", fontSize: 22, fontWeight: 400, color: "#111111", letterSpacing: "0.02em" }}>The TOONO</span>
             </div>
             <div style={{ display: "flex", gap: 4 }}>
               {[["home", "Нүүр"], ["explore", "Хайлт"], ["feed", "Фийд"]].map(([id, label]) =>

@@ -7,12 +7,10 @@ import { DB, isSupabaseReady } from "@/lib/supabase";
 import { toast } from "@/components/layout/Toast";
 import {
   IcNotif, IcOrder, IcSaved, IcFollows, IcCommission, IcDashboard,
-  IcFire, IcHeart, IcEmptyWorks, IcEmptyCart, IcStar, IcProfile,
-  IcUpload, IcBell,
+  IcEmptyWorks, IcEmptyCart, IcStar,
 } from "@/components/icons";
 import PBtn from "@/components/atoms/PBtn";
 import Crd from "@/components/atoms/Crd";
-import Avt from "@/components/atoms/Avt";
 import Toono from "@/components/atoms/Toono";
 import Empty from "@/components/atoms/Empty";
 
@@ -93,9 +91,9 @@ export default function MyProfile({ nav, refresh }) {
             ))}
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 16 }}>
-            {[["Захиалга", "order-list", <IcOrder />, T.accent], ["Хадгалсан", "saved", <IcSaved />, T.yellow], ["Дагагч", "follows", <IcFollows />, T.green], ["Удирдах", "comm-manage", <IcCommission />, T.accent], ["Самбар", "dashboard", <IcDashboard />, "#666666"], ["Фийд", "feed", <IcFire />, "#F0A030"]].map(item => (
+            {[["Захиалга", "order-list", <IcOrder />], ["Хадгалсан", "saved", <IcSaved />], ["Дагагч", "follows", <IcFollows />], ["Удирдах", "comm-manage", <IcCommission />], ["Самбар", "dashboard", <IcDashboard />]].map(item => (
               <Crd key={item[0]} onClick={() => nav(item[1])} style={{ padding: "12px 8px", textAlign: "center", cursor: "pointer" }}>
-                <div style={{ width: 36, height: 36, borderRadius: 10, background: item[3] + "18", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 6px", color: item[3] }}>{item[2]}</div>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: "#F7F7F7", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 6px", color: "#111111" }}>{item[2]}</div>
                 <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 10, fontWeight: 600, color: T.textB }}>{item[0]}</div>
               </Crd>
             ))}
