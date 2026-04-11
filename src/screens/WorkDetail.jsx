@@ -49,6 +49,18 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
     }
   },[w?.id]);
 
+  // ESC key closes zoom modal
+  React.useEffect(()=>{
+    if(!zoomOpen) return;
+    const handleKey=(e)=>{
+      if(e.key==="Escape") setZoomOpen(false);
+      if(e.key==="ArrowLeft"&&imgIdx>0) setImgIdx(imgIdx-1);
+      if(e.key==="ArrowRight"&&w.images&&imgIdx<w.images.length-1) setImgIdx(imgIdx+1);
+    };
+    window.addEventListener("keydown",handleKey);
+    return ()=>window.removeEventListener("keydown",handleKey);
+  },[zoomOpen,imgIdx,w.images]);
+
   const submitComment = async () => {
     if(!commentInput.trim()||!GS.user.id) return;
     const added = await DB.addComment(w.id, GS.user.id, commentInput.trim());
@@ -219,8 +231,8 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
     </div>
     <div style={{padding:"12px 20px 32px",background:T.bg,borderTop:`1px solid ${T.border}`,display:"flex",gap:8,alignItems:"center"}}>
       <button type="button" onClick={async ()=>{
-        let convo = GS.conversations.find(cv=>cv.name===(w.creator||GS.user.name));
-        if(!convo){convo={id:Date.now(),creatorId:w.creator_id||null,name:w.creator||"Бүтээлч",accent:w.accent||T.accent,online:false,unread:0,msgs:[]};GS.conversations.unshift(convo);}
+        let convo = GS.conversations.find(cv=>(w.creator_id&&cv.creatorId===w.creator_id)||cv.name===(w.creator||GS.user.name));
+        if(!convo){convo={id:Date.now(),creatorId:w.creator_id||null,name:w.creator||"Бүтээлч",accent:w.accent||T.accent,online:false,unread:0,msgs:[]};GS.conversations.unshift(convo);saveGS();}
         if(isSupabaseReady()&&GS.user.id&&w.creator_id&&GS.user.id!==w.creator_id){
           const dbConvo=await DB.getOrCreateConversation(GS.user.id,w.creator_id);
           if(dbConvo)convo.dbId=dbConvo.id;

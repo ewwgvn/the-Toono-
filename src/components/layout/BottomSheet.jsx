@@ -1,13 +1,26 @@
 "use client";
+import { useEffect } from "react";
 import { T } from "@/theme/colors";
 import { IcX } from "@/components/icons";
 
 export default function BottomSheet({ open, onClose, title, children, height = "60%" }) {
+  useEffect(() => {
+    if (!open) return;
+    const handleKey = (e) => { if (e.key === "Escape") onClose?.(); };
+    window.addEventListener("keydown", handleKey);
+    // Prevent body scroll when open
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", handleKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [open, onClose]);
   if (!open) return null;
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 999, display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
       <div onClick={onClose} style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.3)" }} />
-      <div style={{ position: "relative", background: "#FFFFFF", borderRadius: "16px 16px 0 0", maxHeight: height, display: "flex", flexDirection: "column", animation: "slideUp .2s ease" }}>
+      <div role="dialog" aria-modal="true" aria-label={title} style={{ position: "relative", background: "#FFFFFF", borderRadius: "16px 16px 0 0", maxHeight: height, display: "flex", flexDirection: "column", animation: "slideUp .2s ease" }}>
         <div style={{ padding: "12px 0 0", display: "flex", justifyContent: "center" }}>
           <div style={{ width: 32, height: 4, borderRadius: 2, background: "#E5E5E5" }} />
         </div>

@@ -7,13 +7,12 @@ import { IcSearch, IcX, IcMsg } from "@/components/icons";
 import PBtn from "@/components/atoms/PBtn";
 import Crd from "@/components/atoms/Crd";
 import Avt from "@/components/atoms/Avt";
+import { toast } from "@/components/layout/Toast";
 
 export default function ChatList({ nav, refresh, goBack }) {
   const [q,setQ]=useState("");
   const convos = GS.conversations;
   const [showNewChat,setShowNewChat]=useState(false);
-
-  const toast = typeof window !== "undefined" && window.toast ? window.toast : () => {};
 
   const startNewChat = (name, accent) => {
     const newConvo = {

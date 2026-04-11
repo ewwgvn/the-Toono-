@@ -225,15 +225,19 @@ export default function Upload({ nav, goBack }) {
             let videoUrl = videoFile ? videoFile.url : null;
             if (isSupabaseReady() && GS.user.id) {
               const prefix = `${GS.user.id}/${Date.now()}`;
+              // Only upload new (base64) images, keep existing HTTP URLs as-is
               const uploaded = await Promise.all(
-                mediaFiles.map((f, i) => DB.uploadFile('works', `${prefix}_${i}.jpg`, f.url))
+                mediaFiles.map((f, i) => {
+                  if (!f.url.startsWith("data:")) return Promise.resolve(f.url);
+                  return DB.uploadFile('works', `${prefix}_${i}.jpg`, f.url);
+                })
               );
               const storageOk = uploaded.some(u => u !== null);
               if (!storageOk && uploaded.length > 0) {
-                console.warn('[Upload] Storage failed for all images — using compressed base64 fallback.');
+                console.warn('[Upload] Storage failed — using compressed base64 fallback.');
               }
               imageUrls = uploaded.map((url, i) => url || mediaFiles[i].url);
-              if (videoFile) {
+              if (videoFile && videoFile.url.startsWith("data:")) {
                 const vUrl = await DB.uploadFile('works', `${prefix}_video.mp4`, videoFile.url);
                 if (vUrl) videoUrl = vUrl;
               }

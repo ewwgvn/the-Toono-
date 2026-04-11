@@ -69,8 +69,8 @@ export default function CartScreen({ nav, refresh, goBack }) {
               </div>
             </div>
             <div style={{ borderTop: `1px solid ${T.border}`, padding: "8px 14px", display: "flex", justifyContent: "space-between" }}>
-              <button type="button" onClick={() => { GS.saved.add(item.id); GS.cart = GS.cart.filter(c => c.id !== item.id); refresh(); }} style={{ background: "none", border: "none", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.accent, cursor: "pointer" }}><span style={{ display: "flex" }}><IcBookmark /></span> Хадгалах</button>
-              <button type="button" onClick={() => { GS.cart = GS.cart.filter(c => c.id !== item.id); refresh(); }} style={{ background: "none", border: "none", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.red, cursor: "pointer" }}><span style={{ display: "flex" }}><IcTrash /></span> Хасах</button>
+              <button type="button" onClick={() => { GS.saved.add(item.id); GS.cart = GS.cart.filter(c => c.id !== item.id); saveGS(); refresh(); }} style={{ background: "none", border: "none", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.accent, cursor: "pointer" }}><span style={{ display: "flex" }}><IcBookmark /></span> Хадгалах</button>
+              <button type="button" onClick={() => { GS.cart = GS.cart.filter(c => c.id !== item.id); saveGS(); refresh(); }} style={{ background: "none", border: "none", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.red, cursor: "pointer" }}><span style={{ display: "flex" }}><IcTrash /></span> Хасах</button>
             </div>
           </Crd>)}
 

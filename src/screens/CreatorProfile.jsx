@@ -106,8 +106,8 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
             ?<PBtn small onClick={()=>nav("edit-profile")}>Профайл засах</PBtn>
             :<>
               <button type="button" onClick={async ()=>{
-                let convo = GS.conversations.find(cv=>cv.name===c.name);
-                if(!convo){convo={id:Date.now(),creatorId:c.id||null,name:c.name,accent:c.accent||T.accent,online:false,unread:0,msgs:[]};GS.conversations.unshift(convo);}
+                let convo = GS.conversations.find(cv=>(c.id&&cv.creatorId===c.id)||cv.name===c.name);
+                if(!convo){convo={id:Date.now(),creatorId:c.id||null,name:c.name,accent:c.accent||T.accent,online:false,unread:0,msgs:[]};GS.conversations.unshift(convo);saveGS();}
                 if(isSupabaseReady()&&GS.user.id&&c.id&&GS.user.id!==c.id){
                   const dbConvo=await DB.getOrCreateConversation(GS.user.id,c.id);
                   if(dbConvo)convo.dbId=dbConvo.id;
