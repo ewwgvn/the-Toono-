@@ -30,6 +30,7 @@ function FeedPost({ work, creator, nav, refresh, onOpenComment }) {
   const [saved, setSaved] = useState(GS.saved.has(work.id));
   const [likeCount, setLikeCount] = useState(work.likes_count || 0);
   const [commentCount, setCommentCount] = useState(0);
+  const [imgRatio, setImgRatio] = useState(null);
 
   useEffect(() => {
     if (work.id && isSupabaseReady()) {
@@ -91,13 +92,22 @@ function FeedPost({ work, creator, nav, refresh, onOpenComment }) {
         onClick={() => nav("work", { workId: work.id })}
         onDoubleClick={(e) => { e.preventDefault(); if (!liked) tLike(); }}
         style={{
-          width: "100%", aspectRatio: "4/5", background: "#F7F7F7",
+          width: "100%", aspectRatio: img ? (imgRatio || "1") : "4/5", background: "#F7F7F7",
           cursor: "pointer", position: "relative", overflow: "hidden",
           display: "flex", alignItems: "center", justifyContent: "center",
         }}
       >
         {img ? (
-          <img src={img} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          <img
+            src={img}
+            alt=""
+            loading="lazy"
+            onLoad={(e) => {
+              const { naturalWidth: nw, naturalHeight: nh } = e.currentTarget;
+              if (nw && nh) setImgRatio(`${nw}/${nh}`);
+            }}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          />
         ) : (
           <Toono size={80} color="#E5E5E5" />
         )}

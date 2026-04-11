@@ -30,6 +30,7 @@ export default function WorkCard({ work: w, onClick, onCreatorClick, onToggleLik
   const imgs = w.images?.length ? w.images : [];
   const [showHeart, setShowHeart] = useState(false);
   const [commentText, setCommentText] = useState("");
+  const [imgRatio, setImgRatio] = useState(null);
   const lastTap = useRef(0);
   const touchStart = useRef(null);
 
@@ -68,9 +69,19 @@ export default function WorkCard({ work: w, onClick, onCreatorClick, onToggleLik
           {w.createdAt && <div style={{ fontFamily: F, fontSize: 11, color: "#999999" }}>{timeAgo(w.createdAt)}</div>}
         </div>
         <div onClick={handleDoubleTap} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}
-          style={{ width: "100%", aspectRatio: "16/10", background: "#F7F7F7", cursor: "pointer", position: "relative", overflow: "hidden", userSelect: "none" }}>
+          style={{ width: "100%", aspectRatio: imgs.length > 0 ? (imgRatio || "1") : "4/5", background: "#F7F7F7", cursor: "pointer", position: "relative", overflow: "hidden", userSelect: "none" }}>
           {imgs.length > 0 ? (
-            <img src={imgs[imgIdx]} alt="" loading="lazy" draggable={false} style={{ width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }} />
+            <img
+              src={imgs[imgIdx]}
+              alt=""
+              loading="lazy"
+              draggable={false}
+              onLoad={(e) => {
+                const { naturalWidth: nw, naturalHeight: nh } = e.currentTarget;
+                if (nw && nh) setImgRatio(`${nw}/${nh}`);
+              }}
+              style={{ width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }}
+            />
           ) : (
             <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#999999", fontSize: 14, fontFamily: F }}>No image</div>
           )}

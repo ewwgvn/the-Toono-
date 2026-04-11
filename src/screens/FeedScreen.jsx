@@ -43,6 +43,7 @@ export default function FeedScreen({ nav, refresh, goBack }) {
     const saved = GS.saved.has(w.id);
     const img = w.images?.[0] || null;
     const [imgLoaded, setImgLoaded] = useState(false);
+    const [imgRatio, setImgRatio] = useState(null);
     const F = "'Helvetica Neue', Arial, sans-serif";
     return <div style={{ marginBottom: 4 }}>
       {/* Header */}
@@ -57,10 +58,10 @@ export default function FeedScreen({ nav, refresh, goBack }) {
         <button type="button" style={{ background: "none", border: "none", color: "#999999", cursor: "pointer", display: "flex", padding: 4, fontSize: 18 }}>···</button>
       </div>
 
-      {/* Image — Instagram 4:5 */}
-      <div onClick={() => nav("work", { workId: w.id })} style={{ width: "100%", aspectRatio: "4/5", background: "#F7F7F7", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", overflow: "hidden", position: "relative" }}>
+      {/* Image — natural aspect ratio */}
+      <div onClick={() => nav("work", { workId: w.id })} style={{ width: "100%", aspectRatio: img ? (imgRatio || "1") : "4/5", background: "#F7F7F7", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", overflow: "hidden", position: "relative" }}>
         {img
-          ? <img src={img} alt="" loading="lazy" onLoad={() => setImgLoaded(true)} style={{ width: "100%", height: "100%", objectFit: "cover", opacity: imgLoaded ? 1 : 0, transition: "opacity .3s" }} />
+          ? <img src={img} alt="" loading="lazy" onLoad={(e) => { setImgLoaded(true); const { naturalWidth: nw, naturalHeight: nh } = e.currentTarget; if (nw && nh) setImgRatio(`${nw}/${nh}`); }} style={{ width: "100%", height: "100%", objectFit: "cover", opacity: imgLoaded ? 1 : 0, transition: "opacity .3s" }} />
           : <Toono size={60} color="#999999" />}
         {!imgLoaded && img && <div style={{ position: "absolute", inset: 0, background: "#F7F7F7", display: "flex", alignItems: "center", justifyContent: "center" }}><Toono size={40} color="#999999" /></div>}
       </div>
