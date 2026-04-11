@@ -80,9 +80,9 @@ export default function Home({ nav, refresh }) {
           <button type="button" onClick={() => nav("explore")} style={{ background: "none", border: "none", fontFamily: F, fontSize: 13, color: "#666666", cursor: "pointer" }}>Бүгдийг харах</button>
         </div>
         <div style={{ display: "flex", gap: 16, overflowX: "auto", scrollbarWidth: "none", paddingBottom: 4 }}>
-          {getCreators().slice(0, 6).map(c => <div key={c.id} onClick={() => nav("profile", { creatorId: c.id })} style={{ flexShrink: 0, textAlign: "center", cursor: "pointer", width: 64 }}>
-            <Avt size={48} photo={c.photo} onClick={() => nav("profile", { creatorId: c.id })} />
-            <div style={{ fontFamily: F, fontSize: 11, fontWeight: 500, color: "#111111", marginTop: 6, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.name.split(" ")[0]}</div>
+          {getCreators().slice(0, 6).map(c => <div key={c.id} onClick={() => nav("profile", { creatorId: c.id })} style={{ flexShrink: 0, textAlign: "center", cursor: "pointer", width: 64, display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <Avt size={48} photo={c.photo} />
+            <div style={{ fontFamily: F, fontSize: 11, fontWeight: 500, color: "#111111", marginTop: 6, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "100%" }}>{c.name.split(" ")[0]}</div>
           </div>)}
         </div>
       </div>
