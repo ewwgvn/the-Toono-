@@ -52,14 +52,14 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
     if(isSupabaseReady()) {
       DB.getProfile(creatorId).then(async p=>{
         if(p) {
-          const fc = await DB.getFollowerCount(creatorId);
+          const fc = await DB.getFollowerCount(creatorId).catch(()=>0);
           setCreator({id:p.id,name:p.name||"—",field:p.field||"Бүтээлч",photo:p.photo||null,followers:String(fc),works:0,comm:p.comm_open||false,rating:p.rating||0,accent:"#111111",bio:p.bio||"",tags:p.tags||[]});
         }
-      });
+      }).catch(()=>{});
       DB.getWorks({creator_id:creatorId}).then(ws=>{
         setCreatorWorks(ws.map(w=>({...w,creator:w.profiles?.name||w.creator||"—"})));
         setCreator(prev=>({...prev,works:ws.length}));
-      });
+      }).catch(()=>setCreatorWorks([]));
     }
   },[creatorId]);
   const c=creator;

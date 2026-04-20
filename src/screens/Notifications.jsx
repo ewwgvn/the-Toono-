@@ -23,6 +23,7 @@ export default function Notifications({ nav, refresh }) {
       if (gsN) gsN.read = true;
       GS.unreadNotif = Math.max(0, GS.unreadNotif - 1);
       setNotis([...notis]);
+      saveGS();
       refresh();
     }
     // Set context before navigating
@@ -35,6 +36,7 @@ export default function Notifications({ nav, refresh }) {
     GS.notifications.forEach(n => n.read = true);
     GS.unreadNotif = 0;
     setNotis([...notis]);
+    saveGS();
     refresh();
     toast("Бүгд уншсан", "success");
   };

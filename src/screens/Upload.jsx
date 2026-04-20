@@ -6,6 +6,7 @@ import { GS, saveGS, WORKS } from "@/lib/store";
 import { DB, SQ, isSupabaseReady, supabase } from "@/lib/supabase";
 import { compressImage } from "@/lib/utils";
 import { IcBack, IcX, IcVideo, IcWarning, IcCheck } from "@/components/icons";
+import { toast } from "@/components/layout/Toast";
 import Crd from "@/components/atoms/Crd";
 import PBtn from "@/components/atoms/PBtn";
 import Pill from "@/components/atoms/Pill";
@@ -58,7 +59,7 @@ export default function Upload({ nav, goBack }) {
   const handleVideoPick = async (e) => {
     const f = e.target.files?.[0];
     if (!f || !f.type.startsWith("video/")) return;
-    if (f.size > 50 * 1024 * 1024) { alert("Видео 50MB-аас бага байх ёстой"); return; }
+    if (f.size > 50 * 1024 * 1024) { toast("Видео 50MB-аас бага байх ёстой", "error"); return; }
     // For videos, upload to Storage directly (don't use base64 for large files)
     if (isSupabaseReady() && GS.user.id) {
       const reader = new FileReader();
@@ -156,7 +157,7 @@ export default function Upload({ nav, goBack }) {
         {/* Warning: no media */}
         {mediaFiles.length === 0 && <div style={{ background: "rgba(240,160,48,0.1)", border: "1px solid rgba(240,160,48,0.3)", borderRadius: 12, padding: "12px 16px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, color: T.yellow, marginBottom: 16 }}><span style={{ display: "flex", marginRight: 4 }}><IcWarning /></span>Дор хаяж 1 зураг оруулна уу</div>}
 
-        <PBtn full onClick={() => { if (mediaFiles.length === 0) { alert("Дор хаяж 1 зураг оруулна уу"); return; } setStep(1); }}>Дараах → Мэдээлэл</PBtn>
+        <PBtn full onClick={() => { if (mediaFiles.length === 0) { toast("Дор хаяж 1 зураг оруулна уу", "error"); return; } setStep(1); }}>Дараах → Мэдээлэл</PBtn>
       </>}
 
       {/* STEP 1: Details */}
@@ -185,7 +186,7 @@ export default function Upload({ nav, goBack }) {
             {saleType === t[0] && <span style={{ color: T.accent }}><IcCheck /></span>}
           </button>)}
         </div>
-        <PBtn full onClick={() => { if (!title || !desc || !cat) { alert("Нэр, тайлбар, ангилал бөглөнө үү"); return; } setStep(2); }}>Дараах → Үнэ·Борлуулалт</PBtn>
+        <PBtn full onClick={() => { if (!title || !desc || !cat) { toast("Нэр, тайлбар, ангилал бөглөнө үү", "error"); return; } setStep(2); }}>Дараах → Үнэ·Борлуулалт</PBtn>
       </>}
 
       {/* STEP 2: Price */}
@@ -218,7 +219,7 @@ export default function Upload({ nav, goBack }) {
         </div>
 
         <PBtn full loading={loading} onClick={async () => {
-          if (saleType === "sale" && !price) { alert("Үнэ оруулна уу"); return; }
+          if (saleType === "sale" && !price) { toast("Үнэ оруулна уу", "error"); return; }
           setLoading(true);
           try {
             let imageUrls = mediaFiles.map(f => f.url);

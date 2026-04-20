@@ -196,7 +196,12 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
                 }
               }
             }
-            const sellerId = items[0]?.creator_id || getAllWorks().find(wk => wk.id === items[0]?.id)?.creator_id || null;
+            const sellerId = items[0]?.creator_id || items[0]?.cid || getAllWorks().find(wk => wk.id === items[0]?.id)?.creator_id || null;
+            if (!sellerId) {
+              const { toast } = await import("@/components/layout/Toast");
+              toast("Борлуулагч олдсонгүй", "error");
+              setLoading(false); return;
+            }
             const newOrder = {
               id: Date.now(),
               title: items.length === 1 ? items[0].title : items.length + " items",
