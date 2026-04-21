@@ -170,7 +170,7 @@ export default function MyProfile({ nav, refresh }) {
                     <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, fontWeight: 700, color: sc[statusMap[o.status] || o.status] || T.textSub, background: (sc[statusMap[o.status] || o.status] || T.textSub) + "18", padding: "3px 9px", borderRadius: 8 }}>{statusMap[o.status] || o.status}</span>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 15, fontWeight: 700, color: T.accent }}>₮{o.price.toLocaleString()}</div>
+                    <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 15, fontWeight: 700, color: T.accent }}>₮{(o.price || 0).toLocaleString()}</div>
                     {(o.status === "Хүргэгдсэн" || o.status === "delivered" || o.canReview) && <PBtn small secondary onClick={e => { e.stopPropagation(); nav("review-write"); }}>Үнэлгээ бичих</PBtn>}
                   </div>
                 </Crd>
@@ -192,7 +192,7 @@ export default function MyProfile({ nav, refresh }) {
                   {stepL.map((_, i) => <div key={i} style={{ flex: 1, height: 4, borderRadius: 2, background: i < c.step ? T.accent : T.border }} />)}
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 15, fontWeight: 700, color: T.accent }}>₮{c.price.toLocaleString()}</div>
+                  <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 15, fontWeight: 700, color: T.accent }}>₮{(c.price || 0).toLocaleString()}</div>
                   <PBtn small secondary onClick={() => { GS.activeChatId = GS.conversations[0]?.id || null; nav("chatroom"); }}>Зурвас үзэх</PBtn>
                 </div>
               </Crd>
