@@ -17,7 +17,7 @@ export default function Splash() {
     // 책을 펼친 듯한 좌/우 두 '페이지' 구조 — 왼쪽 네이비 삽화면 / 오른쪽 크림 글면,
     // 가운데를 세로 스캘럽 제본선으로 구분 (실제 펼친 책처럼 가로로 분할)
     return (
-      <div style={{ height: "100%", display: "flex", flexDirection: "row", background: T.bg, position: "relative", overflow: "hidden" }}>
+      <div style={{ height: "100%", width: "100vw", display: "flex", flexDirection: "row", background: T.bg, position: "relative", marginLeft: "calc(50% - 50vw)", marginRight: "calc(50% - 50vw)", overflow: "hidden" }}>
         {/* 왼쪽 페이지 — 삽화면 */}
         <div style={{ flex: "0 0 44%", background: D.ink, position: "relative", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <StoryDecor variant="stars" size={44} style={{ position: "absolute", top: 22, left: 16, opacity: .9 }} />
@@ -26,7 +26,7 @@ export default function Splash() {
           {/* 꽃잎 모양 블롭 프레임 */}
           <div style={{
             width: 104, height: 104, borderRadius: "42% 58% 53% 47% / 48% 45% 55% 52%",
-            background: D.red, display: "flex", alignItems: "center", justifyContent: "center",
+            background: D.gold, display: "flex", alignItems: "center", justifyContent: "center",
             opacity: 0, animation: "fadeUp .6s .15s ease forwards", border: `3px solid ${D.paper}`,
           }}>
             <Toono size={46} color={D.ink} />
@@ -49,7 +49,7 @@ export default function Splash() {
             </div>
           </div>
           <div style={{ width: 96, height: 4, borderRadius: 4, background: T.s3, marginTop: 4, overflow: "hidden" }}>
-            <div style={{ width: progress + "%", height: "100%", borderRadius: 4, background: D.red, transition: "width .2s" }} />
+            <div style={{ width: progress + "%", height: "100%", borderRadius: 4, background: D.gold, transition: "width .2s" }} />
           </div>
         </div>
 

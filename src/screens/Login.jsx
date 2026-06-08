@@ -1,12 +1,14 @@
 "use client";
 import { useState } from "react";
-import { T } from "@/theme/colors";
+import { T, getTheme, ULIGER_DECOR as D, ULIGER_FONT_DISPLAY, ULIGER_FONT_ACCENT } from "@/theme/colors";
 import { GS, saveGS, seedDemoData } from "@/lib/store";
 import { DB, isSupabaseReady, syncFromSupabase, fetchPublicData } from "@/lib/supabase";
 import { getAllWorks, getCreators } from "@/lib/utils";
 import { toast } from "@/components/layout/Toast";
 import Toono from "@/components/atoms/Toono";
 import PBtn from "@/components/atoms/PBtn";
+import StoryDecor from "@/components/atoms/StoryDecor";
+import ScallopEdge from "@/components/atoms/ScallopEdge";
 import {
   IcBack, IcEye, IcEyeOff, IcWarning, IcCheck,
   IcFieldFashion, IcFieldTextile, IcFieldArt, IcFieldDirection,
@@ -15,6 +17,7 @@ import {
 } from "@/components/icons";
 
 export default function Login({ nav, initialMode = "login" }) {
+  const isUliger = getTheme() === "uliger";
   const [mode, setMode] = useState(initialMode);
   const [step, setStep] = useState(0);
   const [role, setRole] = useState("");
@@ -117,17 +120,22 @@ export default function Login({ nav, initialMode = "login" }) {
     <div style={{width:"100%",maxWidth:480,height:"100%",display:"flex",flexDirection:"column"}}>
     <div style={{padding:"20px 20px 0",display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
       <button type="button" onClick={() => step > 0 ? setStep(step - 1) : nav("onboarding")} style={{background:"none",border:"none",color:T.textH,cursor:"pointer",display:"flex"}}><IcBack/></button>
-      <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:18,fontWeight:700,color:T.textH}}>{mode==="login"?"Нэвтрэх":"Бүртгүүлэх"}</div>
+      <div style={{fontFamily:isUliger?ULIGER_FONT_DISPLAY:"'Helvetica Neue', Arial, sans-serif",fontSize:18,fontWeight:700,color:T.textH}}>{mode==="login"?"Нэвтрэх":"Бүртгүүлэх"}</div>
     </div>
+    {isUliger && <ScallopEdge color={T.s2} size={10} style={{ marginTop: 14 }} />}
 
     <div style={{flex:1,padding:"24px 24px 40px",overflowY:"auto",scrollbarWidth:"none"}}>
       {/* Logo */}
-      <div style={{textAlign:"center",marginBottom:28}}>
-        <div style={{display:"inline-flex",width:68,height:68,borderRadius:20,background:T.accentSub,border:`1px solid ${T.accentGlow}`,alignItems:"center",justifyContent:"center",marginBottom:12}}>
-          <Toono size={42} color={T.accent}/>
+      <div style={{textAlign:"center",marginBottom:28,position:"relative"}}>
+        {isUliger && <>
+          <StoryDecor variant="stars" size={30} style={{ position:"absolute", left:"18%", top:-6, opacity:.7 }} />
+          <StoryDecor variant="moon" size={34} style={{ position:"absolute", right:"16%", top:-2, opacity:.75 }} />
+        </>}
+        <div style={{display:"inline-flex",width:68,height:68,borderRadius:isUliger?"42% 58% 53% 47% / 48% 45% 55% 52%":20,background:isUliger?D.gold:T.accentSub,border:isUliger?`3px solid ${D.ink}`:`1px solid ${T.accentGlow}`,alignItems:"center",justifyContent:"center",marginBottom:12}}>
+          <Toono size={42} color={isUliger?D.ink:T.accent}/>
         </div>
-        <div style={{fontFamily:"'Stardom','Helvetica Neue',Arial,sans-serif",fontSize:28,fontWeight:400,color:T.textH,letterSpacing:".02em"}}>Uliger</div>
-        {mode==="login"&&<div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,color:T.textSub,marginTop:4}}>Бүртгэлдээ нэвтэрнэ үү</div>}
+        <div style={{fontFamily:isUliger?ULIGER_FONT_DISPLAY:"'Stardom','Helvetica Neue',Arial,sans-serif",fontSize:28,fontWeight:isUliger?700:400,color:T.textH,letterSpacing:".02em"}}>Uliger</div>
+        {mode==="login"&&<div style={{fontFamily:isUliger?ULIGER_FONT_ACCENT:"'Helvetica Neue', Arial, sans-serif",fontSize:isUliger?16:13,color:isUliger?T.textSub:T.textSub,marginTop:4}}>Бүртгэлдээ нэвтэрнэ үү</div>}
       </div>
 
       {mode==="login"&&<>

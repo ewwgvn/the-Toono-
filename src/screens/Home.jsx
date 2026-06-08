@@ -1,10 +1,12 @@
 "use client";
 import { useState, useEffect, useRef, memo } from "react";
 import { GS, saveGS } from "@/lib/store";
-import { T } from "@/theme/colors";
+import { T, getTheme, ULIGER_DECOR as D, ULIGER_FONT_DISPLAY } from "@/theme/colors";
 import { DB, isSupabaseReady, fetchPublicData } from "@/lib/supabase";
 import { getAllWorks, getCreators, fmtP } from "@/lib/utils";
 import Toono from "@/components/atoms/Toono";
+import StoryDecor from "@/components/atoms/StoryDecor";
+import ScallopEdge from "@/components/atoms/ScallopEdge";
 import { IcCart, IcBell, IcSearch, IcHeart } from "@/components/icons";
 
 const F = "'Helvetica Neue', Arial, sans-serif";
@@ -22,6 +24,38 @@ function HeroBanner({ works, nav }) {
   const w = works[idx] || works[0];
   if (!w) return null;
   const lbl = HERO_LABELS[idx % HERO_LABELS.length];
+  const isUliger = getTheme() === "uliger";
+
+  if (isUliger) {
+    // 잡지(에디토리얼) 펼침면 — 왼쪽 글 칼럼 / 세로 제본선 / 오른쪽 큰 이미지 블록
+    return (
+      <div style={{ display: "flex", flexDirection: "row", width: "100%", cursor: "pointer" }} onClick={() => nav("work", { workId: w.id })}>
+        <div style={{ flex: "0 0 38%", background: D.navy, position: "relative", overflow: "hidden", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "18px 14px" }}>
+          <StoryDecor variant="stars" size={28} style={{ position: "absolute", top: 10, right: 8, opacity: .6 }} />
+          <div>
+            <div style={{ fontFamily: F, fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", color: D.gold, marginBottom: 8, textTransform: "uppercase" }}>{lbl.label}</div>
+            <div style={{ fontFamily: ULIGER_FONT_DISPLAY, fontSize: 19, fontWeight: 700, color: "#FFFFFF", lineHeight: 1.25 }}>{w.title}</div>
+          </div>
+          <div>
+            <div style={{ fontFamily: F, fontSize: 11, color: "rgba(255,255,255,0.6)", lineHeight: 1.6, marginBottom: 12 }}>{lbl.sub}</div>
+            {works.length > 1 && (
+              <div style={{ display: "flex", gap: 5 }} onClick={e => e.stopPropagation()}>
+                {works.map((_, i) => (
+                  <button key={i} type="button" aria-label={`${i+1}-р зураг`} onClick={() => setIdx(i)} style={{ width: i === idx ? 18 : 6, height: 6, borderRadius: 3, background: i === idx ? D.gold : "rgba(255,255,255,0.3)", border: "none", cursor: "pointer", padding: 0, transition: "all .2s" }} />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+        <ScallopEdge color={T.bg} orientation="vertical" size={14} style={{ marginLeft: -1 }} />
+        <div style={{ flex: 1, position: "relative", overflow: "hidden", background: T.s2 }}>
+          <img src={w.images[0]} alt={w.title} style={{ width: "100%", height: "100%", aspectRatio: "3/4", objectFit: "cover", display: "block" }} />
+          <div style={{ position: "absolute", top: 10, right: 10, width: 26, height: 26, borderRadius: 7, background: D.gold, border: `2px solid ${D.paper}` }} />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ position: "relative", width: "100%", overflow: "hidden", cursor: "pointer" }} onClick={() => nav("work", { workId: w.id })}>
       <div style={{ width: "100%", aspectRatio: "16/9", background: "#111", position: "relative", overflow: "hidden" }}>
@@ -94,12 +128,12 @@ const CreatorChip = memo(function CreatorChip({ c, nav }) {
 });
 
 // ── 섹션 헤더 ─────────────────────────────────────────────────────────────────
-function SectionLabel({ label, title, action, onAction }) {
+function SectionLabel({ label, title, action, onAction, isUliger }) {
   return (
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 14 }}>
       <div>
         {label && <div style={{ fontFamily: F, fontSize: 10, fontWeight: 600, letterSpacing: "0.1em", color: T.textDim, marginBottom: 4, textTransform: "uppercase" }}>{label}</div>}
-        <div style={{ fontFamily: F, fontSize: 20, fontWeight: 800, color: T.textH, lineHeight: 1.1, letterSpacing: "-.02em" }}>{title}</div>
+        <div style={{ fontFamily: isUliger ? ULIGER_FONT_DISPLAY : F, fontSize: 20, fontWeight: isUliger ? 700 : 800, color: T.textH, lineHeight: 1.1, letterSpacing: "-.02em" }}>{title}</div>
       </div>
       {action && <button type="button" onClick={onAction} style={{ background: "none", border: "none", fontFamily: F, fontSize: 12, color: T.textDim, cursor: "pointer", flexShrink: 0, marginBottom: 2 }}>{action}</button>}
     </div>
@@ -155,15 +189,17 @@ export default function Home({ nav, refresh }) {
   const recentlyViewed = (GS.recentlyViewed || []).map(id => allW.find(w => w.id === id)).filter(Boolean).slice(0, 6);
   // 히어로 배너용 — 최신 작품 중 이미지 있는 것 3개
   const heroWorks = sorted.filter(w => w.images?.[0]).slice(0, 3);
+  const isUliger = getTheme() === "uliger";
 
   return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", background: "#FFFFFF" }}>
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", background: T.bg }}>
 
       {/* ── 헤더 ── */}
-      <div className="toono-mobile-nav" style={{ padding: "12px 16px", paddingTop: "max(12px, env(safe-area-inset-top, 12px))", justifyContent: "space-between", alignItems: "center", background: T.s1, flexShrink: 0, borderBottom: `1px solid ${T.borderLight}` }}>
+      <div className="toono-mobile-nav" style={{ padding: "12px 16px", paddingTop: "max(12px, env(safe-area-inset-top, 12px))", justifyContent: "space-between", alignItems: "center", background: T.s1, flexShrink: 0, borderBottom: `1px solid ${T.borderLight}`, position: "relative" }}>
+        {isUliger && <StoryDecor variant="stars" size={22} style={{ position: "absolute", left: 90, top: 6, opacity: .55 }} />}
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <Toono size={18} color={T.textH} />
-          <span style={{ fontFamily: STARDOM, fontSize: 17, fontWeight: 400, color: T.textH, letterSpacing: "0.02em" }}>Uliger</span>
+          <span style={{ fontFamily: isUliger ? ULIGER_FONT_DISPLAY : STARDOM, fontSize: 17, fontWeight: isUliger ? 700 : 400, color: T.textH, letterSpacing: "0.02em" }}>Uliger</span>
         </div>
         <div style={{ display: "flex", gap: 6 }}>
           <button type="button" aria-label="Хайх" className="toono-pressable" onClick={() => nav("explore")} style={{ width: 34, height: 34, borderRadius: 10, background: T.s2, border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: T.textH }}><IcSearch /></button>
@@ -182,7 +218,7 @@ export default function Home({ nav, refresh }) {
         {loading ? <Skeleton /> : <>
 
           {/* ── 카테고리 필터 ── */}
-          <div style={{ padding: "10px 0 0", borderBottom: `1px solid ${T.s2}` }}>
+          <div style={{ padding: "10px 0 0", borderBottom: isUliger ? "none" : `1px solid ${T.s2}` }}>
             <div style={{ display: "flex", gap: 6, overflowX: "auto", scrollbarWidth: "none", padding: "0 16px 10px" }}>
               {[["all", "Бүгд"], ...CATS.map(c => [c, c.split(" ")[0]])].map(([k, l]) => (
                 <button key={k} type="button" onClick={() => setSelCat(k)} style={{ flexShrink: 0, padding: "7px 14px", borderRadius: 20, fontFamily: F, fontSize: 12, fontWeight: selCat === k ? 700 : 400, background: selCat === k ? T.textH : "transparent", border: selCat === k ? "none" : `1px solid ${T.border}`, color: selCat === k ? "#FFFFFF" : T.textSub, cursor: "pointer", transition: "all .15s", whiteSpace: "nowrap" }}>
@@ -191,19 +227,21 @@ export default function Home({ nav, refresh }) {
               ))}
             </div>
           </div>
+          {isUliger && <ScallopEdge color={T.s2} size={10} />}
 
           {/* ── 히어로 배너 ── */}
           {heroWorks.length > 0 && selCat === "all" && (
             <HeroBanner works={heroWorks} nav={nav} />
           )}
+          {isUliger && heroWorks.length > 0 && selCat === "all" && <ScallopEdge color={T.s2} size={10} flip />}
 
           {/* ── 크리에이터 ── */}
           {topCreators.length > 0 && selCat === "all" && (
-            <div style={{ padding: "24px 0 20px", borderBottom: `1px solid ${T.s2}` }}>
+            <div style={{ padding: "24px 0 20px", borderBottom: isUliger ? "none" : `1px solid ${T.s2}` }}>
               <div style={{ padding: "0 16px", marginBottom: 14 }}>
                 <div style={{ fontFamily: F, fontSize: 10, fontWeight: 600, letterSpacing: "0.1em", color: T.textDim, marginBottom: 4, textTransform: "uppercase" }}>CREATORS</div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div style={{ fontFamily: F, fontSize: 20, fontWeight: 800, color: T.textH, letterSpacing: "-.02em" }}>Бүтээлчид</div>
+                  <div style={{ fontFamily: isUliger ? ULIGER_FONT_DISPLAY : F, fontSize: 20, fontWeight: isUliger ? 700 : 800, color: T.textH, letterSpacing: "-.02em" }}>Бүтээлчид</div>
                   <button type="button" onClick={() => nav("explore")} style={{ background: "none", border: "none", fontFamily: F, fontSize: 12, color: T.textDim, cursor: "pointer" }}>Бүгд →</button>
                 </div>
               </div>
@@ -212,11 +250,12 @@ export default function Home({ nav, refresh }) {
               </div>
             </div>
           )}
+          {isUliger && topCreators.length > 0 && selCat === "all" && <ScallopEdge color={T.s2} size={10} />}
 
           {/* ── 인기 상품 ── */}
           {popular.length > 0 && selCat === "all" && (
-            <div style={{ padding: "28px 16px 0", borderBottom: `1px solid ${T.s2}`, paddingBottom: 24 }}>
-              <SectionLabel label="POPULAR LISTINGS" title="Алдартай бүтээл" action="Бүгд →" onAction={() => nav("explore")} />
+            <div style={{ padding: "28px 16px 0", borderBottom: isUliger ? "none" : `1px solid ${T.s2}`, paddingBottom: 24 }}>
+              <SectionLabel label="POPULAR LISTINGS" title="Алдартай бүтээл" action="Бүгд →" onAction={() => nav("explore")} isUliger={isUliger} />
               <div style={{ display: "flex", gap: 12, overflowX: "auto", scrollbarWidth: "none", marginLeft: -16, marginRight: -16, paddingLeft: 16, paddingRight: 16 }}>
                 {popular.map(w => (
                   <div key={w.id} onClick={() => nav("work", { workId: w.id })} className="toono-card-tap" style={{ flexShrink: 0, width: 148, cursor: "pointer" }}>
@@ -236,11 +275,12 @@ export default function Home({ nav, refresh }) {
               </div>
             </div>
           )}
+          {isUliger && popular.length > 0 && selCat === "all" && <ScallopEdge color={T.s2} size={10} />}
 
           {/* ── 최근 본 ── */}
           {recentlyViewed.length > 0 && selCat === "all" && (
-            <div style={{ padding: "24px 16px 0", borderBottom: `1px solid ${T.s2}`, paddingBottom: 20 }}>
-              <SectionLabel label="RECENTLY VIEWED" title="Сүүлд үзсэн" />
+            <div style={{ padding: "24px 16px 0", borderBottom: isUliger ? "none" : `1px solid ${T.s2}`, paddingBottom: 20 }}>
+              <SectionLabel label="RECENTLY VIEWED" title="Сүүлд үзсэн" isUliger={isUliger} />
               <div style={{ display: "flex", gap: 10, overflowX: "auto", scrollbarWidth: "none", marginLeft: -16, marginRight: -16, paddingLeft: 16, paddingRight: 16 }}>
                 {recentlyViewed.map(w => (
                   <div key={w.id} onClick={() => nav("work", { workId: w.id })} className="toono-card-tap" style={{ flexShrink: 0, width: 100, cursor: "pointer" }}>
@@ -263,6 +303,7 @@ export default function Home({ nav, refresh }) {
               label={selCat === "all" ? "ALL WORKS" : selCat.toUpperCase()}
               title={selCat === "all" ? "Бүх бүтээл" : selCat}
               action={`${filtered.length}ш`}
+              isUliger={isUliger}
             />
             {filtered.length === 0 ? (
               <div style={{ padding: "60px 0", textAlign: "center" }}>

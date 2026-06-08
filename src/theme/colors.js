@@ -1,45 +1,46 @@
 "use client";
 
-// ── Uliger color system — folk-art storybook, ink + paper + red ─────────────
-// Uliger = 이야기/설화 → 몽골·슬라브 민속 자수책 같은 그래픽한 무드
-// (잉크 블랙 · 페이퍼 화이트 · 강렬한 레드의 대비 — 크림/오렌지 톤은 배제)
+// ── Uliger color system — night-sky storybook, cool palette ─────────────────
+// Uliger = 이야기/설화 → 동화책 밤하늘의 그래픽한 무드
+// 오직 네이비 · 골드 · 하늘색 · 블랙 · 화이트만 사용 (크림/베이지/오렌지/레드 톤 배제)
 export const ULIGER = {
-  bg:          "#F6F3EE",   // 차분한 페이퍼 화이트 (크림기 제거)
-  s1:          "#F6F3EE",
-  s2:          "#EFEAE2",
-  s3:          "#E2D9CB",
-  border:      "#D8CEBE",
-  borderMid:   "#C2B6A2",
-  borderLight: "#EFEAE2",
-  accent:      "#D6362A",   // 민속 자수책의 강렬한 레드 — 메인 액센트
-  accentHover: "#B8281D",
-  accentSub:   "#F6DEDA",
-  accentGlow:  "#EABFB9",
-  textH:       "#1C1916",   // 잉크 블랙
-  textB:       "#3B342C",
-  textSub:     "#897C6D",
-  textDim:     "#B7AB99",
+  bg:          "#FFFFFF",
+  s1:          "#FFFFFF",
+  s2:          "#F2F4F8",
+  s3:          "#E4E9F0",
+  border:      "#DBE2EC",
+  borderMid:   "#C2CBDA",
+  borderLight: "#EEF1F6",
+  accent:      "#2B3A63",   // 밤하늘 네이비 — 메인 액센트
+  accentHover: "#1F2C4D",
+  accentSub:   "#E6EAF4",
+  accentGlow:  "#C7D2E6",
+  textH:       "#15171C",   // 거의 블랙
+  textB:       "#383D47",
+  textSub:     "#777E8C",
+  textDim:     "#A8AFBC",
   green:       "#5A8F5E",
   greenSub:    "rgba(90,143,94,0.10)",
-  red:         "#D6362A",
-  redSub:      "rgba(214,54,42,0.09)",
-  yellow:      "#BFA046",   // 오렌지기를 뺀 차분한 골드
-  nav:         "#F6F3EE",
+  red:         "#C9573F",   // 오류 등 시맨틱 전용 (무드 팔레트에는 사용하지 않음)
+  redSub:      "rgba(201,87,63,0.09)",
+  yellow:      "#C9A227",   // 골드
+  nav:         "#FFFFFF",
   isDark:      false,
 };
 
-// 민속 자수책 무드의 타이포 — 제목엔 둥글둥글한 디스플레이체, 강조엔 손글씨체
+// 동화책 밤하늘 무드의 타이포 — 제목엔 둥글둥글한 디스플레이체, 강조엔 손글씨체
 export const ULIGER_FONT_DISPLAY = "'Comfortaa', 'Helvetica Neue', Arial, sans-serif";
 export const ULIGER_FONT_ACCENT  = "'Caveat', 'Helvetica Neue', Arial, sans-serif";
 
-// 민속 자수책 무드의 보조 팔레트 — 장식용 일러스트 요소(별, 달, 구름, 꽃 등) 전용
-// T 토큰에는 없는 색조(잉크/레드/스톤/페이퍼)를 uliger 테마 장식에 사용
+// 동화책 밤하늘 무드의 보조 팔레트 — 장식용 일러스트 요소(별·달·구름·꽃 등) 전용
+// 네이비 · 골드 · 하늘색 · 잉크 블랙 · 화이트 다섯 가지로만 구성 (크리미한 톤 배제)
 export const ULIGER_DECOR = {
-  ink:      "#23201B",   // 잉크 블랙
-  inkSub:   "rgba(35,32,27,0.10)",
-  red:      "#D6362A",   // 강렬한 레드 (자수 모티프)
-  stone:    "#C7BCAC",   // 따뜻한 스톤 그레이
-  paper:    "#F6F3EE",   // 페이퍼 화이트
+  ink:    "#15171C",   // 잉크 블랙
+  inkSub: "rgba(21,23,28,0.10)",
+  navy:   "#2B3A63",   // 밤하늘 네이비
+  gold:   "#C9A227",   // 별빛 골드
+  sky:    "#8FB7DC",   // 하늘색
+  paper:  "#FFFFFF",   // 화이트
 };
 
 // ── Mono (무채색) theme ───────────────────────────────────────────────────────

@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { T } from "@/theme/colors";
+import { T, getTheme, ULIGER_DECOR as D, ULIGER_FONT_DISPLAY } from "@/theme/colors";
 import { GS, saveGS } from "@/lib/store";
 import { DB, isSupabaseReady } from "@/lib/supabase";
 import { toast } from "@/components/layout/Toast";
@@ -8,9 +8,12 @@ import Toono from "@/components/atoms/Toono";
 import PBtn from "@/components/atoms/PBtn";
 import Inp from "@/components/atoms/Inp";
 import ImageCropper from "@/components/shared/ImageCropper";
+import StoryDecor from "@/components/atoms/StoryDecor";
+import ScallopEdge from "@/components/atoms/ScallopEdge";
 import { IcBack, IcProfile, IcCamera, IcCommission, IcCheck } from "@/components/icons";
 
 export default function ProfileSetup({ nav, refresh, goBack }) {
+  const isUliger = getTheme() === "uliger";
   const [step, setStep] = useState(0);
   const [field, setField] = useState(GS.user.field);
   const [bio, setBio] = useState("");
@@ -85,25 +88,27 @@ export default function ProfileSetup({ nav, refresh, goBack }) {
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
         <div style={{display:"flex",alignItems:"center",gap:10}}>
           <button type="button" onClick={() => goBack?goBack():nav("login")} style={{width:36,height:36,borderRadius:10,background:T.s1,border:`1px solid ${T.border}`,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:T.textH,flexShrink:0}}><IcBack/></button>
-          <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:22,fontWeight:800,color:T.textH}}>Профайл тохируулах</div>
+          <div style={{fontFamily:isUliger?ULIGER_FONT_DISPLAY:"'Helvetica Neue', Arial, sans-serif",fontSize:22,fontWeight:isUliger?700:800,color:T.textH}}>Профайл тохируулах</div>
         </div>
         <button type="button" onClick={skip} style={{background:"none",border:"none",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,color:T.textSub,cursor:"pointer"}}>Алгасах →</button>
       </div>
       <div style={{display:"flex",gap:5,marginBottom:6}}>
-        {[0,1,2].map(i => <div key={i} style={{flex:1,height:4,borderRadius:2,background:i<=step?T.accent:T.border}}/>)}
+        {[0,1,2].map(i => <div key={i} style={{flex:1,height:4,borderRadius:2,background:i<=step?(isUliger?D.gold:T.accent):T.border}}/>)}
       </div>
       <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.textSub}}>{step+1}/3 — {["Зураг · Нэр","Чиглэл · Танилцуулга","Таг сонгох"][step]}</div>
     </div>
+    {isUliger && <ScallopEdge color={T.s2} size={10} />}
 
     <div style={{flex:1,overflowY:"auto",scrollbarWidth:"none",padding:"16px 20px 0"}}>
       {step===0&&<>
-        <div style={{display:"flex",flexDirection:"column",alignItems:"center",marginBottom:24}}>
+        <div style={{display:"flex",flexDirection:"column",alignItems:"center",marginBottom:24,position:"relative"}}>
+          {isUliger && <StoryDecor variant="flower" size={36} style={{ position:"absolute", right:"22%", top:-10, opacity:.6 }} />}
           <div style={{position:"relative",marginBottom:12}}>
-            <div style={{width:100,height:100,borderRadius:30,background:T.accentSub,border:`2px solid ${T.accentGlow}`,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>
+            <div style={{width:100,height:100,borderRadius:isUliger?"42% 58% 53% 47% / 48% 45% 55% 52%":30,background:isUliger?D.gold:T.accentSub,border:isUliger?`2px solid ${D.ink}`:`2px solid ${T.accentGlow}`,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>
               {photo ? <img src={photo} alt="" loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
-                     : <div style={{color:T.accent}}><IcProfile/></div>}
+                     : <div style={{color:isUliger?D.ink:T.accent}}><IcProfile/></div>}
             </div>
-            <label style={{position:"absolute",bottom:-4,right:-4,width:32,height:32,borderRadius:"50%",background:T.accent,border:`2px solid ${T.bg}`,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:"#fff"}}>
+            <label style={{position:"absolute",bottom:-4,right:-4,width:32,height:32,borderRadius:"50%",background:isUliger?D.ink:T.accent,border:`2px solid ${T.bg}`,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:"#fff"}}>
               <IcCamera/>
               <input type="file" accept="image/*" onChange={handlePhoto} style={{display:"none"}}/>
             </label>
@@ -135,10 +140,10 @@ export default function ProfileSetup({ nav, refresh, goBack }) {
         <div style={{display:"flex",flexWrap:"wrap",gap:10}}>
           {suggestedTags.map(t => {
             const sel = tags.includes(t);
-            return <button type="button" key={t} onClick={() => setTags(sel?tags.filter(x => x!==t):[...tags,t])} style={{padding:"10px 18px",borderRadius:20,cursor:"pointer",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,fontWeight:600,background:sel?T.accent:T.s1,border:`1.5px solid ${sel?T.accent:T.border}`,color:sel?"#fff":T.textSub,transition:"all .12s"}}>{t}</button>;
+            return <button type="button" key={t} onClick={() => setTags(sel?tags.filter(x => x!==t):[...tags,t])} style={{padding:"10px 18px",borderRadius:20,cursor:"pointer",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,fontWeight:600,background:sel?(isUliger?D.gold:T.accent):T.s1,border:`1.5px solid ${sel?(isUliger?D.ink:T.accent):T.border}`,color:sel?(isUliger?D.ink:"#fff"):T.textSub,transition:"all .12s"}}>{t}</button>;
           })}
         </div>
-        {tags.length>0&&<div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.accent,marginTop:12}}>{tags.length} сонгогдлоо</div>}
+        {tags.length>0&&<div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:isUliger?D.navy:T.accent,marginTop:12}}>{tags.length} сонгогдлоо</div>}
       </>}
 
       <div style={{height:20}}/>
