@@ -1,45 +1,45 @@
 "use client";
 
-// ── Uliger color system — storybook, warm, soft ──────────────────────────────
-// Uliger = 이야기/설화 → 동화책 삽화 같은 따뜻하고 포근한 분위기
-// (밤하늘 네이비 · 테라코타 오렌지 · 머스타드 옐로 · 라벤더가 어우러진 무드)
+// ── Uliger color system — folk-art storybook, ink + paper + red ─────────────
+// Uliger = 이야기/설화 → 몽골·슬라브 민속 자수책 같은 그래픽한 무드
+// (잉크 블랙 · 페이퍼 화이트 · 강렬한 레드의 대비 — 크림/오렌지 톤은 배제)
 export const ULIGER = {
-  bg:          "#FFF9F1",   // 따뜻한 크림 화이트
-  s1:          "#FFF9F1",
-  s2:          "#FBF1E4",   // 연한 오트밀 크림
-  s3:          "#F1E4D2",   // 따뜻한 베이지
-  border:      "#E9DCC7",   // 카라멜 베이지 경계선
-  borderMid:   "#D2C0A4",
-  borderLight: "#F4EAD9",   // 아주 연한 크림 경계
-  accent:      "#33406B",   // 동화 일러스트의 깊은 밤하늘 네이비 — 메인 액센트
-  accentHover: "#262E50",
-  accentSub:   "#E7E9F2",   // 연한 네이비-라벤더 배경
-  accentGlow:  "#C4CADC",   // 네이비 글로우
-  textH:       "#2A2218",   // 따뜻한 잉크 브라운 (거의 검정)
-  textB:       "#4A3D2E",   // 따뜻한 브라운
-  textSub:     "#8C7C68",   // 따뜻한 모카 그레이
-  textDim:     "#B6A98F",   // 연한 모카
-  green:       "#5A8F5E",   // 부드러운 세이지 그린 (성공)
+  bg:          "#F6F3EE",   // 차분한 페이퍼 화이트 (크림기 제거)
+  s1:          "#F6F3EE",
+  s2:          "#EFEAE2",
+  s3:          "#E2D9CB",
+  border:      "#D8CEBE",
+  borderMid:   "#C2B6A2",
+  borderLight: "#EFEAE2",
+  accent:      "#D6362A",   // 민속 자수책의 강렬한 레드 — 메인 액센트
+  accentHover: "#B8281D",
+  accentSub:   "#F6DEDA",
+  accentGlow:  "#EABFB9",
+  textH:       "#1C1916",   // 잉크 블랙
+  textB:       "#3B342C",
+  textSub:     "#897C6D",
+  textDim:     "#B7AB99",
+  green:       "#5A8F5E",
   greenSub:    "rgba(90,143,94,0.10)",
-  red:         "#C9573F",
-  redSub:      "rgba(201,87,63,0.09)",
-  yellow:      "#E0A22C",   // 머스타드 허니 옐로
-  nav:         "#FFF9F1",
+  red:         "#D6362A",
+  redSub:      "rgba(214,54,42,0.09)",
+  yellow:      "#BFA046",   // 오렌지기를 뺀 차분한 골드
+  nav:         "#F6F3EE",
   isDark:      false,
 };
 
-// 동화책 키치/큐티 무드의 타이포 — 제목엔 둥글둥글한 디스플레이체, 강조엔 손글씨체
+// 민속 자수책 무드의 타이포 — 제목엔 둥글둥글한 디스플레이체, 강조엔 손글씨체
 export const ULIGER_FONT_DISPLAY = "'Comfortaa', 'Helvetica Neue', Arial, sans-serif";
 export const ULIGER_FONT_ACCENT  = "'Caveat', 'Helvetica Neue', Arial, sans-serif";
 
-// 동화책 삽화 무드의 보조 팔레트 — 장식용 일러스트 요소(별, 달, 구름 등) 전용
-// T 토큰 형태에는 없는 색조(네이비/머스타드/라벤더)를 uliger 테마 장식에 사용
+// 민속 자수책 무드의 보조 팔레트 — 장식용 일러스트 요소(별, 달, 구름, 꽃 등) 전용
+// T 토큰에는 없는 색조(잉크/레드/스톤/페이퍼)를 uliger 테마 장식에 사용
 export const ULIGER_DECOR = {
-  navy:     "#33406B",   // 밤하늘 네이비
-  navySub:  "rgba(51,64,107,0.12)",
-  mustard:  "#EAAE3E",   // 머스타드 옐로 (별빛)
-  lavender: "#A6A6D6",   // 라벤더
-  star:     "#FFF6E8",   // 별빛 크림
+  ink:      "#23201B",   // 잉크 블랙
+  inkSub:   "rgba(35,32,27,0.10)",
+  red:      "#D6362A",   // 강렬한 레드 (자수 모티프)
+  stone:    "#C7BCAC",   // 따뜻한 스톤 그레이
+  paper:    "#F6F3EE",   // 페이퍼 화이트
 };
 
 // ── Mono (무채색) theme ───────────────────────────────────────────────────────

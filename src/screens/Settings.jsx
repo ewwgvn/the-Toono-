@@ -53,9 +53,9 @@ export default function Settings({ nav, goBack, refresh }) {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
           {/* 동화 (uliger) */}
           <button type="button" onClick={() => switchTheme("uliger")} style={{ padding: "16px 14px", borderRadius: 14, border: `2px solid ${theme === "uliger" ? T.accent : T.border}`, background: theme === "uliger" ? T.accentSub : T.s1, cursor: "pointer", textAlign: "left", transition: "all .2s" }}>
-            <div style={{ width: 28, height: 28, borderRadius: 8, marginBottom: 10, position: "relative", overflow: "hidden", background: `linear-gradient(135deg, ${ULIGER_DECOR.navy} 0%, ${T.accent} 60%, ${ULIGER_DECOR.mustard} 100%)` }}>
-              <span style={{ position: "absolute", top: 5, left: 6, width: 3, height: 3, borderRadius: "50%", background: ULIGER_DECOR.star }} />
-              <span style={{ position: "absolute", top: 12, left: 16, width: 2, height: 2, borderRadius: "50%", background: ULIGER_DECOR.star, opacity: .8 }} />
+            <div style={{ width: 28, height: 28, borderRadius: 8, marginBottom: 10, position: "relative", overflow: "hidden", background: `linear-gradient(135deg, ${ULIGER_DECOR.ink} 0%, ${ULIGER_DECOR.red} 55%, ${ULIGER_DECOR.paper} 100%)` }}>
+              <span style={{ position: "absolute", top: 5, left: 6, width: 3, height: 3, borderRadius: "50%", background: ULIGER_DECOR.paper }} />
+              <span style={{ position: "absolute", top: 12, left: 16, width: 2, height: 2, borderRadius: "50%", background: ULIGER_DECOR.stone, opacity: .8 }} />
             </div>
             <div style={{ fontFamily: F, fontSize: 13, fontWeight: 700, color: T.textH, marginBottom: 3 }}>Үлгэр</div>
             <div style={{ fontFamily: F, fontSize: 11, color: T.textSub, lineHeight: 1.4 }}>Дулаан, түүхэн мэт зөөлөн өнгөнүүд</div>
