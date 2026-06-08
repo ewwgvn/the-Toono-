@@ -61,11 +61,12 @@ function FullBleedHalf({ page, side, pageNumber }) {
   return (
     <div style={{
       flex: 1, position: "relative", overflow: "hidden",
-      background: page.image
-        ? `url(${page.image})`
+      backgroundColor: C.navyDeep,
+      backgroundImage: page.image
+        ? `linear-gradient(rgba(15,23,42,.15),rgba(15,23,42,.15)), url(${page.image})`
         : `radial-gradient(circle at ${side === "left" ? "72%" : "28%"} 32%, ${C.navy}, ${C.navyDeep})`,
-      backgroundSize: page.image ? "200% 100%" : undefined,
-      backgroundPosition: page.image ? (side === "left" ? "left center" : "right center") : undefined,
+      backgroundSize: page.image ? "200% 100%" : "cover",
+      backgroundPosition: page.image ? (side === "left" ? "left center" : "right center") : "center",
       backgroundRepeat: "no-repeat",
       minHeight: 320,
     }}>
@@ -99,7 +100,11 @@ function SplitHalf({ page, role, pageNumber }) {
         width: "70%", aspectRatio: "1 / 1", borderRadius: "50%", overflow: "hidden",
         border: `3px solid ${C.gold}`,
         boxShadow: `0 0 0 7px ${C.navyDeep}, 0 0 0 8px rgba(212,175,55,.32)`,
-        background: page.image ? `url(${page.image}) center / cover no-repeat` : `radial-gradient(circle, ${C.navy}, ${C.navyDeep})`,
+        backgroundColor: C.navy,
+        backgroundImage: page.image
+          ? `linear-gradient(rgba(15,23,42,.1),rgba(15,23,42,.1)), url(${page.image})`
+          : `radial-gradient(circle, ${C.navy}, ${C.navyDeep})`,
+        backgroundSize: "cover", backgroundPosition: "center",
       }} />
       <PageNumber n={pageNumber} />
     </div>
