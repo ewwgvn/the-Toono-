@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { T } from "@/theme/colors";
+import { T, getTheme, ULIGER_DECOR as D, ULIGER_FONT_DISPLAY } from "@/theme/colors";
 import { GS, saveGS } from "@/lib/store";
 import { DB, isSupabaseReady } from "@/lib/supabase";
 import { getCreators } from "@/lib/utils";
@@ -37,6 +37,7 @@ function TrustBadges({creator}) {
 }
 
 export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
+  const isUliger = getTheme() === "uliger";
   const localCreator = getCreators().find(x=>x.id===creatorId)||null;
   const [creator, setCreator] = useState(localCreator || {id:creatorId,name:"...",field:"",followers:"0",works:0,comm:false,rating:0,accent:T.textH,bio:"",tags:[]});
   const [creatorWorks, setCreatorWorks] = useState(null);
@@ -92,7 +93,7 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
       {/* ── 프로필 헤더 ── */}
       <div style={{padding:"20px 20px 16px"}}>
         <div style={{display:"flex",alignItems:"center",gap:14}}>
-          <div style={{width:72,height:72,borderRadius:22,background:T.s2,flexShrink:0,overflow:"hidden",position:"relative"}}>
+          <div style={{width:72,height:72,borderRadius:isUliger?"42% 58% 53% 47% / 48% 45% 55% 52%":22,background:T.s2,border:isUliger?`2px solid ${D.gold}`:"none",flexShrink:0,overflow:"hidden",position:"relative"}}>
             {c.photo
               ? (c.photo.startsWith("data:")
                   ? <img src={c.photo} alt={c.name} style={{width:"100%",height:"100%",objectFit:"cover"}}/>
@@ -100,7 +101,7 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
               : <div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center"}}><Toono size={40} color={T.textDim}/></div>}
           </div>
           <div style={{flex:1,minWidth:0}}>
-            <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:20,fontWeight:800,color:T.textH,lineHeight:1.2,marginBottom:3}}>{c.name||"..."}</div>
+            <div style={{fontFamily:isUliger?ULIGER_FONT_DISPLAY:"'Helvetica Neue', Arial, sans-serif",fontSize:20,fontWeight:isUliger?700:800,color:T.textH,lineHeight:1.2,marginBottom:3}}>{c.name||"..."}</div>
             <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,color:"#888888"}}>{c.field||""}</div>
             {c.rating>=4.8&&<div style={{marginTop:6}}><StarSellerBadge/></div>}
           </div>

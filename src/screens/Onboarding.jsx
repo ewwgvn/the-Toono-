@@ -13,7 +13,7 @@ export default function Onboarding({ nav }) {
   const [step, setStep] = useState(0);
   const isUliger = getTheme() === "uliger";
   const slides = [
-    {title:"Монгол уран бүтээлчидэд\nзориулагдсан платформ",sub:"Бүтээлээ байршуулж, олон нийтэд\nтаниулах дижитал орон зай",emoji:null,icon:<Toono size={64} color={isUliger?D.gold:T.accent}/>},
+    {title:"Монгол уран бүтээлчидэд\nзориулагдсан платформ",sub:"Бүтээлээ байршуулж, олон нийтэд\nтаниулах дижитал орон зай",emoji:null,icon:<Toono size={64} color={isUliger?D.ink:T.accent}/>},
     {title:"Өөрийн хамтрагчаа\nолоорой",sub:"Загвар · Нэхмэл · Урлаг · График\nМонгол бүтээлчидтэй холбогдоорой",emoji:null,icon:<IcOnboard2/>},
     {title:"Бүтээлээ\nархивлаарай",sub:"Таны бүтээл, ажлыг нэг дороос\nхадгалж, портфолио болгоорой",emoji:null,icon:<IcPortfolio/>},
     {title:"Захиалга өгөх,\nхүлээн авах",sub:"Бүтээлч хайж, захиалга илгээж\nхамтран ажиллаарай",emoji:null,icon:<IcOnboard3/>},

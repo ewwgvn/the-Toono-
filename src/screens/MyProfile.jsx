@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { T } from "@/theme/colors";
+import { T, getTheme, ULIGER_DECOR as D, ULIGER_FONT_DISPLAY } from "@/theme/colors";
 import { GS, saveGS } from "@/lib/store";
 import { fmtP } from "@/lib/utils";
 import { DB, isSupabaseReady } from "@/lib/supabase";
@@ -30,6 +30,7 @@ function StarSellerBadge({ size = "sm" }) {
 }
 
 export default function MyProfile({ nav, refresh }) {
+  const isUliger = getTheme() === "uliger";
   const [sub, setSub] = useState("works");
   const myWorks = GS.myWorks;
   const myOrders = GS.orders;
@@ -42,7 +43,7 @@ export default function MyProfile({ nav, refresh }) {
     <div style={{ height: "100%", display: "flex", flexDirection: "column", background: T.bg }}>
       <div style={{ padding: "20px 20px 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 24, fontWeight: 800, color: T.textH }}>Миний профайл</div>
+          <div style={{ fontFamily: isUliger ? ULIGER_FONT_DISPLAY : "'Helvetica Neue', Arial, sans-serif", fontSize: 24, fontWeight: isUliger ? 700 : 800, color: T.textH }}>Миний профайл</div>
           <StarSellerBadge />
         </div>
         <div style={{ display: "flex", gap: 8 }}>
@@ -59,7 +60,7 @@ export default function MyProfile({ nav, refresh }) {
       <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none" }}>
         <div style={{ padding: "20px 20px 0", display: "flex", flexDirection: "column", alignItems: "center" }}>
           <div style={{ marginBottom: 12 }}><Avt size={88} photo={GS.user.photo} /></div>
-          <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 22, fontWeight: 800, color: T.textH, marginBottom: 4, textAlign: "center", letterSpacing: "-0.02em" }}>{GS.user.name || "Үлгэр"}</div>
+          <div style={{ fontFamily: isUliger ? ULIGER_FONT_DISPLAY : "'Helvetica Neue', Arial, sans-serif", fontSize: 22, fontWeight: isUliger ? 700 : 800, color: T.textH, marginBottom: 4, textAlign: "center", letterSpacing: "-0.02em" }}>{GS.user.name || "Үлгэр"}</div>
           <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, color: "#888888", marginBottom: 14, textAlign: "center" }}>{GS.user.field || "Үлгэр хэрэглэгч"}</div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center" }}>
             <PBtn small secondary onClick={() => nav("edit-profile")}>Профайл засах</PBtn>

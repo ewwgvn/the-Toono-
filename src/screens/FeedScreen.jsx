@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, memo } from "react";
-import { T } from "@/theme/colors";
+import { T, getTheme, ULIGER_DECOR as D, ULIGER_FONT_DISPLAY } from "@/theme/colors";
 import { GS, saveGS } from "@/lib/store";
 import { DB, isSupabaseReady, fetchPublicData } from "@/lib/supabase";
 import { getAllWorks, getCreators, fmtP } from "@/lib/utils";
@@ -73,6 +73,7 @@ const FeedPost = memo(function FeedPost({ w, creator, nav, tLike, tSave }) {
 });
 
 export default function FeedScreen({ nav, refresh, goBack }) {
+  const isUliger = getTheme() === "uliger";
   const [tick, setTick] = useState(0);
   const [loading, setLoading] = useState(GS.publicWorks.length === 0);
 
@@ -117,7 +118,7 @@ export default function FeedScreen({ nav, refresh, goBack }) {
   return <div style={{ height: "100%", display: "flex", flexDirection: "column", background: T.bg }}>
     {/* Header */}
     <div style={{ padding: "16px 16px 10px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: `1px solid ${T.border}`, flexShrink: 0 }}>
-      <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 20, fontWeight: 800, color: T.textH }}>Фийд</div>
+      <div style={{ fontFamily: isUliger ? ULIGER_FONT_DISPLAY : "'Helvetica Neue', Arial, sans-serif", fontSize: 20, fontWeight: isUliger ? 700 : 800, color: T.textH }}>Фийд</div>
       <div style={{ display: "flex", gap: 2 }}>
         <button type="button" aria-label="Зурвас" className="toono-pressable" onClick={() => nav("chat")} style={{ position: "relative", width: 36, height: 36, borderRadius: 10, background: "transparent", border: "none", color: T.textH, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <IcMsg />
@@ -135,7 +136,7 @@ export default function FeedScreen({ nav, refresh, goBack }) {
       <div style={{ padding: "12px 0", borderBottom: `1px solid ${T.border}` }}>
         <div style={{ display: "flex", gap: 14, overflowX: "auto", scrollbarWidth: "none", padding: "0 14px" }}>
           {stories.map((s, i) => <div key={s.id || i} onClick={() => s._self ? nav("upload") : nav("profile", { creatorId: s.id })} style={{ flexShrink: 0, textAlign: "center", cursor: "pointer", width: 62 }}>
-            <div style={{ width: 48, height: 48, borderRadius: "50%", background: T.s2, border: `2px solid ${s._self ? T.border : T.textH}`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 5px", overflow: "hidden" }}>
+            <div style={{ width: 48, height: 48, borderRadius: "50%", background: T.s2, border: `2px solid ${s._self ? T.border : (isUliger ? D.gold : T.textH)}`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 5px", overflow: "hidden" }}>
               {s.photo ? <img src={s.photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : s._self ? <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 4v10M4 9h10" stroke={T.textDim} strokeWidth="1.5" strokeLinecap="round"/></svg> : <Toono size={24} color={T.textH} />}
             </div>
             <div style={{ fontFamily: F, fontSize: 10, color: T.textSub, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 58 }}>{s._self ? "Таны" : (s.name || "—").split(" ")[0]}</div>
