@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(npx next *)",
+      "Bash(npx --prefix . next build)",
+      "Bash(CLAUDE_CODE_TMPDIR=/tmp/cc grep -n \"<<<<<<\\\\|>>>>>>>\" /Users/gun/Downloads/the-Toono--main-3/src/components/App.jsx)",
+      "Bash(git -C /Users/gun/Downloads/the-Toono--main-3 status --short)",
+      "Bash(git -C /Users/gun/Downloads/the-Toono--main-3 log --oneline -5)",
+      "Bash(git -C /Users/gun/Downloads/the-Toono--main-3 diff HEAD src/components/App.jsx)"
+    ]
+  }
+}
