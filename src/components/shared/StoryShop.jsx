@@ -1,14 +1,18 @@
 "use client";
 
-import { useState } from "react";
 import { getTheme } from "@/theme/colors";
 
-// 동화책 감성의 마켓플레이스 UI 부품 모음
+// 하이브리드 마켓플레이스 UI 부품 모음
+// 기능·구조는 현대적 이커머스 그리드/스크롤(Mono UX)을 그대로 따르고,
+// 동화책 감성(Uliger)은 컴포넌트 위에 입히는 "스킨"으로만 적용한다 — 책장 넘김 같은 내비게이션은 사용하지 않음
 // - ArchFrame   : 아치형 게이트 + 필리그리 코너 골드 프레임 (상품 이미지)
-// - RibbonTab   : 실크 책갈피 리본 형태의 필터/카테고리 탭
+// - ProductCard : 표준 그리드 카드 — 아치 프레임 + 세리프 타이포 + 왁스 실 CTA
+// - ProductGrid : 종이 질감 컨테이너 위 반응형 2~3단 그리드 (표준 스크롤)
+// - FilterBar   : 가로 스크롤 카테고리 필터 바 (리본 탭 스킨, 일반 토글로 동작)
+// - RibbonTab   : 실크 책갈피 리본 형태의 필터/카테고리 버튼
 // - WaxSeal     : 골드 실링 왁스 인장 모양의 CTA 버튼
 // - DropCap     : 문단 첫 글자 장식(Drop Cap)
-// - PageFlip    : 종이가 펄럭이며 넘어가는 CSS 3D 페이지 전환 래퍼
+// - SectionTitle: 섹션 헤딩용 Drop Cap 타이틀
 
 const C = {
   navyDeep: "#0F172A",
@@ -158,48 +162,78 @@ export function DropCap({ children }) {
   );
 }
 
-// ── PageFlip — 종이가 펄럭이며 넘어가는 3D 전환 래퍼 ────────────────────────
-// activeKey가 바뀔 때마다 직전 내용이 책장처럼 앞으로 접히고 새 내용이 펼쳐짐 (CSS 3D perspective)
-export function PageFlip({ activeKey, children }) {
-  const isUliger = getTheme() === "uliger";
-  const [display, setDisplay] = useState({ key: activeKey, node: children, phase: "idle" });
-
-  // 모노 테마에서는 책장 넘김 연출 없이 그대로 통과 — 공존 원칙 유지
-  if (!isUliger) return <>{children}</>;
-
-  if (activeKey !== display.key && display.phase === "idle") {
-    setDisplay({ key: display.key, node: display.node, phase: "out", nextKey: activeKey, nextNode: children });
-  }
-
+// ── SectionTitle — 섹션 헤딩용 Drop Cap 타이틀 ─────────────────────────────
+export function SectionTitle({ children, subtitle }) {
+  if (getTheme() !== "uliger") return null;
+  const text = String(children ?? "");
+  if (!text) return null;
+  const first = text.slice(0, 1);
+  const rest = text.slice(1);
   return (
-    <div style={{ perspective: 1400 }}>
-      <div
-        key={display.phase === "out" ? `out-${display.key}` : `in-${display.key}`}
-        onAnimationEnd={() => {
-          if (display.phase === "out") {
-            setDisplay({ key: display.nextKey, node: display.nextNode, phase: "in" });
-          } else if (display.phase === "in") {
-            setDisplay(d => ({ ...d, phase: "idle" }));
-          }
-        }}
-        style={{
-          transformOrigin: "left center", transformStyle: "preserve-3d",
-          animation: display.phase === "out" ? "toono-pf-out .38s cubic-bezier(.4,0,.2,1) forwards"
-                   : display.phase === "in"  ? "toono-pf-in .42s cubic-bezier(.2,.8,.2,1) forwards"
-                   : "none",
-        }}
-      >
-        {display.phase === "out" ? display.node : (display.phase === "in" ? display.nextNode ?? display.node : display.node)}
+    <div style={{ marginBottom: 20 }}>
+      <h2 style={{ margin: 0, fontFamily: SERIF_DISP, fontWeight: 700, fontSize: 25, color: C.ink, lineHeight: 1.15 }}>
+        <span style={{
+          display: "inline-block", fontSize: 44, lineHeight: .8, verticalAlign: "-0.1em",
+          color: C.gold, textShadow: `1px 1px 0 ${C.navy}`, marginRight: 4,
+        }}>{first}</span>
+        {rest}
+      </h2>
+      {subtitle && <div style={{ fontFamily: SERIF, fontSize: 12.5, color: C.ink, opacity: .55, marginTop: 6 }}>{subtitle}</div>}
+    </div>
+  );
+}
+
+// ── FilterBar — 가로 스크롤 카테고리 필터 바 (리본 탭 스킨, 일반 토글) ───────
+// 책장을 넘기지 않고 표준 필터처럼 그 자리에서 목록만 갈아끼우는 용도
+export function FilterBar({ items = [], active, onChange }) {
+  if (getTheme() !== "uliger") return null;
+  return (
+    <div style={{ display: "flex", gap: 10, overflowX: "auto", padding: "2px 2px 16px", WebkitOverflowScrolling: "touch" }}>
+      {items.map(it => (
+        <RibbonTab key={it.value} label={it.label} color={it.color || "navy"}
+          active={active === it.value} onClick={() => onChange?.(it.value)} />
+      ))}
+    </div>
+  );
+}
+
+// ── ProductCard — 표준 그리드 카드 (아치 프레임 + 세리프 타이포 + 왁스 실 CTA)
+export function ProductCard({ image, title, price, badge, onAdd, ctaLabel = "담기" }) {
+  if (getTheme() !== "uliger") return null;
+  return (
+    <div style={{
+      display: "flex", flexDirection: "column", alignItems: "center", gap: 14,
+      padding: "22px 18px", borderRadius: 14,
+      border: `1px solid rgba(212,175,55,.32)`,
+      boxShadow: "0 12px 30px -18px rgba(15,23,42,.4)",
+      ...paperTextureStyle, boxSizing: "border-box",
+    }}>
+      <ArchFrame src={image} alt={title} size={148} ribbon={badge ? { label: badge } : undefined} />
+      <div style={{ textAlign: "center", width: "100%" }}>
+        <div style={{ fontFamily: SERIF, fontWeight: 700, fontSize: 14.5, color: C.ink, lineHeight: 1.35 }}>{title}</div>
+        {price && <div style={{ fontFamily: SERIF, fontSize: 13, color: C.goldDeep, marginTop: 5, letterSpacing: ".02em" }}>{price}</div>}
       </div>
+      <WaxSeal size={48} onClick={onAdd}>{ctaLabel}</WaxSeal>
+    </div>
+  );
+}
+
+// ── ProductGrid — 종이 질감 컨테이너 위 반응형 2~3단 그리드 (표준 스크롤형) ──
+// 책장을 넘기는 대신 일반 이커머스처럼 그리드를 그대로 스크롤해서 탐색
+export function ProductGrid({ children, columns = 3 }) {
+  if (getTheme() !== "uliger") return null;
+  return (
+    <div className="toono-story-grid" style={{
+      "--toono-cols": columns,
+      display: "grid", gridTemplateColumns: "repeat(var(--toono-cols), 1fr)", gap: 18,
+      padding: 22, borderRadius: 18, boxSizing: "border-box",
+      border: `1px solid ${C.paperEdge}`,
+      ...paperTextureStyle,
+    }}>
+      {children}
       <style>{`
-        @keyframes toono-pf-out {
-          0%   { transform: rotateY(0deg);   filter: brightness(1);    box-shadow: none; }
-          100% { transform: rotateY(-100deg);filter: brightness(.55); box-shadow: 30px 0 40px -20px rgba(0,0,0,.5); }
-        }
-        @keyframes toono-pf-in {
-          0%   { transform: rotateY(100deg);  filter: brightness(.55); }
-          100% { transform: rotateY(0deg);    filter: brightness(1); }
-        }
+        @media (max-width: 760px)  { .toono-story-grid { --toono-cols: 2 !important; } }
+        @media (max-width: 480px)  { .toono-story-grid { --toono-cols: 1 !important; } }
       `}</style>
     </div>
   );
