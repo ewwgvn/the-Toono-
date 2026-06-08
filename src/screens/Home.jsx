@@ -7,6 +7,7 @@ import { getAllWorks, getCreators, fmtP } from "@/lib/utils";
 import Toono from "@/components/atoms/Toono";
 import StoryDecor from "@/components/atoms/StoryDecor";
 import ScallopEdge from "@/components/atoms/ScallopEdge";
+import { ArchFrame, SectionTitle, paperTextureStyle, STORY_SHOP_TOKENS as SC, SERIF as STORY_SERIF } from "@/components/shared/StoryShop";
 import { IcCart, IcBell, IcSearch, IcHeart } from "@/components/icons";
 
 const F = "'Helvetica Neue', Arial, sans-serif";
@@ -108,6 +109,33 @@ const WorkCard = memo(function WorkCard({ w, liked, onLike, nav }) {
       <div style={{ fontFamily: F, fontSize: 11, color: T.textDim, marginBottom: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.creator}</div>
       <div style={{ fontFamily: F, fontSize: 13, fontWeight: 500, color: T.textH, marginBottom: 5, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</div>
       <div style={{ fontFamily: F, fontSize: 14, fontWeight: 700, color: T.textH }}>{fmtP(w)}</div>
+    </div>
+  );
+});
+
+// ── 동화책 무드 상품 카드 — 아치 프레임 + 세리프 타이포 (uliger 전용) ─────────
+const StoryWorkCard = memo(function StoryWorkCard({ w, liked, onLike, nav }) {
+  const thumb = w.images?.[0] || null;
+  const likeCount = (w.likes_count || w.likes || 0);
+  return (
+    <div onClick={() => nav("work", { workId: w.id })} className="toono-card-tap" style={{ cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 11 }}>
+      <ArchFrame src={thumb} alt={w.title} size={132}>
+        <button
+          type="button"
+          aria-label={liked ? "Таалагдсаныг болиулах" : "Таалагдлаа"}
+          className="toono-pressable"
+          onClick={e => { e.stopPropagation(); onLike(w.id); }}
+          style={{ position: "absolute", bottom: 9, right: 9, zIndex: 3, display: "flex", alignItems: "center", gap: 4, background: "rgba(251,248,243,0.92)", borderRadius: 16, border: "none", padding: "4px 8px", cursor: "pointer", color: liked ? "#C9573F" : SC.ink }}
+        >
+          <IcHeart filled={liked} />
+          {likeCount > 0 && <span style={{ fontFamily: STORY_SERIF, fontSize: 10, fontWeight: 600 }}>{likeCount}</span>}
+        </button>
+      </ArchFrame>
+      <div style={{ textAlign: "center", maxWidth: 132 }}>
+        <div style={{ fontFamily: STORY_SERIF, fontSize: 10.5, color: "rgba(255,255,255,0.5)", marginBottom: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.creator}</div>
+        <div style={{ fontFamily: STORY_SERIF, fontWeight: 700, fontSize: 13, color: "#FBF8F3", lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</div>
+        <div style={{ fontFamily: STORY_SERIF, fontSize: 12, color: SC.gold, marginTop: 4, letterSpacing: ".02em" }}>{fmtP(w)}</div>
+      </div>
     </div>
   );
 });
@@ -297,26 +325,58 @@ export default function Home({ nav, refresh }) {
             </div>
           )}
 
-          {/* ── 메인 작품 그리드 ── */}
-          <div style={{ padding: "28px 16px 0" }}>
-            <SectionLabel
-              label={selCat === "all" ? "ALL WORKS" : selCat.toUpperCase()}
-              title={selCat === "all" ? "Бүх бүтээл" : selCat}
-              action={`${filtered.length}ш`}
-              isUliger={isUliger}
-            />
-            {filtered.length === 0 ? (
-              <div style={{ padding: "60px 0", textAlign: "center" }}>
-                <div style={{ fontFamily: F, fontSize: 13, color: T.textDim }}>Энэ ангилалд бүтээл байхгүй байна</div>
+          {/* ── 메인 작품 그리드 — uliger: 화면 전체 비율의 밤하늘 위에 펼쳐진 종이책 페이지 ── */}
+          {isUliger ? (
+            <div style={{
+              width: "100vw", marginLeft: "calc(50% - 50vw)", marginRight: "calc(50% - 50vw)",
+              background: `radial-gradient(ellipse at 50% 0%, ${SC.navy} 0%, ${SC.navyDeep} 75%)`,
+              padding: "34px 16px 36px", boxSizing: "border-box", position: "relative",
+            }}>
+              <StoryDecor variant="stars" size={26} style={{ position: "absolute", top: 18, right: "8%", opacity: .55 }} />
+              <StoryDecor variant="moon" size={34} style={{ position: "absolute", top: 14, left: "6%", opacity: .5 }} />
+              <div style={{
+                maxWidth: 760, margin: "0 auto", borderRadius: 18, padding: "26px 18px 30px", boxSizing: "border-box",
+                border: `1px solid rgba(212,175,55,.4)`,
+                boxShadow: `0 0 0 6px ${SC.navyDeep}, 0 30px 70px -28px rgba(0,0,0,.6)`,
+                ...paperTextureStyle,
+              }}>
+                <SectionTitle subtitle={`${filtered.length}ширхэг бүтээл`}>
+                  {selCat === "all" ? "Бүх бүтээл" : selCat}
+                </SectionTitle>
+                {filtered.length === 0 ? (
+                  <div style={{ padding: "60px 0", textAlign: "center" }}>
+                    <div style={{ fontFamily: STORY_SERIF, fontSize: 13, color: SC.ink, opacity: .6 }}>Энэ ангилалд бүтээл байхгүй байна</div>
+                  </div>
+                ) : (
+                  <div className="toono-grid-2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 22 }}>
+                    {filtered.map(w => (
+                      <StoryWorkCard key={w.id} w={w} liked={GS.liked.has(w.id)} onLike={tLike} nav={nav} />
+                    ))}
+                  </div>
+                )}
               </div>
-            ) : (
-              <div className="toono-grid-2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-                {filtered.map(w => (
-                  <WorkCard key={w.id} w={w} liked={GS.liked.has(w.id)} onLike={tLike} nav={nav} />
-                ))}
-              </div>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div style={{ padding: "28px 16px 0" }}>
+              <SectionLabel
+                label={selCat === "all" ? "ALL WORKS" : selCat.toUpperCase()}
+                title={selCat === "all" ? "Бүх бүтээл" : selCat}
+                action={`${filtered.length}ш`}
+                isUliger={isUliger}
+              />
+              {filtered.length === 0 ? (
+                <div style={{ padding: "60px 0", textAlign: "center" }}>
+                  <div style={{ fontFamily: F, fontSize: 13, color: T.textDim }}>Энэ ангилалд бүтээл байхгүй байна</div>
+                </div>
+              ) : (
+                <div className="toono-grid-2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+                  {filtered.map(w => (
+                    <WorkCard key={w.id} w={w} liked={GS.liked.has(w.id)} onLike={tLike} nav={nav} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           <div style={{ height: 100 }} />
         </>}

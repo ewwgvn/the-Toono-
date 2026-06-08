@@ -24,8 +24,8 @@ const C = {
   ink:      "#15171C",
 };
 
-const SERIF      = "Georgia, 'Iowan Old Style', 'Noto Serif', 'Times New Roman', serif";
-const SERIF_DISP = "'Playfair Display', Georgia, 'Noto Serif', serif";
+export const SERIF      = "Georgia, 'Iowan Old Style', 'Noto Serif', 'Times New Roman', serif";
+export const SERIF_DISP = "'Playfair Display', Georgia, 'Noto Serif', serif";
 
 // 미세한 종이 스크래치/번짐 노이즈 — feTurbulence 오버레이를 data URI SVG로 인라인
 const PAPER_NOISE_URL =
