@@ -2,8 +2,8 @@
 
 import { getTheme, ULIGER_DECOR as D } from "@/theme/colors";
 
-// 동화책 삽화풍 장식 요소 — "uliger" 테마일 때만 노출 (별·초승달·구름)
-// variant: "stars" | "moon" | "cloud"
+// 동화책 삽화풍 장식 요소 — "uliger" 테마일 때만 노출 (별·초승달·구름·꽃 낙서)
+// variant: "stars" | "moon" | "cloud" | "flower"
 export default function StoryDecor({ variant = "stars", size = 64, style }) {
   if (getTheme() !== "uliger") return null;
 
@@ -24,6 +24,22 @@ export default function StoryDecor({ variant = "stars", size = 64, style }) {
     return (
       <svg {...common} viewBox="0 0 64 64" fill="none" aria-hidden="true">
         <path d="M16 40c-5 0-9-3.6-9-8.5S11 23 16 23c.9-6 6.6-10.5 13-10.5 6 0 11 3.8 12.7 9.1 5.6.5 10.3 5 10.3 10.4 0 5.5-4.6 8-10 8H16Z" fill={D.lavender} opacity=".55" />
+      </svg>
+    );
+  }
+
+  if (variant === "flower") {
+    return (
+      <svg {...common} viewBox="0 0 64 64" fill="none" aria-hidden="true">
+        <g transform="translate(32,30)">
+          <ellipse rx="9" ry="13" transform="rotate(0)" fill={D.lavender} opacity=".8" />
+          <ellipse rx="9" ry="13" transform="rotate(72)" fill={D.lavender} opacity=".8" />
+          <ellipse rx="9" ry="13" transform="rotate(144)" fill={D.lavender} opacity=".8" />
+          <ellipse rx="9" ry="13" transform="rotate(216)" fill={D.lavender} opacity=".8" />
+          <ellipse rx="9" ry="13" transform="rotate(288)" fill={D.lavender} opacity=".8" />
+          <circle r="6" fill={D.mustard} />
+        </g>
+        <path d="M32 50v12M32 62c-4 0-7-3-7-3s2 5 7 5 7-5 7-5-3 3-7 3Z" stroke={D.navy} strokeWidth="1.6" strokeLinecap="round" fill="none" opacity=".55" />
       </svg>
     );
   }
