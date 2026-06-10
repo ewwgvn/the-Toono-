@@ -152,29 +152,44 @@ create policy "messages_update" on messages for update using (
 
 -- ─────────────────────────────────────────────
 -- offers : buyer or the work's owner can read; buyer inserts
+-- (optional table — applied only if it exists)
 -- ─────────────────────────────────────────────
-alter table offers enable row level security;
-drop policy if exists "offers_select" on offers;
-drop policy if exists "offers_insert" on offers;
-create policy "offers_select" on offers for select using (
-  buyer_id = auth.uid() or exists (select 1 from works w where w.id = offers.work_id and w.creator_id = auth.uid()));
-create policy "offers_insert" on offers for insert with check (buyer_id = auth.uid());
+do $$ begin
+  if to_regclass('public.offers') is not null then
+    alter table offers enable row level security;
+    drop policy if exists "offers_select" on offers;
+    drop policy if exists "offers_insert" on offers;
+    create policy "offers_select" on offers for select using (
+      buyer_id = auth.uid() or exists (select 1 from works w where w.id = offers.work_id and w.creator_id = auth.uid()));
+    create policy "offers_insert" on offers for insert with check (buyer_id = auth.uid());
+  end if;
+end $$;
 
 -- ─────────────────────────────────────────────
 -- return_requests : buyer or seller read; buyer inserts
+-- (optional table — applied only if it exists)
 -- ─────────────────────────────────────────────
-alter table return_requests enable row level security;
-drop policy if exists "return_requests_select" on return_requests;
-drop policy if exists "return_requests_insert" on return_requests;
-create policy "return_requests_select" on return_requests for select using (buyer_id = auth.uid() or seller_id = auth.uid());
-create policy "return_requests_insert" on return_requests for insert with check (buyer_id = auth.uid());
+do $$ begin
+  if to_regclass('public.return_requests') is not null then
+    alter table return_requests enable row level security;
+    drop policy if exists "return_requests_select" on return_requests;
+    drop policy if exists "return_requests_insert" on return_requests;
+    create policy "return_requests_select" on return_requests for select using (buyer_id = auth.uid() or seller_id = auth.uid());
+    create policy "return_requests_insert" on return_requests for insert with check (buyer_id = auth.uid());
+  end if;
+end $$;
 
 -- ─────────────────────────────────────────────
 -- reports : insert only (reads via service role / dashboard)
+-- (optional table — applied only if it exists)
 -- ─────────────────────────────────────────────
-alter table reports enable row level security;
-drop policy if exists "reports_insert" on reports;
-create policy "reports_insert" on reports for insert with check (reporter_id = auth.uid());
+do $$ begin
+  if to_regclass('public.reports') is not null then
+    alter table reports enable row level security;
+    drop policy if exists "reports_insert" on reports;
+    create policy "reports_insert" on reports for insert with check (reporter_id = auth.uid());
+  end if;
+end $$;
 
 -- ============================================================
 --  STORAGE : public read, logged-in users can upload
