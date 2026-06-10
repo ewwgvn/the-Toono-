@@ -12,20 +12,22 @@ import {
 import PBtn from "@/components/atoms/PBtn";
 import Crd from "@/components/atoms/Crd";
 import Toono from "@/components/atoms/Toono";
-import Avt from "@/components/atoms/Avt";
 import Empty from "@/components/atoms/Empty";
+import { ScriptTitle, SCRIPT } from "@/components/shared/Editorial";
+
+const HELV = "'Helvetica Neue', Arial, sans-serif";
 
 // ── StarSellerBadge (inline) ──
 function StarSellerBadge({ size = "sm" }) {
   const met = GS.trustMetrics;
   const isStarSeller = met.responseRate >= 95 && met.onTimeRate >= 95 && met.avgRating >= 4.8;
   if (!isStarSeller) return null;
-  const sz = size === "sm" ? { fs: 10, p: "3px 8px", gap: 4 } : { fs: 12, p: "5px 12px", gap: 6 };
+  const sz = size === "sm" ? { fs: 10, p: "4px 10px", gap: 5 } : { fs: 12, p: "5px 12px", gap: 6 };
   return (
-    <div style={{ display: "inline-flex", alignItems: "center", gap: sz.gap, background: "linear-gradient(135deg,#E8960C,#F0C040)", borderRadius: 20, padding: sz.p }}>
+    <span style={{ display: "inline-flex", alignItems: "center", gap: sz.gap, background: T.accent, borderRadius: 20, padding: sz.p }}>
       <svg width={sz.fs} height={sz.fs} viewBox="0 0 12 12" fill="#fff"><path d="M6 1L7.4 4.2H10.8L8 6.4L9.2 9.6L6 7.6L2.8 9.6L4 6.4L1.2 4.2H4.6Z" /></svg>
-      <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: sz.fs, fontWeight: 700, color: "#fff" }}>Шилдэг худалдагч</span>
-    </div>
+      <span style={{ fontFamily: HELV, fontSize: sz.fs, fontWeight: 700, letterSpacing: "0.04em", color: "#fff" }}>STAR SELLER</span>
+    </span>
   );
 }
 
@@ -57,23 +59,28 @@ export default function MyProfile({ nav, refresh }) {
         </div>
       </div>
       <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none" }}>
-        <div style={{ padding: "20px 20px 0", display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <div style={{ marginBottom: 12 }}><Avt size={88} photo={GS.user.photo} /></div>
-          <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 22, fontWeight: 800, color: T.textH, marginBottom: 4, textAlign: "center", letterSpacing: "-0.02em" }}>{GS.user.name || "Үлгэр"}</div>
-          <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, color: "#888888", marginBottom: 14, textAlign: "center" }}>{GS.user.field || "Үлгэр хэрэглэгч"}</div>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center" }}>
+        <div style={{ padding: "24px 20px 0", display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div style={{ width: 116, height: 116, borderRadius: "50%", overflow: "hidden", background: T.s2, position: "relative" }}>
+            {GS.user.photo
+              ? <img src={GS.user.photo} alt={GS.user.name} style={{ width: "100%", height: "100%", objectFit: "cover", filter: "grayscale(1)" }} />
+              : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}><Toono size={48} color={T.textDim} /></div>}
+          </div>
+          <ScriptTitle size={48} style={{ marginTop: 14 }}>{GS.user.name || "Uliger"}</ScriptTitle>
+          <div style={{ fontFamily: HELV, fontSize: 11, fontWeight: 600, letterSpacing: "0.22em", textTransform: "uppercase", color: T.textDim, marginTop: 6 }}>{GS.user.field || "ULIGER USER"}</div>
+          {GS.trustMetrics.avgRating >= 4.8 && <div style={{ marginTop: 12 }}><StarSellerBadge /></div>}
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center", marginTop: 16 }}>
             <PBtn small secondary onClick={() => nav("edit-profile")}>Профайл засах</PBtn>
             {GS.currentRole === "creator" && <PBtn small onClick={() => nav("upload")}>Бүтээл нэмэх</PBtn>}
           </div>
         </div>
-        <div style={{ padding: "16px 20px 0" }}>
+        <div style={{ padding: "20px 20px 0" }}>
 
-          {/* ── 통계 바 ── */}
-          <div style={{ display: "flex", marginBottom: 16, border: `1px solid ${T.borderLight}`, borderRadius: 12, background: "#FAFAFA", overflow: "hidden" }}>
-            {[[String(GS.myWorks.length), "Бүтээл", null], [String(GS.user.followers || 0), "Дагагч", () => { GS.viewingFollowsUserId = GS.user.id; GS.viewingFollowsTab = "followers"; nav("follows"); }], [String(GS.following.size), "Дагаж байна", () => { GS.viewingFollowsUserId = GS.user.id; GS.viewingFollowsTab = "following"; nav("follows"); }]].map((s, i) => (
-              <div key={s[1]} onClick={s[2] || undefined} style={{ flex: 1, textAlign: "center", padding: "13px 0", borderRight: i < 2 ? `1px solid ${T.borderLight}` : "none", cursor: s[2] ? "pointer" : "default" }}>
-                <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 18, fontWeight: 800, color: T.textH }}>{s[0]}</div>
-                <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, color: T.textSub, marginTop: 2 }}>{s[1]}</div>
+          {/* ── 통계 바 (editorial) ── */}
+          <div style={{ display: "flex", marginBottom: 18, padding: "16px 0", borderTop: `1px solid ${T.border}`, borderBottom: `1px solid ${T.border}` }}>
+            {[[String(GS.myWorks.length), "БҮТЭЭЛ", null], [String(GS.user.followers || 0), "ДАГАГЧ", () => { GS.viewingFollowsUserId = GS.user.id; GS.viewingFollowsTab = "followers"; nav("follows"); }], [String(GS.following.size), "ДАГАЖ БУЙ", () => { GS.viewingFollowsUserId = GS.user.id; GS.viewingFollowsTab = "following"; nav("follows"); }]].map((s, i) => (
+              <div key={s[1]} onClick={s[2] || undefined} style={{ flex: 1, textAlign: "center", borderLeft: i > 0 ? `1px solid ${T.border}` : "none", cursor: s[2] ? "pointer" : "default" }}>
+                <div style={{ fontFamily: SCRIPT, fontSize: 30, fontWeight: 700, color: T.accent, lineHeight: 1 }}>{s[0]}</div>
+                <div style={{ fontFamily: HELV, fontSize: 9.5, fontWeight: 600, letterSpacing: "0.14em", color: T.textDim, marginTop: 5 }}>{s[1]}</div>
               </div>
             ))}
           </div>

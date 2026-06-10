@@ -99,10 +99,10 @@ function SectionLabel({ label, title, action, onAction }) {
   return (
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 14 }}>
       <div>
-        {label && <div style={{ fontFamily: F, fontSize: 10, fontWeight: 600, letterSpacing: "0.1em", color: T.textDim, marginBottom: 4, textTransform: "uppercase" }}>{label}</div>}
-        <div style={{ fontFamily: F, fontSize: 20, fontWeight: 800, color: T.textH, lineHeight: 1.1, letterSpacing: "-.02em" }}>{title}</div>
+        {label && <div style={{ fontFamily: F, fontSize: 10, fontWeight: 600, letterSpacing: "0.22em", color: T.accent, marginBottom: 3, textTransform: "uppercase" }}>{label}</div>}
+        <div style={{ fontFamily: "'Caveat','Helvetica Neue',cursive", fontSize: 34, fontWeight: 700, color: T.textH, lineHeight: 1, letterSpacing: "0.01em" }}>{title}</div>
       </div>
-      {action && <button type="button" onClick={onAction} style={{ background: "none", border: "none", fontFamily: F, fontSize: 12, color: T.textDim, cursor: "pointer", flexShrink: 0, marginBottom: 2 }}>{action}</button>}
+      {action && <button type="button" onClick={onAction} style={{ background: "none", border: "none", fontFamily: F, fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", color: T.accent, cursor: "pointer", flexShrink: 0, marginBottom: 4 }}>{action}</button>}
     </div>
   );
 }
