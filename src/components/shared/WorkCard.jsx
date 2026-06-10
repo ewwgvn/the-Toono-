@@ -64,7 +64,7 @@ const WorkCard = memo(function WorkCard({ work: w, onClick, onCreatorClick, onTo
       <div style={{ marginBottom: 0, background: "#FFFFFF", borderBottom: `1px solid ${T.borderLight}` }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 16px" }}>
           <div onClick={onCreatorClick} style={{ cursor: onCreatorClick ? "pointer" : "default", display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
-            <Avt size={32} photo={w.creatorPhoto} />
+            <Avt size={32} photo={w.creatorPhoto || w.profiles?.photo} />
             <div style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: T.textH }}>{w.creator}</div>
           </div>
           {w.createdAt && <div style={{ fontFamily: F, fontSize: 11, color: T.textSub }}>{timeAgo(w.createdAt)}</div>}

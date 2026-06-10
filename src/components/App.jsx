@@ -216,7 +216,7 @@ export default function App() {
 
     if (s === "home" && GS.isLoggedIn && isSupabaseReady()) {
       Promise.all([DB.getWorks().catch(() => []), DB.getCreators().catch(() => [])]).then(([ws, cs]) => {
-        if (ws.length) { GS.publicWorks = ws.map(w => ({ ...w, creator: w.profiles?.name || "—" })); }
+        if (ws.length) { GS.publicWorks = ws.map(w => ({ ...w, creator: w.profiles?.name || "—", creatorPhoto: w.profiles?.photo || w.creatorPhoto || null })); }
         if (cs.length) { GS.publicCreators = cs.map(c => ({ ...c })); }
         setTick(t => t + 1);
       });
