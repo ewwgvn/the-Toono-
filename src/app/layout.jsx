@@ -1,26 +1,26 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Үлгэр — Бүтээлчдийн Зах",
-  description: "Үлгэр — Монгол бүтээлчдийн дижитал зах",
+  title: "Uliger World — Бүтээлчдийн Зах",
+  description: "Uliger World — Монгол бүтээлчдийн дижитал зах",
   openGraph: {
-    title: "Үлгэр",
+    title: "Uliger World",
     description: "Монгол бүтээлчдийн дижитал зах — Fashion, Art, Design",
     url: "https://the-toono.vercel.app",
-    siteName: "Үлгэр",
+    siteName: "Uliger World",
     type: "website",
     images: [
       {
         url: "https://the-toono.vercel.app/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Үлгэр",
+        alt: "Uliger World",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Үлгэр",
+    title: "Uliger World",
     description: "Монгол бүтээлчдийн дижитал зах",
     images: ["https://the-toono.vercel.app/og-image.png"],
   },

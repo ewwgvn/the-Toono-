@@ -46,18 +46,7 @@ export default function DesktopNav({
             onClick={() => onNav("home")}
             style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}
           >
-            {ToonoLogo && <ToonoLogo size={28} color={T.accent} />}
-            <span
-              style={{
-                fontFamily: "'Stardom','Helvetica Neue',Arial,sans-serif",
-                fontSize: 24,
-                fontWeight: 400,
-                color: T.textH,
-                letterSpacing: ".02em",
-              }}
-            >
-              Uliger
-            </span>
+            <img src="/uliger-world-logo.png" alt="Uliger World" style={{ height: 32, width: "auto", display: "block" }} />
           </div>
           <div style={{ display: "flex", gap: 6 }}>
             {[

@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import { T } from "@/theme/colors";
-import Toono from "@/components/atoms/Toono";
 
 export default function Splash() {
   const [progress, setProgress] = useState(0);
@@ -11,13 +10,12 @@ export default function Splash() {
   }, []);
 
   return <div style={{height:"100%",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:T.bg,position:"relative",overflow:"hidden"}}>
-    <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:20}}>
+    <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:16}}>
       <div style={{opacity:0,animation:"fadeUp .6s .2s ease forwards"}}>
-        <Toono size={72} color={T.accent}/>
+        <img src="/uliger-world-logo.png" alt="Uliger World" style={{width:200,height:"auto",display:"block"}} />
       </div>
       <div style={{opacity:0,animation:"fadeUp .6s .4s ease forwards",textAlign:"center"}}>
-        <div style={{fontFamily:"'Stardom','Helvetica Neue',Arial,sans-serif",fontSize:34,fontWeight:400,color:T.textH,letterSpacing:".02em"}}>Uliger</div>
-        <div style={{fontFamily:"monospace",fontSize:9,color:T.textSub,letterSpacing:".28em",marginTop:4}}>БҮТЭЭЛЧДИЙН ЗАХ</div>
+        <div style={{fontFamily:"monospace",fontSize:9,color:T.textSub,letterSpacing:".28em"}}>БҮТЭЭЛЧДИЙН ЗАХ</div>
       </div>
     </div>
     <div style={{width:120,height:3,borderRadius:2,background:T.s2,marginTop:24,overflow:"hidden"}}>

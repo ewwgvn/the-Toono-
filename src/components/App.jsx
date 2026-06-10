@@ -280,8 +280,7 @@ export default function App() {
         <div style={{ maxWidth: 1200, width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", height: 56 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
             <div onClick={() => nav("home")} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
-              <Toono size={22} color={T.textH} />
-              <span style={{ fontFamily: "'Stardom','Helvetica Neue',Arial,sans-serif", fontSize: 22, fontWeight: 400, color: T.textH, letterSpacing: "0.02em" }}>Uliger</span>
+              <img src="/uliger-world-logo.png" alt="Uliger World" style={{ height: 32, width: "auto", display: "block" }} />
             </div>
             <div style={{ display: "flex", gap: 4 }}>
               {[["home", "Нүүр"], ["explore", "Хайлт"], ["feed", "Фийд"]].map(([id, label]) =>
@@ -357,7 +356,7 @@ export default function App() {
       </nav>}
 
       {/* Footer — desktop only */}
-      {isMain && <div className="toono-desktop-only" style={{ textAlign: "center", padding: "12px 0", borderTop: `1px solid ${T.borderLight}` }}><span style={{ fontFamily: F, fontSize: 11, color: T.textSub }}>© 2026 Uliger</span></div>}
+      {isMain && <div className="toono-desktop-only" style={{ textAlign: "center", padding: "12px 0", borderTop: `1px solid ${T.borderLight}` }}><span style={{ fontFamily: F, fontSize: 11, color: T.textSub }}>© 2026 Uliger World</span></div>}
 
       <Toast />
       <NetworkStatus />

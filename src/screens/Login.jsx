@@ -123,10 +123,7 @@ export default function Login({ nav, initialMode = "login" }) {
     <div style={{flex:1,padding:"24px 24px 40px",overflowY:"auto",scrollbarWidth:"none"}}>
       {/* Logo */}
       <div style={{textAlign:"center",marginBottom:28,position:"relative"}}>
-        <div style={{display:"inline-flex",width:68,height:68,borderRadius:20,background:T.accentSub,border:`1px solid ${T.accentGlow}`,alignItems:"center",justifyContent:"center",marginBottom:12}}>
-          <Toono size={42} color={T.accent}/>
-        </div>
-        <div style={{fontFamily:"'Stardom','Helvetica Neue',Arial,sans-serif",fontSize:28,fontWeight:400,color:T.textH,letterSpacing:".02em"}}>Uliger</div>
+        <img src="/uliger-world-logo.png" alt="Uliger World" style={{width:160,height:"auto",display:"block",margin:"0 auto 8px"}} />
         {mode==="login"&&<div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,color:T.textSub,marginTop:4}}>Бүртгэлдээ нэвтэрнэ үү</div>}
       </div>
 
