@@ -71,6 +71,8 @@ const Privacy = lazy(() => import("@/screens/Privacy"));
 
 const F = "'Helvetica Neue', Arial, sans-serif";
 const APP_VERSION = "2.1.0";
+const PROTECTED = new Set(["upload", "settings", "edit-profile", "dashboard", "saved", "follows", "comm-manage", "comm-status", "review-write", "report", "portfolio", "dispute", "referral", "notifications", "checkout", "order-detail", "order-list", "cart", "chatroom"]);
+const PROTECTED_TABS = new Set(["chat", "me"]);
 
 export default function App() {
   const [screen, setScreen] = useState("splash");
@@ -174,6 +176,16 @@ export default function App() {
 
   const nav = useCallback((s, data) => {
     const tabs = { home: 1, explore: 1, chat: 1, me: 1 };
+
+    // Auth guard — redirect unauthenticated users to login
+    if (!GS.isLoggedIn && (PROTECTED.has(s) || PROTECTED_TABS.has(s))) {
+      setLoginMode("login");
+      setHistory(h => [...h, { screen, tab }]);
+      setScreen("login");
+      toast("Нэвтэрч орно уу", "info");
+      return;
+    }
+
     if (data?.workId !== undefined) setSelectedWorkId(data.workId);
     if (data?.creatorId !== undefined) setSelectedCreatorId(data.creatorId);
     if (s === "login" && data?.mode) setLoginMode(data.mode);

@@ -37,6 +37,8 @@ export const isSupabaseReady = () => supabase !== null;
  * Apply to every user-supplied string before embedding it in .or(),
  * .ilike(), or any other filter that interpolates values into a raw string.
  */
+const DEV = process.env.NODE_ENV === "development";
+
 export function sanitizeFilter(str) {
   if (typeof str !== "string") return "";
   return str
@@ -102,11 +104,14 @@ export const DB = {
 
   async updateProfile(userId, updates) {
     if (!isSupabaseReady()) return null;
+    const ALLOWED = ["name", "field", "bio", "tags", "photo", "comm_open", "response_rate", "on_time_rate"];
+    const safe = Object.fromEntries(Object.entries(updates).filter(([k]) => ALLOWED.includes(k)));
+    if (!Object.keys(safe).length) return null;
     try {
-      const { data, error } = await supabase.from("profiles").update(updates).eq("id", userId).select().single();
-      if (error) { console.error("updateProfile:", error.message); toast("Профайл шинэчлэхэд алдаа гарлаа", "error"); return null; }
+      const { data, error } = await supabase.from("profiles").update(safe).eq("id", userId).select().single();
+      if (error) { if (DEV) console.error("updateProfile:", error.message); toast("Профайл шинэчлэхэд алдаа гарлаа", "error"); return null; }
       return data;
-    } catch (e) { console.error("updateProfile exception:", e.message); toast("Профайл шинэчлэхэд алдаа гарлаа", "error"); return null; }
+    } catch (e) { if (DEV) console.error("updateProfile:", e.message); toast("Профайл шинэчлэхэд алдаа гарлаа", "error"); return null; }
   },
 
   // Works
@@ -133,26 +138,26 @@ export const DB = {
     if (!isSupabaseReady()) return null;
     try {
       const { data, error } = await supabase.from("works").insert(work).select().single();
-      if (error) { console.error("createWork:", error.message, error.code); toast("Бүтээл байршуулахад алдаа гарлаа", "error"); return null; }
+      if (error) { if (DEV) console.error("createWork:", error.code); toast("Бүтээл байршуулахад алдаа гарлаа", "error"); return null; }
       return data;
-    } catch (e) { console.error("createWork exception:", e.message); toast("Бүтээл байршуулахад алдаа гарлаа", "error"); return null; }
+    } catch (e) { if (DEV) console.error("createWork:", e.message); toast("Бүтээл байршуулахад алдаа гарлаа", "error"); return null; }
   },
 
   async updateWork(id, updates) {
     if (!isSupabaseReady()) return null;
     try {
       const { data, error } = await supabase.from("works").update({ ...updates, updated_at: new Date().toISOString() }).eq("id", id).select().single();
-      if (error) { console.error("updateWork:", error.message); toast("Бүтээл шинэчлэхэд алдаа гарлаа", "error"); return null; }
+      if (error) { if (DEV) console.error("updateWork:", error.code); toast("Бүтээл шинэчлэхэд алдаа гарлаа", "error"); return null; }
       return data;
-    } catch (e) { console.error("updateWork exception:", e.message); toast("Бүтээл шинэчлэхэд алдаа гарлаа", "error"); return null; }
+    } catch (e) { if (DEV) console.error("updateWork:", e.message); toast("Бүтээл шинэчлэхэд алдаа гарлаа", "error"); return null; }
   },
 
   async deleteWork(id) {
     if (!isSupabaseReady()) return;
     try {
       const { error } = await supabase.from("works").delete().eq("id", id);
-      if (error) { console.error("deleteWork:", error.message); toast("Бүтээл устгахад алдаа гарлаа", "error"); }
-    } catch (e) { console.error("deleteWork exception:", e.message); toast("Бүтээл устгахад алдаа гарлаа", "error"); }
+      if (error) { if (DEV) console.error("deleteWork:", error.code); toast("Бүтээл устгахад алдаа гарлаа", "error"); }
+    } catch (e) { if (DEV) console.error("deleteWork:", e.message); toast("Бүтээл устгахад алдаа гарлаа", "error"); }
   },
 
   // My works (for creator)
@@ -167,9 +172,9 @@ export const DB = {
     if (!isSupabaseReady()) return null;
     try {
       const { data, error } = await supabase.from("orders").insert(order).select().single();
-      if (error) { console.error("createOrder:", error.message); toast("Захиалга үүсгэхэд алдаа гарлаа", "error"); return null; }
+      if (error) { if (DEV) console.error("createOrder:", error.code); toast("Захиалга үүсгэхэд алдаа гарлаа", "error"); return null; }
       return data;
-    } catch (e) { console.error("createOrder exception:", e.message); toast("Захиалга үүсгэхэд алдаа гарлаа", "error"); return null; }
+    } catch (e) { if (DEV) console.error("createOrder:", e.message); toast("Захиалга үүсгэхэд алдаа гарлаа", "error"); return null; }
   },
 
   async getMyOrders(userId) {
@@ -188,9 +193,9 @@ export const DB = {
     if (!isSupabaseReady()) return null;
     try {
       const { data, error } = await supabase.from("orders").update(updates).eq("id", id).select().single();
-      if (error) { console.error("updateOrder:", error.message); toast("Захиалга шинэчлэхэд алдаа гарлаа", "error"); return null; }
+      if (error) { if (DEV) console.error("updateOrder:", error.code); toast("Захиалга шинэчлэхэд алдаа гарлаа", "error"); return null; }
       return data;
-    } catch (e) { console.error("updateOrder exception:", e.message); toast("Захиалга шинэчлэхэд алдаа гарлаа", "error"); return null; }
+    } catch (e) { if (DEV) console.error("updateOrder:", e.message); toast("Захиалга шинэчлэхэд алдаа гарлаа", "error"); return null; }
   },
 
   // Likes / Saves / Follows
@@ -285,14 +290,17 @@ export const DB = {
   },
 
   async addComment(workId, userId, text) {
-    if (!isSupabaseReady() || !text.trim()) return null;
-    const { data } = await supabase.from("comments").insert({ work_id: workId, user_id: userId, text: text.trim() }).select("*, profiles!user_id(name, photo)").single();
+    if (!isSupabaseReady() || !userId) return null;
+    const trimmed = text?.trim().slice(0, 500);
+    if (!trimmed) return null;
+    const { data } = await supabase.from("comments").insert({ work_id: workId, user_id: userId, text: trimmed }).select("*, profiles!user_id(name, photo)").single();
     return data;
   },
 
-  async deleteComment(commentId) {
-    if (!isSupabaseReady()) return;
-    await supabase.from("comments").delete().eq("id", commentId);
+  async deleteComment(commentId, userId) {
+    if (!isSupabaseReady() || !userId) return;
+    // userId constraint ensures only the owner can delete (RLS also enforces this)
+    await supabase.from("comments").delete().eq("id", commentId).eq("user_id", userId);
   },
 
   async getCommentCount(workId) {
@@ -328,9 +336,9 @@ export const DB = {
     if (!isSupabaseReady()) return null;
     try {
       const { data, error } = await supabase.from("commissions").insert(comm).select().single();
-      if (error) { console.error("createCommission:", error.message); toast("Захиалга илгээхэд алдаа гарлаа", "error"); return null; }
+      if (error) { if (DEV) console.error("createCommission:", error.code); toast("Захиалга илгээхэд алдаа гарлаа", "error"); return null; }
       return data;
-    } catch (e) { console.error("createCommission exception:", e.message); toast("Захиалга илгээхэд алдаа гарлаа", "error"); return null; }
+    } catch (e) { if (DEV) console.error("createCommission:", e.message); toast("Захиалга илгээхэд алдаа гарлаа", "error"); return null; }
   },
 
   async updateCommission(id, updates) {
@@ -375,7 +383,7 @@ export const DB = {
     if (!isSupabaseReady()) return;
     try {
       const { error } = await supabase.from("messages").insert({ conversation_id: conversationId, sender_id: senderId, text, image });
-      if (error) { console.error("sendMessage:", error.message); toast("Зурвас илгээхэд алдаа гарлаа", "error"); return; }
+      if (error) { if (DEV) console.error("sendMessage:", error.code); toast("Зурвас илгээхэд алдаа гарлаа", "error"); return; }
       // Increment recipient's unread counter
       const { data: conv } = await supabase.from("conversations").select("user_a, user_b, unread_a, unread_b").eq("id", conversationId).single();
       if (conv) {
@@ -385,7 +393,7 @@ export const DB = {
         else update.unread_a = (conv.unread_a || 0) + 1;
         await supabase.from("conversations").update(update).eq("id", conversationId);
       }
-    } catch (e) { console.error("sendMessage exception:", e.message); toast("Зурвас илгээхэд алдаа гарлаа", "error"); }
+    } catch (e) { if (DEV) console.error("sendMessage:", e.message); toast("Зурвас илгээхэд алдаа гарлаа", "error"); }
   },
 
   // Mark conversation as read for a specific user (reset unread counter)
@@ -448,12 +456,13 @@ export const DB = {
   // Upload file to Supabase Storage
   async uploadFile(bucket, path, base64Url) {
     if (!isSupabaseReady()) return null;
+    const ALLOWED_MIME = ["image/jpeg", "image/png", "image/webp", "image/gif"];
     try {
       let blob;
       if (base64Url.startsWith("data:")) {
-        // Convert base64 dataURL → Blob without fetch() (fetch can't handle data: URLs in some environments)
         const [header, b64] = base64Url.split(",");
         const mime = header.match(/:(.*?);/)?.[1] || "image/jpeg";
+        if (!ALLOWED_MIME.includes(mime)) { toast("Зөвшөөрөгдөөгүй файлын төрөл", "error"); return null; }
         const binary = atob(b64);
         const bytes = new Uint8Array(binary.length);
         for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
@@ -461,12 +470,13 @@ export const DB = {
       } else {
         const res = await fetch(base64Url);
         blob = await res.blob();
+        if (!ALLOWED_MIME.includes(blob.type)) { toast("Зөвшөөрөгдөөгүй файлын төрөл", "error"); return null; }
       }
       const { error } = await supabase.storage.from(bucket).upload(path, blob, { upsert: true, contentType: blob.type || "image/jpeg" });
-      if (error) { console.error(`[Storage] ${bucket}/${path}:`, error.message); toast("Файл байршуулахад алдаа гарлаа", "error"); return null; }
+      if (error) { if (DEV) console.error("[Storage]:", error.code); toast("Файл байршуулахад алдаа гарлаа", "error"); return null; }
       const { data } = supabase.storage.from(bucket).getPublicUrl(path);
       return data.publicUrl;
-    } catch (e) { console.error("[Storage] uploadFile exception:", e.message); toast("Файл байршуулахад алдаа гарлаа", "error"); return null; }
+    } catch (e) { if (DEV) console.error("[Storage]:", e.message); toast("Файл байршуулахад алдаа гарлаа", "error"); return null; }
   },
 
   // Creators list
@@ -646,7 +656,7 @@ export async function syncFromSupabase() {
     // Flush any pending writes from previous sessions
     setTimeout(() => SQ.flush(), 2000);
 
-    console.log(`[Sync] done works=${WORKS.length} creators=${CREATORS.length} myWorks=${GS.myWorks.length} orders=${orders.length}`);
+    if (DEV) console.log(`[Sync] done works=${WORKS.length} creators=${CREATORS.length} myWorks=${GS.myWorks.length} orders=${orders.length}`);
     return true;
   } catch (e) {
     console.error("[Sync] Supabase sync error:", e);
