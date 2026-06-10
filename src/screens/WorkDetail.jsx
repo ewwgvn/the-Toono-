@@ -113,14 +113,14 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
           {w.images.length>1&&<div style={{position:"absolute",bottom:12,left:"50%",transform:"translateX(-50%)",display:"flex",gap:6}}>
             {w.images.map((_,i)=><button type="button" key={i} onClick={e=>{e.stopPropagation();setImgIdx(i);}} style={{width:i===(imgIdx||0)?20:8,height:8,borderRadius:4,background:i===(imgIdx||0)?"#fff":"rgba(255,255,255,0.4)",border:"none",cursor:"pointer",transition:"all .2s"}}/>)}
           </div>}
-          {w.badge&&<span style={{position:"absolute",top:14,left:14,fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,fontWeight:700,color:"#fff",background:"rgba(91,143,232,0.85)",padding:"5px 12px",borderRadius:10}}>{w.badge}</span>}
+          {w.badge&&<span style={{position:"absolute",top:14,left:14,fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,fontWeight:700,color:"#fff",background:"#2681DA",padding:"5px 12px",borderRadius:10}}>{w.badge}</span>}
           {w.images.length>1&&<div style={{position:"absolute",bottom:14,right:14,background:"rgba(0,0,0,0.5)",borderRadius:10,padding:"6px 12px",display:"flex",alignItems:"center",gap:6}}>
             <span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:"#fff"}}>{(imgIdx||0)+1}/{w.images.length}</span>
           </div>}
         </div>
         :<div style={{height:260,background:`linear-gradient(135deg,#1A2A5A,${w.accent},#1A2A5A)`,display:"flex",alignItems:"center",justifyContent:"center",position:"relative",margin:"0 20px",borderRadius:20}}>
           <div style={{opacity:.25}}><Toono size={200} color="#fff"/></div>
-          {w.badge&&<span style={{position:"absolute",top:14,left:14,fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,fontWeight:700,color:"#fff",background:"rgba(91,143,232,0.85)",padding:"5px 12px",borderRadius:10}}>{w.badge}</span>}
+          {w.badge&&<span style={{position:"absolute",top:14,left:14,fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,fontWeight:700,color:"#fff",background:"#2681DA",padding:"5px 12px",borderRadius:10}}>{w.badge}</span>}
           <div style={{position:"absolute",bottom:14,right:14,background:"rgba(0,0,0,0.5)",borderRadius:10,padding:"6px 12px"}}>
             <span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.textB}}><IcHeart/> {(w.likes||0).toLocaleString()}</span>
           </div>
@@ -131,8 +131,11 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
       </div>}
       <div style={{padding:"18px 20px 0"}}>
         <div style={{marginBottom:12}}>
-          <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:24,fontWeight:800,color:T.textH,lineHeight:1.15,letterSpacing:"-0.02em",marginBottom:8}}>{w.title}</div>
-          <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:22,fontWeight:700,color:T.textH,letterSpacing:"-0.01em"}}>{fmtP(w)}</div>
+          <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:22,fontWeight:800,color:T.textH,lineHeight:1.2,letterSpacing:"-0.02em",marginBottom:6}}>{w.title}</div>
+          <div style={{display:"flex",alignItems:"center",gap:10}}>
+            <span style={{display:"inline-block",width:7,height:7,background:T.accent,transform:"rotate(45deg)"}}/>
+            <span style={{fontFamily:"'Caveat','Helvetica Neue',cursive",fontSize:36,fontWeight:700,color:T.accent,lineHeight:1}}>{fmtP(w)}</span>
+          </div>
         </div>
         <div style={{display:"flex",gap:6,marginBottom:16,flexWrap:"wrap"}}>
           {[w.cat,...(w.tags||[])].filter(Boolean).map(t=><Pill key={t}>{t}</Pill>)}
@@ -147,7 +150,7 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
         </Crd>
         <div style={{height:1,background:T.border}}/>
         <div style={{padding:"16px 0"}}>
-          <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,fontWeight:600,letterSpacing:'0.06em',textTransform:'uppercase',color:'#AAAAAA',marginBottom:10}}>ТАЙЛБАР</div>
+          <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:11,fontWeight:700,letterSpacing:'0.22em',textTransform:'uppercase',color:T.accent,marginBottom:10}}>ТАЙЛБАР</div>
           <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,color:T.textB,lineHeight:1.8}}>{w.description||w.desc||""}</div>
         </div>
         {/* ── 스펙 칩 인라인 미리보기 ── */}
@@ -161,7 +164,7 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
         </div>}
         {/* Comments section */}
         <div style={{marginTop:4,marginBottom:24,borderTop:`1px solid ${T.borderLight}`,paddingTop:16}}>
-          <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:16,fontWeight:700,color:T.textH,marginBottom:12}}>Сэтгэгдэл {comments.length>0?`(${comments.length})`:""}</div>
+          <div style={{fontFamily:"'Caveat','Helvetica Neue',cursive",fontSize:30,fontWeight:700,color:T.textH,marginBottom:12,lineHeight:1}}>Сэтгэгдэл {comments.length>0?`(${comments.length})`:""}</div>
           {GS.user.id && <div style={{display:"flex",gap:10,marginBottom:16,alignItems:"center"}}>
             <Avt size={32} photo={GS.user.photo}/>
             <input value={commentInput} onChange={e=>setCommentInput(e.target.value)}
@@ -184,7 +187,7 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
           const more=getAllWorks().filter(ww=>ww.id!==w.id&&(ww.creator_id===w.creator_id||ww.cid===w.cid)).slice(0,6);
           if(more.length===0) return null;
           return <div style={{marginTop:4}}>
-            <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:16,fontWeight:700,color:T.textH,marginBottom:12}}>Бүтээлчийн бусад бүтээл</div>
+            <div style={{fontFamily:"'Caveat','Helvetica Neue',cursive",fontSize:30,fontWeight:700,color:T.textH,marginBottom:12,lineHeight:1}}>Бүтээлчийн бусад бүтээл</div>
             <div style={{display:"flex",gap:12,overflowX:"auto",scrollbarWidth:"none"}}>
               {more.map(ww=><div key={ww.id} onClick={()=>nav("work",{workId:ww.id})} className="toono-card-tap" style={{flexShrink:0,width:130,cursor:"pointer"}}>
                 <div style={{width:130,height:160,borderRadius:14,background:T.s2,display:"flex",alignItems:"center",justifyContent:"center",marginBottom:7,overflow:"hidden"}}>
