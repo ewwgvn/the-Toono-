@@ -125,13 +125,8 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
 
   const works = creatorWorks || [];
   const featured = works[0] || null;
-  const gallery = works.slice(1);
   const tags = (c.tags || GS.user.tags || []).filter(Boolean);
   const bio = c.bio || (isOwn ? GS.user.bio : "");
-
-  // Bento uses first 2 gallery works + 1 blue accent tile; rest in grid
-  const bento = gallery.slice(0, 2);
-  const gridRest = gallery.slice(2);
 
   return <div style={{ height: "100%", display: "flex", flexDirection: "column", background: T.bg }}>
     {/* ── Top bar ── */}
@@ -262,34 +257,20 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
           ? <div style={{ padding: "40px 0", textAlign: "center", fontFamily: HELV, fontSize: 13, color: T.textDim }}>Уншиж байна...</div>
           : works.length === 0
             ? <div style={{ padding: "40px 0", textAlign: "center", fontFamily: HELV, fontSize: 13, color: T.textDim }}>Бүтээл байхгүй байна</div>
-            : <>
-                {/* bento: tall left + (small right top, blue tile right bottom) */}
-                {bento.length > 0 && (
-                  <div style={{ display: "grid", gridTemplateColumns: "1.35fr 1fr", gridTemplateRows: "auto auto", gap: 8, marginBottom: 8 }}>
-                    <div onClick={() => nav("work", { workId: bento[0].id })} className="toono-card-tap" style={{ gridRow: "1 / 3", cursor: "pointer" }}><WorkImg w={bento[0]} /></div>
-                    {bento[1]
-                      ? <div onClick={() => nav("work", { workId: bento[1].id })} className="toono-card-tap" style={{ aspectRatio: "1", cursor: "pointer" }}><WorkImg w={bento[1]} /></div>
-                      : <div style={{ aspectRatio: "1" }} />}
-                    {/* blue accent tile — creator field/tag */}
-                    <div style={{ aspectRatio: "1", background: T.accent, borderRadius: 4, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 12, textAlign: "center" }}>
-                      <span style={{ fontFamily: HELV, fontSize: 12, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "#fff", lineHeight: 1.3 }}>{c.field || tags[0] || "Studio"}</span>
-                      <span style={{ fontFamily: HELV, fontSize: 9, fontWeight: 500, letterSpacing: "0.12em", color: "rgba(255,255,255,0.7)", marginTop: 6, textTransform: "uppercase" }}>{works.length} бүтээл</span>
-                    </div>
+            : <div className="toono-grid-2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                {/* blue accent tile — creator field/tag */}
+                <div style={{ aspectRatio: "1", background: T.accent, borderRadius: 4, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 12, textAlign: "center" }}>
+                  <span style={{ fontFamily: HELV, fontSize: 13, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "#fff", lineHeight: 1.3 }}>{c.field || tags[0] || "Studio"}</span>
+                  <span style={{ fontFamily: HELV, fontSize: 9.5, fontWeight: 500, letterSpacing: "0.12em", color: "rgba(255,255,255,0.7)", marginTop: 6, textTransform: "uppercase" }}>{works.length} бүтээл</span>
+                </div>
+                {works.map((w, i) => (
+                  <div key={w.id || i} onClick={() => nav("work", { workId: w.id })} className="toono-card-tap" style={{ cursor: "pointer" }}>
+                    <div style={{ aspectRatio: "1" }}><WorkImg w={w} /></div>
+                    <div style={{ fontFamily: HELV, fontSize: 12, fontWeight: 600, color: T.textH, marginTop: 7, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</div>
+                    <div style={{ fontFamily: HELV, fontSize: 11, color: T.textDim, marginTop: 1 }}>{w.price > 0 ? `₮${Number(w.price).toLocaleString()}` : "Захиалга"}</div>
                   </div>
-                )}
-                {/* rest — uniform 2-col */}
-                {gridRest.length > 0 && (
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                    {gridRest.map((w, i) => (
-                      <div key={w.id || i} onClick={() => nav("work", { workId: w.id })} className="toono-card-tap" style={{ cursor: "pointer" }}>
-                        <div style={{ aspectRatio: "1" }}><WorkImg w={w} /></div>
-                        <div style={{ fontFamily: HELV, fontSize: 11.5, fontWeight: 600, color: T.textH, marginTop: 7, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</div>
-                        <div style={{ fontFamily: HELV, fontSize: 11, color: T.textDim, marginTop: 1 }}>{w.price > 0 ? `₮${Number(w.price).toLocaleString()}` : "Захиалга"}</div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </>}
+                ))}
+              </div>}
         {isOwn && works.length > 0 && (
           <div style={{ textAlign: "center", marginTop: 18 }}>
             <button type="button" onClick={() => nav("portfolio")} style={linkBtn}>ПОРТФОЛИО →</button>

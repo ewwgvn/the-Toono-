@@ -192,12 +192,21 @@ input[type="checkbox"], input[type="radio"] { -webkit-appearance: auto !importan
   .toono-grid-2 { grid-template-columns: repeat(5, 1fr) !important; }
 }
 
-/* ── Feed: single column on mobile, masonry-ish grid on desktop ── */
+/* ── Feed layouts ── */
+/* grid view: single column on mobile, multi-column cards on desktop */
 .feed-grid { display: flex; flex-direction: column; }
-.feed-post { margin-bottom: 6px; }
+.feed-grid .feed-post { margin-bottom: 6px; }
 @media (min-width: 768px) {
   .feed-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; padding: 18px 24px; align-items: start; }
-  .feed-post { margin-bottom: 0; border: 1px solid #ECECEC; border-radius: 14px; overflow: hidden; }
+  .feed-grid .feed-post { margin-bottom: 0; border: 1px solid #ECECEC; border-radius: 14px; overflow: hidden; }
 }
 @media (min-width: 1280px) { .feed-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 1700px) { .feed-grid { grid-template-columns: repeat(4, 1fr); } }
+
+/* single view: one centered column on all sizes */
+.feed-single { display: flex; flex-direction: column; max-width: 600px; margin: 0 auto; }
+.feed-single .feed-post { margin-bottom: 6px; }
+@media (min-width: 768px) {
+  .feed-single { padding: 18px 0; }
+  .feed-single .feed-post { border: 1px solid #ECECEC; border-radius: 14px; overflow: hidden; margin-bottom: 18px; }
+}

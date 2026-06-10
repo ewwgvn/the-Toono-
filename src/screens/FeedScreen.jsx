@@ -75,6 +75,7 @@ const FeedPost = memo(function FeedPost({ w, creator, nav, tLike, tSave }) {
 export default function FeedScreen({ nav, refresh, goBack }) {
   const [tick, setTick] = useState(0);
   const [loading, setLoading] = useState(GS.publicWorks.length === 0);
+  const [view, setView] = useState("grid"); // "grid" (multi-col) | "single" (one column)
 
   // Fetch public works if empty (after store.js optimization)
   useEffect(() => {
@@ -119,6 +120,11 @@ export default function FeedScreen({ nav, refresh, goBack }) {
     <div style={{ padding: "16px 16px 10px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: `1px solid ${T.border}`, flexShrink: 0 }}>
       <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 24, fontWeight: 800, color: T.textH, letterSpacing: "-0.02em" }}>Фийд</div>
       <div style={{ display: "flex", gap: 2 }}>
+        <button type="button" aria-label="Харагдац" className="toono-pressable" onClick={() => setView(v => v === "grid" ? "single" : "grid")} style={{ width: 36, height: 36, borderRadius: 10, background: "transparent", border: "none", color: T.textH, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          {view === "grid"
+            ? <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="1.5" stroke="currentColor" strokeWidth="1.6"/><path d="M10 3v14M3 10h14" stroke="currentColor" strokeWidth="1.6"/></svg>
+            : <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.6"/><rect x="3" y="11" width="14" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.6"/></svg>}
+        </button>
         <button type="button" aria-label="Зурвас" className="toono-pressable" onClick={() => nav("chat")} style={{ position: "relative", width: 36, height: 36, borderRadius: 10, background: "transparent", border: "none", color: T.textH, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <IcMsg />
           {GS.unreadChat > 0 && <span style={{ position: "absolute", top: 4, right: 4, width: 7, height: 7, borderRadius: "50%", background: T.red, border: "1.5px solid #fff" }} />}
@@ -166,7 +172,7 @@ export default function FeedScreen({ nav, refresh, goBack }) {
               <div style={{ fontFamily: F, fontSize: 13, color: T.textSub, lineHeight: 1.6, marginBottom: 20 }}>Бүтээлчийг дагаад тэдний шинэ<br />бүтээлийг энд харна уу</div>
               <PBtn onClick={() => nav("explore")}>Бүтээлч хайх</PBtn>
             </div>
-          : <div className="feed-grid">
+          : <div className={view === "grid" ? "feed-grid" : "feed-single"}>
               {feedWorks.map(w => {
                 const creator = allCreators.find(c => c.id === w.creator_id) || { name: w.creator, photo: w.profiles?.photo || null, field: "" };
                 return <FeedPost key={w.id} w={w} creator={creator} nav={nav} tLike={tLike} tSave={tSave} />;
