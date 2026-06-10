@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { T, getTheme, ULIGER_DECOR as D, ULIGER_FONT_DISPLAY } from "@/theme/colors";
+import { T } from "@/theme/colors";
 import { GS, saveGS } from "@/lib/store";
 import { DB, isSupabaseReady } from "@/lib/supabase";
 import { getAllWorks, fmtP } from "@/lib/utils";
@@ -19,7 +19,6 @@ import BottomSheet from "@/components/layout/BottomSheet";
 import { toast } from "@/components/layout/Toast";
 
 export default function WorkDetail({ nav, refresh, goBack, workId }) {
-  const isUliger = getTheme() === "uliger";
   const w=getAllWorks().find(x=>x.id===workId)||GS.myWorks.find(x=>x.id===workId)||{id:0,title:"—",creator:"—",creator_id:null,price:0,accent:T.textH,likes:0,description:"",desc:"",sizes:[],colors:[],stock:0,images:[],tags:[],cat:"",medium:"",digital:false,badge:null,video:null,profiles:{photo:null,name:""}};
   const [offerOpen,setOfferOpen]=useState(false);
   const [zoomOpen,setZoomOpen]=useState(false);
@@ -114,14 +113,14 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
           {w.images.length>1&&<div style={{position:"absolute",bottom:12,left:"50%",transform:"translateX(-50%)",display:"flex",gap:6}}>
             {w.images.map((_,i)=><button type="button" key={i} onClick={e=>{e.stopPropagation();setImgIdx(i);}} style={{width:i===(imgIdx||0)?20:8,height:8,borderRadius:4,background:i===(imgIdx||0)?"#fff":"rgba(255,255,255,0.4)",border:"none",cursor:"pointer",transition:"all .2s"}}/>)}
           </div>}
-          {w.badge&&<span style={{position:"absolute",top:14,left:14,fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,fontWeight:700,color:"#fff",background:isUliger?D.navy:"rgba(91,143,232,0.85)",padding:"5px 12px",borderRadius:10}}>{w.badge}</span>}
+          {w.badge&&<span style={{position:"absolute",top:14,left:14,fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,fontWeight:700,color:"#fff",background:"rgba(91,143,232,0.85)",padding:"5px 12px",borderRadius:10}}>{w.badge}</span>}
           {w.images.length>1&&<div style={{position:"absolute",bottom:14,right:14,background:"rgba(0,0,0,0.5)",borderRadius:10,padding:"6px 12px",display:"flex",alignItems:"center",gap:6}}>
             <span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:"#fff"}}>{(imgIdx||0)+1}/{w.images.length}</span>
           </div>}
         </div>
         :<div style={{height:260,background:`linear-gradient(135deg,#1A2A5A,${w.accent},#1A2A5A)`,display:"flex",alignItems:"center",justifyContent:"center",position:"relative",margin:"0 20px",borderRadius:20}}>
           <div style={{opacity:.25}}><Toono size={200} color="#fff"/></div>
-          {w.badge&&<span style={{position:"absolute",top:14,left:14,fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,fontWeight:700,color:"#fff",background:isUliger?D.navy:"rgba(91,143,232,0.85)",padding:"5px 12px",borderRadius:10}}>{w.badge}</span>}
+          {w.badge&&<span style={{position:"absolute",top:14,left:14,fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,fontWeight:700,color:"#fff",background:"rgba(91,143,232,0.85)",padding:"5px 12px",borderRadius:10}}>{w.badge}</span>}
           <div style={{position:"absolute",bottom:14,right:14,background:"rgba(0,0,0,0.5)",borderRadius:10,padding:"6px 12px"}}>
             <span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.textB}}><IcHeart/> {(w.likes||0).toLocaleString()}</span>
           </div>
@@ -132,8 +131,8 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
       </div>}
       <div style={{padding:"18px 20px 0"}}>
         <div style={{marginBottom:12}}>
-          <div style={{fontFamily:isUliger?ULIGER_FONT_DISPLAY:"'Helvetica Neue', Arial, sans-serif",fontSize:24,fontWeight:isUliger?700:800,color:T.textH,lineHeight:1.15,letterSpacing:"-0.02em",marginBottom:8}}>{w.title}</div>
-          <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:22,fontWeight:700,color:isUliger?D.navy:T.textH,letterSpacing:"-0.01em"}}>{fmtP(w)}</div>
+          <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:24,fontWeight:800,color:T.textH,lineHeight:1.15,letterSpacing:"-0.02em",marginBottom:8}}>{w.title}</div>
+          <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:22,fontWeight:700,color:T.textH,letterSpacing:"-0.01em"}}>{fmtP(w)}</div>
         </div>
         <div style={{display:"flex",gap:6,marginBottom:16,flexWrap:"wrap"}}>
           {[w.cat,...(w.tags||[])].filter(Boolean).map(t=><Pill key={t}>{t}</Pill>)}

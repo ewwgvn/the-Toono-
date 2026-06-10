@@ -20,7 +20,7 @@ class ErrorBoundary extends Component {
     return this.props.children;
   }
 }
-import { T, loadTheme } from "@/theme/colors";
+import { T } from "@/theme/colors";
 import { GS, saveGS, loadGS, resetGS, getUnreadChat, getUnreadNotif } from "@/lib/store";
 import { DB, isSupabaseReady, initSupabase, syncFromSupabase, fetchPublicData } from "@/lib/supabase";
 import { getAllWorks, getCreators } from "@/lib/utils";
@@ -84,7 +84,6 @@ export default function App() {
   const refresh = useCallback(() => setTick(t => t + 1), []);
 
   useEffect(() => {
-    loadTheme(); // 저장된 테마 복원
     const init = async () => {
       try {
         const savedVer = localStorage.getItem("toono-version");

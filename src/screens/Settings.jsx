@@ -1,28 +1,17 @@
 "use client";
-import { useState } from "react";
-import { T, setTheme, getTheme, ULIGER_DECOR } from "@/theme/colors";
 import { GS, resetGS, saveGS } from "@/lib/store";
+import { T } from "@/theme/colors";
 import { DB, isSupabaseReady } from "@/lib/supabase";
 import { toast } from "@/components/layout/Toast";
 import {
   IcEdit, IcPortfolio, IcDashboard, IcDispute,
   IcOrder, IcInfo, IcShield, IcX, IcChevron, IcCommission,
 } from "@/components/icons";
-import Crd from "@/components/atoms/Crd";
 import Simple from "@/components/layout/Simple";
 
 const F = "'Helvetica Neue', Arial, sans-serif";
 
-export default function Settings({ nav, goBack, refresh }) {
-  const [theme, setThemeState] = useState(getTheme());
-
-  const switchTheme = (mode) => {
-    setTheme(mode);
-    setThemeState(mode);
-    refresh();
-    toast(mode === "uliger" ? "동화 테마로 변경됐어요 📖" : "흑백 테마로 변경됐어요", "success");
-  };
-
+export default function Settings({ nav, refresh }) {
   const Sec = ({ title, items }) => (
     <div style={{ marginBottom: 22 }}>
       <div style={{ fontFamily: F, fontSize: 11, fontWeight: 600, color: "#767676", letterSpacing: ".08em", textTransform: "uppercase", marginBottom: 8 }}>{title}</div>
@@ -46,31 +35,6 @@ export default function Settings({ nav, goBack, refresh }) {
 
   return (
     <Simple nav={nav} title="Тохиргоо" back="me">
-
-      {/* ── 테마 스위처 ── */}
-      <div style={{ marginBottom: 22 }}>
-        <div style={{ fontFamily: F, fontSize: 11, fontWeight: 600, color: "#767676", letterSpacing: ".08em", textTransform: "uppercase", marginBottom: 10 }}>Загвар</div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-          {/* 동화 (uliger) */}
-          <button type="button" onClick={() => switchTheme("uliger")} style={{ padding: "16px 14px", borderRadius: 14, border: `2px solid ${theme === "uliger" ? T.accent : T.border}`, background: theme === "uliger" ? T.accentSub : T.s1, cursor: "pointer", textAlign: "left", transition: "all .2s" }}>
-            <div style={{ width: 28, height: 28, borderRadius: 8, marginBottom: 10, position: "relative", overflow: "hidden", background: `linear-gradient(135deg, ${ULIGER_DECOR.navy} 0%, ${ULIGER_DECOR.sky} 55%, ${ULIGER_DECOR.gold} 100%)` }}>
-              <span style={{ position: "absolute", top: 5, left: 6, width: 3, height: 3, borderRadius: "50%", background: ULIGER_DECOR.paper }} />
-              <span style={{ position: "absolute", top: 12, left: 16, width: 2, height: 2, borderRadius: "50%", background: ULIGER_DECOR.paper, opacity: .8 }} />
-            </div>
-            <div style={{ fontFamily: F, fontSize: 13, fontWeight: 700, color: T.textH, marginBottom: 3 }}>Үлгэр</div>
-            <div style={{ fontFamily: F, fontSize: 11, color: T.textSub, lineHeight: 1.4 }}>Дулаан, түүхэн мэт зөөлөн өнгөнүүд</div>
-            {theme === "uliger" && <div style={{ marginTop: 8, fontFamily: F, fontSize: 10, fontWeight: 700, color: T.accent }}>✓ Идэвхтэй</div>}
-          </button>
-          {/* 흑백 (mono) */}
-          <button type="button" onClick={() => switchTheme("mono")} style={{ padding: "16px 14px", borderRadius: 14, border: `2px solid ${theme === "mono" ? "#111111" : T.border}`, background: theme === "mono" ? "#F7F7F7" : T.s1, cursor: "pointer", textAlign: "left", transition: "all .2s" }}>
-            <div style={{ width: 28, height: 28, borderRadius: 8, background: "#111111", marginBottom: 10 }} />
-            <div style={{ fontFamily: F, fontSize: 13, fontWeight: 700, color: T.textH, marginBottom: 3 }}>Хар цагаан</div>
-            <div style={{ fontFamily: F, fontSize: 11, color: T.textSub, lineHeight: 1.4 }}>Цэвэр хар цагаан, минимал</div>
-            {theme === "mono" && <div style={{ marginTop: 8, fontFamily: F, fontSize: 10, fontWeight: 700, color: "#111111" }}>✓ Идэвхтэй</div>}
-          </button>
-        </div>
-      </div>
-
       <Sec title="Бүртгэл" items={[
         { icon: <IcEdit />, label: "Профайл засах", action: () => nav("edit-profile") },
         { icon: <IcPortfolio />, label: "Портфолио", action: () => nav("portfolio") },

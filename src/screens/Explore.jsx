@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { T, getTheme, ULIGER_DECOR as D, ULIGER_FONT_DISPLAY } from "@/theme/colors";
+import { T } from "@/theme/colors";
 import { GS, saveGS } from "@/lib/store";
 import { DB, isSupabaseReady } from "@/lib/supabase";
 import { getAllWorks, getCreators, fmtP } from "@/lib/utils";
@@ -20,7 +20,6 @@ import CreatorRow from "@/components/shared/CreatorRow";
 const MATERIALS = ["Бүгд","Тэмээний ноос","Хонины ноос","Эсгий","Торго","Арьс","Мод","Шаазан","Мөнгө","Хүрэл","Цаас","Дижитал","3D Принт"];
 
 export default function Explore({ nav, refresh, goBack }) {
-  const isUliger = getTheme() === "uliger";
   const [q,setQ]=useState("");
   const [debouncedQ,setDebouncedQ]=useState("");
   const debounceRef=React.useRef(null);
@@ -110,14 +109,14 @@ export default function Explore({ nav, refresh, goBack }) {
   return <div style={{height:"100%",display:"flex",flexDirection:"column",background:T.bg,position:"relative"}}>
     <div style={{padding:"20px 20px 12px",flexShrink:0}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-        <div style={{fontFamily:isUliger?ULIGER_FONT_DISPLAY:"'Helvetica Neue', Arial, sans-serif",fontSize:24,fontWeight:isUliger?700:800,color:T.textH}}>Хайлт</div>
-        <button type="button" onClick={()=>setFilterOpen(true)} style={{position:"relative",width:42,height:42,borderRadius:12,background:af>0?(isUliger?D.gold:T.accent):T.s1,border:`1px solid ${af>0?(isUliger?D.gold:T.accent):T.border}`,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:af>0?(isUliger?D.ink:"#fff"):T.textSub}}>
+        <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:24,fontWeight:800,color:T.textH}}>Хайлт</div>
+        <button type="button" onClick={()=>setFilterOpen(true)} style={{position:"relative",width:42,height:42,borderRadius:12,background:af>0?T.accent:T.s1,border:`1px solid ${af>0?T.accent:T.border}`,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:af>0?"#fff":T.textSub}}>
           <IcFilter/>
           {af>0&&<div style={{position:"absolute",top:-4,right:-4,width:16,height:16,borderRadius:"50%",background:T.red,display:"flex",alignItems:"center",justifyContent:"center"}}><span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:9,fontWeight:700,color:"#fff"}}>{af}</span></div>}
         </button>
       </div>
       <div style={{position:"relative"}}>
-        <div style={{background:T.s1,border:`1px solid ${inputFocused?(isUliger?D.navy:T.accent):T.border}`,borderRadius:14,padding:"11px 14px",display:"flex",alignItems:"center",gap:10,transition:"border-color .15s"}}>
+        <div style={{background:T.s1,border:`1px solid ${inputFocused?T.accent:T.border}`,borderRadius:14,padding:"11px 14px",display:"flex",alignItems:"center",gap:10,transition:"border-color .15s"}}>
           <span style={{color:T.textSub,display:"flex"}}><IcSearch/></span>
           <input
             value={q}
@@ -152,7 +151,7 @@ export default function Explore({ nav, refresh, goBack }) {
       </div>
     </div>
     <div style={{display:"flex",borderBottom:`1px solid ${T.border}`,flexShrink:0}}>
-      {[["works","Бүтээл"],["creators","Бүтээлч"],["users","Хэрэглэгч"]].map(t=><button type="button" key={t[0]} onClick={()=>setTab(t[0])} style={{flex:1,padding:"11px 0",background:"none",border:"none",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,fontWeight:tab===t[0]?700:500,color:tab===t[0]?(isUliger?D.navy:T.accent):T.textSub,borderBottom:`2px solid ${tab===t[0]?(isUliger?D.gold:T.accent):"transparent"}`,cursor:"pointer"}}>{t[1]}{(debouncedQ||cat!=="all")&&t[0]!=="users"?` ${t[0]==="works"?fw.length:fc.length}`:""}</button>)}
+      {[["works","Бүтээл"],["creators","Бүтээлч"],["users","Хэрэглэгч"]].map(t=><button type="button" key={t[0]} onClick={()=>setTab(t[0])} style={{flex:1,padding:"11px 0",background:"none",border:"none",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,fontWeight:tab===t[0]?700:500,color:tab===t[0]?T.accent:T.textSub,borderBottom:`2px solid ${tab===t[0]?T.accent:"transparent"}`,cursor:"pointer"}}>{t[1]}{(debouncedQ||cat!=="all")&&t[0]!=="users"?` ${t[0]==="works"?fw.length:fc.length}`:""}</button>)}
     </div>
     {/* 카테고리 칩 — 검색어가 없을 때만 표시 */}
     <div style={{padding:"8px 20px 8px",display:"flex",gap:7,overflowX:"auto",scrollbarWidth:"none",flexShrink:0,borderBottom:`1px solid ${T.border}`}}>
@@ -160,7 +159,7 @@ export default function Explore({ nav, refresh, goBack }) {
         setCat(c);
         // 특정 카테고리 선택 시 자동으로 작품 탭으로 전환
         if(c!=="all") setTab("works");
-      }} style={{flexShrink:0,padding:"5px 12px",borderRadius:20,cursor:"pointer",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,fontWeight:cat===c?700:500,background:cat===c?(isUliger?D.gold:T.accent):T.s1,border:`1px solid ${cat===c?(isUliger?D.gold:T.accent):T.border}`,color:cat===c?(isUliger?D.ink:"#fff"):T.textSub,whiteSpace:"nowrap"}}>{c==="all"?"Бүгд":c}</button>)}
+      }} style={{flexShrink:0,padding:"5px 12px",borderRadius:20,cursor:"pointer",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,fontWeight:cat===c?700:500,background:cat===c?T.accent:T.s1,border:`1px solid ${cat===c?T.accent:T.border}`,color:cat===c?"#fff":T.textSub,whiteSpace:"nowrap"}}>{c==="all"?"Бүгд":c}</button>)}
     </div>
     <div style={{flex:1,overflowY:"auto",scrollbarWidth:"none",padding:"0 20px"}}>
 
