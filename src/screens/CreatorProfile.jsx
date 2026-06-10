@@ -118,28 +118,19 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
 
     <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none" }}>
 
-      {/* ════ HERO — color circle + overlapping blue script name ════ */}
-      <div style={{ position: "relative", padding: "30px 0 14px", overflow: "hidden" }}>
-        <div style={{ position: "relative", width: 232, height: 232, margin: "0 auto" }}>
-          <div style={{ width: "100%", height: "100%", borderRadius: "50%", overflow: "hidden", background: T.s2 }}>
-            {c.photo
-              ? (c.photo.startsWith("data:")
-                  ? <img src={c.photo} alt={c.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                  : <Image src={c.photo} fill alt={c.name} sizes="232px" style={{ objectFit: "cover" }} />)
-              : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}><Toono size={70} color={T.textDim} /></div>}
-          </div>
+      {/* ════ HERO — color circle, name below ════ */}
+      <div style={{ padding: "30px 24px 0", display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <div style={{ width: 148, height: 148, borderRadius: "50%", overflow: "hidden", background: T.s2, position: "relative" }}>
+          {c.photo
+            ? (c.photo.startsWith("data:")
+                ? <img src={c.photo} alt={c.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                : <Image src={c.photo} fill alt={c.name} sizes="148px" style={{ objectFit: "cover" }} />)
+            : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}><Toono size={56} color={T.textDim} /></div>}
         </div>
-        {/* overlapping script name */}
-        <div style={{ position: "absolute", top: "50%", left: 0, right: 0, transform: "translateY(-50%)", textAlign: "center", pointerEvents: "none", padding: "0 8px" }}>
-          <span style={{ fontFamily: SCRIPT, fontSize: 66, fontWeight: 700, color: T.accent, lineHeight: 0.9, letterSpacing: "0.01em", textShadow: "0 2px 22px rgba(255,255,255,0.95), 0 0 8px rgba(255,255,255,0.9)", wordBreak: "break-word" }}>{c.name || "..."}</span>
-        </div>
-      </div>
-
-      {/* field + badge + small links (like PLAY NOW row) */}
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
-        <div style={{ fontFamily: HELV, fontSize: 11, fontWeight: 600, letterSpacing: "0.22em", textTransform: "uppercase", color: T.textDim }}>{c.field || "БҮТЭЭЛЧ"}</div>
-        {c.rating >= 4.8 && <StarSellerBadge />}
-        <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 4 }}>
+        <div style={{ fontFamily: HELV, fontSize: 27, fontWeight: 800, color: T.textH, letterSpacing: "-0.02em", lineHeight: 1.1, marginTop: 18, textAlign: "center", wordBreak: "break-word" }}>{c.name || "..."}</div>
+        <div style={{ fontFamily: HELV, fontSize: 11, fontWeight: 600, letterSpacing: "0.22em", textTransform: "uppercase", color: T.textDim, marginTop: 8 }}>{c.field || "БҮТЭЭЛЧ"}</div>
+        {c.rating >= 4.8 && <div style={{ marginTop: 12 }}><StarSellerBadge /></div>}
+        <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 16 }}>
           {isOwn ? (
             <button type="button" onClick={() => nav("edit-profile")} style={linkBtn}>ПРОФАЙЛ ЗАСАХ</button>
           ) : (

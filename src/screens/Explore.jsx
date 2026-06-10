@@ -109,7 +109,7 @@ export default function Explore({ nav, refresh, goBack }) {
   return <div style={{height:"100%",display:"flex",flexDirection:"column",background:T.bg,position:"relative"}}>
     <div style={{padding:"20px 20px 12px",flexShrink:0}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-        <div style={{fontFamily:"'Caveat','Helvetica Neue',cursive",fontSize:38,fontWeight:700,color:T.textH,lineHeight:1}}>Хайлт</div>
+        <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:26,fontWeight:800,color:T.textH,lineHeight:1.05,letterSpacing:"-0.02em"}}>Хайлт</div>
         <button type="button" onClick={()=>setFilterOpen(true)} style={{position:"relative",width:42,height:42,borderRadius:12,background:af>0?T.accent:T.s1,border:`1px solid ${af>0?T.accent:T.border}`,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:af>0?"#fff":T.textSub}}>
           <IcFilter/>
           {af>0&&<div style={{position:"absolute",top:-4,right:-4,width:16,height:16,borderRadius:"50%",background:T.red,display:"flex",alignItems:"center",justifyContent:"center"}}><span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:9,fontWeight:700,color:"#fff"}}>{af}</span></div>}

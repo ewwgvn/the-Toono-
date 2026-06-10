@@ -99,8 +99,8 @@ function SectionLabel({ label, title, action, onAction }) {
   return (
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 14 }}>
       <div>
-        {label && <div style={{ fontFamily: F, fontSize: 10, fontWeight: 600, letterSpacing: "0.22em", color: T.accent, marginBottom: 3, textTransform: "uppercase" }}>{label}</div>}
-        <div style={{ fontFamily: "'Caveat','Helvetica Neue',cursive", fontSize: 34, fontWeight: 700, color: T.textH, lineHeight: 1, letterSpacing: "0.01em" }}>{title}</div>
+        {label && <div style={{ fontFamily: F, fontSize: 10, fontWeight: 700, letterSpacing: "0.22em", color: T.accent, marginBottom: 4, textTransform: "uppercase" }}>{label}</div>}
+        <div style={{ fontFamily: F, fontSize: 22, fontWeight: 800, color: T.textH, lineHeight: 1.1, letterSpacing: "-0.02em" }}>{title}</div>
       </div>
       {action && <button type="button" onClick={onAction} style={{ background: "none", border: "none", fontFamily: F, fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", color: T.accent, cursor: "pointer", flexShrink: 0, marginBottom: 4 }}>{action}</button>}
     </div>
@@ -201,10 +201,10 @@ export default function Home({ nav, refresh }) {
           {topCreators.length > 0 && selCat === "all" && (
             <div style={{ padding: "24px 0 20px", borderBottom: `1px solid ${T.s2}` }}>
               <div style={{ padding: "0 16px", marginBottom: 14 }}>
-                <div style={{ fontFamily: F, fontSize: 10, fontWeight: 600, letterSpacing: "0.1em", color: T.textDim, marginBottom: 4, textTransform: "uppercase" }}>CREATORS</div>
+                <div style={{ fontFamily: F, fontSize: 10, fontWeight: 700, letterSpacing: "0.22em", color: T.accent, marginBottom: 4, textTransform: "uppercase" }}>CREATORS</div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div style={{ fontFamily: F, fontSize: 20, fontWeight: 800, color: T.textH, letterSpacing: "-.02em" }}>Бүтээлчид</div>
-                  <button type="button" onClick={() => nav("explore")} style={{ background: "none", border: "none", fontFamily: F, fontSize: 12, color: T.textDim, cursor: "pointer" }}>Бүгд →</button>
+                  <div style={{ fontFamily: F, fontSize: 22, fontWeight: 800, color: T.textH, letterSpacing: "-.02em" }}>Бүтээлчид</div>
+                  <button type="button" onClick={() => nav("explore")} style={{ background: "none", border: "none", fontFamily: F, fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", color: T.accent, cursor: "pointer" }}>Бүгд →</button>
                 </div>
               </div>
               <div style={{ display: "flex", gap: 14, overflowX: "auto", scrollbarWidth: "none", padding: "0 16px" }}>

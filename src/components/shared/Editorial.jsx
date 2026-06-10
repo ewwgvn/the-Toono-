@@ -3,10 +3,11 @@
 import { T } from "@/theme/colors";
 
 const HELV = "'Helvetica Neue', Arial, sans-serif";
-export const SCRIPT = "'Caveat', 'Helvetica Neue', cursive";
+// NOTE: kept for backward-compat imports. Local fonts (Caveat/Stardom) lack
+// Mongolian Cyrillic (Ү ү Ө ө) and the ₮ sign, so display text uses Helvetica.
+export const SCRIPT = HELV;
 
 // ── Centered section label with flanking hairlines (editorial) ──
-// e.g.  ──────  SELECTED WORKS  ──────
 export function SectionLabel({ children, color = T.accent, mt = 0, mb = 16 }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 14, marginTop: mt, marginBottom: mb }}>
@@ -17,28 +18,30 @@ export function SectionLabel({ children, color = T.accent, mt = 0, mb = 16 }) {
   );
 }
 
-// ── Brush-script display heading (Caveat) ──
-export function ScriptTitle({ children, size = 44, color = T.accent, align = "center", style }) {
+// ── Bold editorial display heading (Helvetica, tight tracking) ──
+export function Display({ children, size = 28, color = T.textH, align = "left", weight = 800, style }) {
   return (
-    <div style={{ fontFamily: SCRIPT, fontSize: size, fontWeight: 700, color, textAlign: align, lineHeight: 1, letterSpacing: "0.01em", ...style }}>
+    <div style={{ fontFamily: HELV, fontSize: size, fontWeight: weight, color, textAlign: align, lineHeight: 1.08, letterSpacing: "-0.02em", ...style }}>
       {children}
     </div>
   );
 }
+// Backward-compat alias
+export const ScriptTitle = Display;
 
-// ── Small uppercase kicker (above titles) ──
+// ── Small uppercase kicker ──
 export function Kicker({ children, color = T.textDim, align = "center" }) {
   return (
     <div style={{ fontFamily: HELV, fontSize: 10, fontWeight: 600, letterSpacing: "0.24em", textTransform: "uppercase", color, textAlign: align }}>{children}</div>
   );
 }
 
-// ── Diamond bullet (editorial divider accent) ──
+// ── Diamond bullet ──
 export function Diamond({ size = 8, color = T.accent }) {
   return <span style={{ display: "inline-block", width: size, height: size, background: color, transform: "rotate(45deg)" }} />;
 }
 
-// ── Solid accent tile with white label (skateboard-editorial grid accent) ──
+// ── Solid accent tile with white label ──
 export function AccentTile({ label, sub, onClick, aspect = "1" }) {
   return (
     <div onClick={onClick} style={{ aspectRatio: aspect, background: T.accent, borderRadius: 4, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 14, cursor: onClick ? "pointer" : "default", textAlign: "center" }}>

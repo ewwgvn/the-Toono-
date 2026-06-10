@@ -117,7 +117,7 @@ export default function FeedScreen({ nav, refresh, goBack }) {
   return <div style={{ height: "100%", display: "flex", flexDirection: "column", background: T.bg }}>
     {/* Header */}
     <div style={{ padding: "16px 16px 10px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: `1px solid ${T.border}`, flexShrink: 0 }}>
-      <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 20, fontWeight: 800, color: T.textH }}>Фийд</div>
+      <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 24, fontWeight: 800, color: T.textH, letterSpacing: "-0.02em" }}>Фийд</div>
       <div style={{ display: "flex", gap: 2 }}>
         <button type="button" aria-label="Зурвас" className="toono-pressable" onClick={() => nav("chat")} style={{ position: "relative", width: 36, height: 36, borderRadius: 10, background: "transparent", border: "none", color: T.textH, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <IcMsg />

@@ -134,7 +134,7 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
           <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:22,fontWeight:800,color:T.textH,lineHeight:1.2,letterSpacing:"-0.02em",marginBottom:6}}>{w.title}</div>
           <div style={{display:"flex",alignItems:"center",gap:10}}>
             <span style={{display:"inline-block",width:7,height:7,background:T.accent,transform:"rotate(45deg)"}}/>
-            <span style={{fontFamily:"'Caveat','Helvetica Neue',cursive",fontSize:36,fontWeight:700,color:T.accent,lineHeight:1}}>{fmtP(w)}</span>
+            <span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:24,fontWeight:800,color:T.accent,letterSpacing:"-0.01em"}}>{fmtP(w)}</span>
           </div>
         </div>
         <div style={{display:"flex",gap:6,marginBottom:16,flexWrap:"wrap"}}>
@@ -164,7 +164,7 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
         </div>}
         {/* Comments section */}
         <div style={{marginTop:4,marginBottom:24,borderTop:`1px solid ${T.borderLight}`,paddingTop:16}}>
-          <div style={{fontFamily:"'Caveat','Helvetica Neue',cursive",fontSize:30,fontWeight:700,color:T.textH,marginBottom:12,lineHeight:1}}>Сэтгэгдэл {comments.length>0?`(${comments.length})`:""}</div>
+          <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:30,fontWeight:700,color:T.textH,marginBottom:12,lineHeight:1}}>Сэтгэгдэл {comments.length>0?`(${comments.length})`:""}</div>
           {GS.user.id && <div style={{display:"flex",gap:10,marginBottom:16,alignItems:"center"}}>
             <Avt size={32} photo={GS.user.photo}/>
             <input value={commentInput} onChange={e=>setCommentInput(e.target.value)}
@@ -187,7 +187,7 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
           const more=getAllWorks().filter(ww=>ww.id!==w.id&&(ww.creator_id===w.creator_id||ww.cid===w.cid)).slice(0,6);
           if(more.length===0) return null;
           return <div style={{marginTop:4}}>
-            <div style={{fontFamily:"'Caveat','Helvetica Neue',cursive",fontSize:30,fontWeight:700,color:T.textH,marginBottom:12,lineHeight:1}}>Бүтээлчийн бусад бүтээл</div>
+            <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:30,fontWeight:700,color:T.textH,marginBottom:12,lineHeight:1}}>Бүтээлчийн бусад бүтээл</div>
             <div style={{display:"flex",gap:12,overflowX:"auto",scrollbarWidth:"none"}}>
               {more.map(ww=><div key={ww.id} onClick={()=>nav("work",{workId:ww.id})} className="toono-card-tap" style={{flexShrink:0,width:130,cursor:"pointer"}}>
                 <div style={{width:130,height:160,borderRadius:14,background:T.s2,display:"flex",alignItems:"center",justifyContent:"center",marginBottom:7,overflow:"hidden"}}>
