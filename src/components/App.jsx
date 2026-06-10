@@ -288,7 +288,7 @@ export default function App() {
                   background: "transparent", border: "none", padding: "8px 14px",
                   fontFamily: F, fontSize: 13, fontWeight: tab === id ? 600 : 400,
                   color: tab === id ? T.textH : T.textSub, cursor: "pointer",
-                  borderBottom: tab === id ? `2px solid ${T.textH}` : "2px solid transparent",
+                  borderBottom: tab === id ? `2px solid ${T.accent}` : "2px solid transparent",
                   transition: "all 150ms ease",
                 }}>{label}</button>
               )}
@@ -345,10 +345,10 @@ export default function App() {
               ? <div style={{ width: 46, height: 46, borderRadius: "50%", background: "#C26846", display: "flex", alignItems: "center", justifyContent: "center", marginTop: -18, color: "#FFFFFF", boxShadow: "0 4px 20px rgba(194,104,70,0.35)" }}><IcPlus /></div>
               : <>
                 <div style={{ position: "relative", width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ color: active ? T.textH : T.textDim, transition: "color .15s" }}><item.Ic /></span>
+                  <span style={{ color: active ? T.accent : T.textDim, transition: "color .15s" }}><item.Ic /></span>
                   {item.badge > 0 && <div style={{ position: "absolute", top: -3, right: -6, minWidth: 14, height: 14, borderRadius: 7, background: T.red, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 3px", border: "1.5px solid #fff" }}><span style={{ fontFamily: F, fontSize: 8, fontWeight: 700, color: "#fff" }}>{item.badge}</span></div>}
                 </div>
-                <span style={{ fontFamily: F, fontSize: 9.5, fontWeight: active ? 700 : 400, color: active ? T.textH : T.textDim, lineHeight: 1, transition: "all .15s", letterSpacing: active ? "0.01em" : "0" }}>{item.label}</span>
+                <span style={{ fontFamily: F, fontSize: 9.5, fontWeight: active ? 700 : 400, color: active ? T.accent : T.textDim, lineHeight: 1, transition: "all .15s", letterSpacing: active ? "0.01em" : "0" }}>{item.label}</span>
                 {active && <span className="toono-nav-pip" style={{ transition: "opacity .2s" }} />}
               </>}
           </button>;

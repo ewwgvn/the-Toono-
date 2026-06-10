@@ -129,7 +129,7 @@ img { image-rendering: auto; }
 .toono-divider { height: 1px; background: #F2F2F2; margin: 0; }
 
 /* ── Nav pill active indicator ── */
-.toono-nav-pip { width: 4px; height: 4px; border-radius: 2px; background: #C26846; display: block; margin: 0 auto; }
+.toono-nav-pip { width: 4px; height: 4px; border-radius: 2px; background: #2681DA; display: block; margin: 0 auto; }
 .toono-card-tap:active { transform: scale(0.985); }
 .toono-input { transition: border-color 150ms ease, box-shadow 150ms ease; }
 .toono-input:focus { border-color: #C26846 !important; box-shadow: 0 0 0 3px rgba(194,104,70,0.12); }

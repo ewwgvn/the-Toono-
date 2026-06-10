@@ -185,7 +185,7 @@ export default function Home({ nav, refresh }) {
           <div style={{ padding: "10px 0 0", borderBottom: `1px solid ${T.s2}` }}>
             <div style={{ display: "flex", gap: 6, overflowX: "auto", scrollbarWidth: "none", padding: "0 16px 10px" }}>
               {[["all", "Бүгд"], ...CATS.map(c => [c, c.split(" ")[0]])].map(([k, l]) => (
-                <button key={k} type="button" onClick={() => setSelCat(k)} style={{ flexShrink: 0, padding: "7px 14px", borderRadius: 20, fontFamily: F, fontSize: 12, fontWeight: selCat === k ? 700 : 400, background: selCat === k ? T.textH : "transparent", border: selCat === k ? "none" : `1px solid ${T.border}`, color: selCat === k ? "#FFFFFF" : T.textSub, cursor: "pointer", transition: "all .15s", whiteSpace: "nowrap" }}>
+                <button key={k} type="button" onClick={() => setSelCat(k)} style={{ flexShrink: 0, padding: "7px 14px", borderRadius: 20, fontFamily: F, fontSize: 12, fontWeight: selCat === k ? 700 : 400, background: selCat === k ? T.accent : "transparent", border: selCat === k ? "none" : `1px solid ${T.border}`, color: selCat === k ? "#FFFFFF" : T.textSub, cursor: "pointer", transition: "all .15s", whiteSpace: "nowrap" }}>
                   {k === "all" ? "Бүгд" : l}
                 </button>
               ))}
