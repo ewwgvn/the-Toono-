@@ -35,7 +35,7 @@ export default function FollowList({ nav, refresh, goBack }) {
           setFollowing(getCreators().filter(c => GS.following.has(c.id)));
         }
       } catch (e) {
-        console.error("[FollowList]", e);
+        if (process.env.NODE_ENV === "development") console.error("[FollowList]", e);
       } finally {
         setLoading(false);
       }

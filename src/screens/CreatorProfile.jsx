@@ -211,7 +211,7 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
             ))}
           </div>
           {GS.currentRole === "creator" && (
-            <button type="button" onClick={() => { GS.user.commOpen = !GS.user.commOpen; setCreator(p => ({ ...p, comm: GS.user.commOpen })); saveGS(); refresh(); toast(GS.user.commOpen ? "Захиалга нээлттэй боллоо" : "Захиалга хаалттай боллоо", "success"); }}
+            <button type="button" onClick={() => { GS.user.commOpen = !GS.user.commOpen; setCreator(p => ({ ...p, comm: GS.user.commOpen })); saveGS(); refresh(); if (isSupabaseReady() && GS.user.id) DB.updateProfile(GS.user.id, { comm_open: GS.user.commOpen }); toast(GS.user.commOpen ? "Захиалга нээлттэй боллоо" : "Захиалга хаалттай боллоо", "success"); }}
               style={{ width: "100%", marginTop: 8, display: "flex", alignItems: "center", justifyContent: "space-between", background: GS.user.commOpen ? T.accentSub : T.s2, border: `1px solid ${GS.user.commOpen ? T.accent : T.border}`, borderRadius: 10, padding: "12px 16px", cursor: "pointer" }}>
               <span style={{ fontFamily: HELV, fontSize: 13, fontWeight: 600, color: GS.user.commOpen ? T.accent : T.textSub }}>{GS.user.commOpen ? "Захиалга авч байна" : "Захиалга хаалттай"}</span>
               <div style={{ width: 40, height: 22, borderRadius: 11, background: GS.user.commOpen ? T.accent : T.borderMid, position: "relative", transition: "background .2s" }}>

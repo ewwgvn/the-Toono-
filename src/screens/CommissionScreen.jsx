@@ -60,7 +60,7 @@ export default function CommissionScreen({ nav, goBack, refresh, creatorId }) {
           if (isSupabaseReady()) {
             const {data, error} = await supabase.from('commissions').insert(commPayload).select().single();
             if (data) newComm.id = data.id;
-            else { SQ.push('createCommission', commPayload); if(error) console.error('[Comm]', error.message); }
+            else { SQ.push('createCommission', commPayload); if(error && process.env.NODE_ENV === "development") console.error('[Comm]', error.code); }
           } else {
             SQ.push('createCommission', commPayload);
           }

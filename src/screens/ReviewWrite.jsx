@@ -29,7 +29,7 @@ export default function ReviewWrite({ nav, goBack }) {
           rating,
           text: text.trim() || null,
         }).then(({ error }) => {
-          if (error) console.error("[ReviewWrite]", error.message);
+          if (error && process.env.NODE_ENV === "development") console.error("[ReviewWrite]", error.code);
         });
         // Bump seller's average rating
         supabase.rpc("update_seller_rating", { seller_id: sellerId }).catch(() => {});
@@ -42,7 +42,7 @@ export default function ReviewWrite({ nav, goBack }) {
       saveGS();
       toast("Сэтгэгдэл амжилттай илгээгдлээ", "success");
       goBack ? goBack() : nav("home");
-    } catch (e) { console.error(e); toast("Алдаа гарлаа", "error"); }
+    } catch (e) { if (process.env.NODE_ENV === "development") console.error(e); toast("Алдаа гарлаа", "error"); }
     finally { setLoading(false); }
   };
 

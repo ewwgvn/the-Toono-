@@ -269,7 +269,7 @@ export default function Upload({ nav, goBack }) {
               );
               const storageOk = uploaded.some(u => u !== null);
               if (!storageOk && uploaded.length > 0) {
-                console.warn('[Upload] Storage failed — using compressed base64 fallback.');
+                if (process.env.NODE_ENV === "development") console.warn('[Upload] Storage failed — using compressed base64 fallback.');
               }
               imageUrls = uploaded.map((url, i) => url || mediaFiles[i].url);
               if (videoFile && videoFile.url.startsWith("data:")) {
@@ -331,7 +331,7 @@ export default function Upload({ nav, goBack }) {
                 } else {
                   const sqId = SQ.push('createWork', workPayload);
                   newWork._sqId = sqId;
-                  if (error) console.error('[Upload] createWork:', error.message, error.code);
+                  if (error && process.env.NODE_ENV === "development") console.error('[Upload] createWork:', error.code);
                 }
               } else {
                 const sqId = SQ.push('createWork', workPayload);
@@ -352,7 +352,8 @@ export default function Upload({ nav, goBack }) {
             saveGS();
             nav("me");
           } catch (e) {
-            console.error(e);
+            if (process.env.NODE_ENV === "development") console.error(e);
+            toast("Хадгалах үед алдаа гарлаа", "error");
           } finally {
             setLoading(false);
           }
