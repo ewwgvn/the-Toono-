@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
 import { T } from "@/theme/colors";
 import { GS, saveGS } from "@/lib/store";
 import { DB, isSupabaseReady } from "@/lib/supabase";
@@ -156,11 +155,9 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
       {/* ════ HERO — color circle, name below ════ */}
       <div style={{ padding: "30px 24px 0", display: "flex", flexDirection: "column", alignItems: "center" }}>
         <div style={{ width: 148, height: 148, borderRadius: "50%", overflow: "hidden", background: T.s2, position: "relative" }}>
-          {c.photo
-            ? (c.photo.startsWith("data:")
-                ? <img src={c.photo} alt={c.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                : <Image src={c.photo} fill alt={c.name} sizes="148px" style={{ objectFit: "cover" }} />)
-            : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}><Toono size={56} color={T.textDim} /></div>}
+          {(() => { const hp = isOwn ? GS.user.photo : c.photo; return hp
+            ? <img src={hp} alt={c.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}><Toono size={56} color={T.textDim} /></div>; })()}
         </div>
         <div style={{ fontFamily: HELV, fontSize: 27, fontWeight: 800, color: T.textH, letterSpacing: "-0.02em", lineHeight: 1.1, marginTop: 18, textAlign: "center", wordBreak: "break-word" }}>{c.name || "..."}</div>
         <div style={{ fontFamily: HELV, fontSize: 11, fontWeight: 600, letterSpacing: "0.22em", textTransform: "uppercase", color: T.textDim, marginTop: 8 }}>{c.field || "БҮТЭЭЛЧ"}</div>
