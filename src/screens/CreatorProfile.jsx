@@ -151,6 +151,7 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
     </div>
 
     <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none" }}>
+      <div className="profile-content">
 
       {/* ════ HERO — color circle, name below ════ */}
       <div style={{ padding: "30px 24px 0", display: "flex", flexDirection: "column", alignItems: "center" }}>
@@ -312,7 +313,7 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
       </div>
 
       {/* ════ DARK FOOTER ════ */}
-      <div style={{ marginTop: 36, background: "#111111", padding: "44px 28px calc(44px + env(safe-area-inset-bottom,0px))", display: "flex", flexDirection: "column", alignItems: "center" }}>
+      <div className="profile-darkfooter" style={{ marginTop: 36, background: "#111111", padding: "44px 28px calc(44px + env(safe-area-inset-bottom,0px))", display: "flex", flexDirection: "column", alignItems: "center" }}>
         <div style={{ fontFamily: HELV, fontSize: 10, fontWeight: 600, letterSpacing: "0.24em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)" }}>{isOwn ? "Таны дэлгүүр" : "Бүтээлчтэй холбогдох"}</div>
         <div style={{ fontFamily: SCRIPT, fontSize: 54, fontWeight: 700, color: "#fff", lineHeight: 1, marginTop: 8, textAlign: "center", wordBreak: "break-word" }}>{c.name || "Uliger"}</div>
         <div style={{ display: "flex", gap: 10, marginTop: 24, width: "100%", maxWidth: 300 }}>
@@ -326,6 +327,7 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
         <SocialRow creator={c} dark />
         <div style={{ marginTop: 28, fontFamily: HELV, fontSize: 10, letterSpacing: "0.1em", color: "rgba(255,255,255,0.35)" }}>ULIGER WORLD · 2026</div>
       </div>
+      </div>{/* /profile-content */}
     </div>
 
     {/* sticky commission CTA */}

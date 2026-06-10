@@ -211,6 +211,13 @@ input[type="checkbox"], input[type="radio"] { -webkit-appearance: auto !importan
   .toono-form { max-width: 480px; margin: 0 auto; }
 }
 
+/* ── Profile: center content column on desktop; dark footer stays full-bleed ── */
+.profile-content { width: 100%; }
+@media (min-width: 768px) {
+  .profile-content { max-width: 920px; margin: 0 auto; }
+  .profile-darkfooter { width: 100vw; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); }
+}
+
 /* ── WorkDetail: stacked on mobile, 2-column product layout on desktop ── */
 .wd-grid { display: block; }
 @media (min-width: 1024px) {
