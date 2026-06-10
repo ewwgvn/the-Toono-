@@ -203,7 +203,7 @@ export default function Explore({ nav, refresh, goBack }) {
             </div>
           </div>
           :<div>
-            <div className="toono-grid-2" style={{paddingTop:8,paddingBottom:8,display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+            <div className="toono-grid-2" style={{paddingTop:8,paddingBottom:8,display:"grid",gridTemplateColumns:"1fr 1fr",gap:"26px 16px"}}>
               {fw.slice(0,visibleCount).map(w=><WorkCard key={w.id} work={w} onClick={()=>nav("work",{workId:w.id})} onToggleLike={tLike} onToggleSave={tSave}/>)}
             </div>
             {fw.length>visibleCount&&<div style={{textAlign:"center",padding:"16px 0"}}>
