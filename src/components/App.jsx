@@ -353,7 +353,7 @@ export default function App() {
           const active = tab === item.id && isMain;
           return <button type="button" key={item.id} aria-label={item.label || item.id} aria-current={active ? "page" : undefined} onClick={() => nav(item.id)} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3, cursor: "pointer", background: "none", border: "none", padding: "6px 10px 4px", minWidth: 52, minHeight: 44, justifyContent: "center", position: "relative" }}>
             {item.id === "upload"
-              ? <div style={{ width: 46, height: 46, borderRadius: "50%", background: "#C26846", display: "flex", alignItems: "center", justifyContent: "center", marginTop: -18, color: "#FFFFFF", boxShadow: "0 4px 20px rgba(194,104,70,0.35)" }}><IcPlus /></div>
+              ? <div style={{ width: 46, height: 46, borderRadius: "50%", background: T.accent, display: "flex", alignItems: "center", justifyContent: "center", marginTop: -18, color: "#FFFFFF", boxShadow: "0 4px 20px rgba(38,129,218,0.35)" }}><IcPlus /></div>
               : <>
                 <div style={{ position: "relative", width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <span style={{ color: active ? T.accent : T.textDim, transition: "color .15s" }}><item.Ic /></span>

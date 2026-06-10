@@ -83,7 +83,7 @@ input, textarea, button, select {
 
 button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 button:not(.no-scale):active { transform: scale(0.97); transition: transform 120ms ease; }
-input:focus, textarea:focus { border-color: #C26846 !important; outline: none; }
+input:focus, textarea:focus { border-color: #2681DA !important; outline: none; }
 button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
   outline: 2px solid #111111;
   outline-offset: 2px;
@@ -132,7 +132,7 @@ img { image-rendering: auto; }
 .toono-nav-pip { width: 4px; height: 4px; border-radius: 2px; background: #2681DA; display: block; margin: 0 auto; }
 .toono-card-tap:active { transform: scale(0.985); }
 .toono-input { transition: border-color 150ms ease, box-shadow 150ms ease; }
-.toono-input:focus { border-color: #C26846 !important; box-shadow: 0 0 0 3px rgba(194,104,70,0.12); }
+.toono-input:focus { border-color: #2681DA !important; box-shadow: 0 0 0 3px rgba(38,129,218,0.12); }
 .toono-input[aria-invalid="true"]:focus { border-color: #C94040 !important; box-shadow: 0 0 0 3px rgba(201,64,64,0.08); }
 .toono-skeleton { background: linear-gradient(90deg, #F0F0F0 25%, #F7F7F7 50%, #F0F0F0 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
 .toono-pressable { transition: transform 120ms ease, background-color 120ms ease; }
