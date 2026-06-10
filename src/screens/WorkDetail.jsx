@@ -21,8 +21,18 @@ import { toast } from "@/components/layout/Toast";
 export default function WorkDetail({ nav, refresh, goBack, workId }) {
   const w=getAllWorks().find(x=>x.id===workId)||GS.myWorks.find(x=>x.id===workId)||{id:0,title:"—",creator:"—",creator_id:null,price:0,accent:T.textH,likes:0,description:"",desc:"",sizes:[],colors:[],stock:0,images:[],tags:[],cat:"",medium:"",digital:false,badge:null,video:null,profiles:{photo:null,name:""}};
   const creatorObj = getCreators().find(c => c.id === (w.creator_id || w.cid));
-  const creatorPhoto = w.profiles?.photo || w.creatorPhoto || creatorObj?.photo || (w.creator_id === GS.user.id ? GS.user.photo : null) || null;
+  const localPhoto = w.profiles?.photo || w.creatorPhoto || creatorObj?.photo || (w.creator_id === GS.user.id ? GS.user.photo : null) || null;
   const creatorName = w.creator || w.profiles?.name || creatorObj?.name || GS.user.name;
+  const [fetchedPhoto, setFetchedPhoto] = useState(null);
+  const creatorPhoto = localPhoto || fetchedPhoto;
+  // If no photo found locally, fetch the creator's profile photo straight from the DB
+  React.useEffect(() => {
+    setFetchedPhoto(null);
+    const cid = w.creator_id || w.cid;
+    if (!localPhoto && cid && isSupabaseReady()) {
+      DB.getProfile(cid).then(p => { if (p?.photo) setFetchedPhoto(p.photo); }).catch(() => {});
+    }
+  }, [w.creator_id, w.cid, localPhoto]);
   const [offerOpen,setOfferOpen]=useState(false);
   const [zoomOpen,setZoomOpen]=useState(false);
   const [touchStart,setTouchStart]=useState(null);
@@ -147,7 +157,9 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
           {[w.cat,...(w.tags||[])].filter(Boolean).map(t=><Pill key={t}>{t}</Pill>)}
         </div>
         <Crd onClick={()=>nav("profile",{creatorId:w.creator_id})} style={{padding:"14px 16px",display:"flex",alignItems:"center",gap:12,marginBottom:18}}>
-          <Avt size={44} color={w.accent||T.accent} photo={creatorPhoto}/>
+          <div style={{width:44,height:44,borderRadius:"50%",overflow:"hidden",background:T.s2,border:`1px solid ${T.borderLight}`,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
+            {creatorPhoto ? <img src={creatorPhoto} alt={creatorName} style={{width:"100%",height:"100%",objectFit:"cover"}}/> : <Toono size={24} color={T.textDim}/>}
+          </div>
           <div style={{flex:1}}>
             <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,fontWeight:700,color:T.textH}}>{creatorName}</div>
             <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.textSub}}>{w.cat||"Бүтээлч"}</div>
