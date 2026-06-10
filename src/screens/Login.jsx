@@ -123,7 +123,7 @@ export default function Login({ nav, initialMode = "login" }) {
     <div style={{flex:1,padding:"24px 24px 40px",overflowY:"auto",scrollbarWidth:"none"}}>
       {/* Logo */}
       <div style={{textAlign:"center",marginBottom:28,position:"relative"}}>
-        <img src="/uliger-world-logo.png" alt="Uliger World" style={{width:160,height:"auto",display:"block",margin:"0 auto 8px"}} />
+        <img src="/uliger-world-logo.png?v=2" alt="Uliger World" style={{width:160,height:"auto",display:"block",margin:"0 auto 8px"}} />
         {mode==="login"&&<div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,color:T.textSub,marginTop:4}}>Бүртгэлдээ нэвтэрнэ үү</div>}
       </div>
 

@@ -280,7 +280,7 @@ export default function App() {
         <div style={{ maxWidth: 1200, width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", height: 56 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
             <div onClick={() => nav("home")} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
-              <img src="/uliger-world-logo.png" alt="Uliger World" style={{ height: 32, width: "auto", display: "block" }} />
+              <img src="/uliger-world-logo.png?v=2" alt="Uliger World" style={{ height: 52, width: "auto", display: "block" }} />
             </div>
             <div style={{ display: "flex", gap: 4 }}>
               {[["home", "Нүүр"], ["explore", "Хайлт"], ["feed", "Фийд"]].map(([id, label]) =>

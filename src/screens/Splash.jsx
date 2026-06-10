@@ -12,7 +12,7 @@ export default function Splash() {
   return <div style={{height:"100%",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:T.bg,position:"relative",overflow:"hidden"}}>
     <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:16}}>
       <div style={{opacity:0,animation:"fadeUp .6s .2s ease forwards"}}>
-        <img src="/uliger-world-logo.png" alt="Uliger World" style={{width:200,height:"auto",display:"block"}} />
+        <img src="/uliger-world-logo.png?v=2" alt="Uliger World" style={{width:200,height:"auto",display:"block"}} />
       </div>
       <div style={{opacity:0,animation:"fadeUp .6s .4s ease forwards",textAlign:"center"}}>
         <div style={{fontFamily:"monospace",fontSize:9,color:T.textSub,letterSpacing:".28em"}}>БҮТЭЭЛЧДИЙН ЗАХ</div>
