@@ -24,6 +24,7 @@ export const GS = {
     revenue: "₮0",
     works: 0, followers: "0", following_count: 0, rating: 0,
     commOpen: false,
+    instagram: "", facebook: "", twitter: "",
   },
   // Dynamic data stores
   myWorks: [],

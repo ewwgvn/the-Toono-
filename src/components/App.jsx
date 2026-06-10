@@ -37,7 +37,6 @@ import Onboarding from "@/screens/Onboarding";
 import Login from "@/screens/Login";
 import Home from "@/screens/Home";
 import Explore from "@/screens/Explore";
-import MyProfile from "@/screens/MyProfile";
 
 // Lazy-loaded screens — reduces initial bundle size
 const ProfileSetup = lazy(() => import("@/screens/ProfileSetup"));
@@ -271,7 +270,7 @@ export default function App() {
     if (tab === "explore") return <Explore {...p} />;
     if (tab === "feed") return <FeedScreen {...p} />;
     if (tab === "chat") return <ChatList nav={nav} refresh={refresh} />;
-    if (tab === "me") return <MyProfile {...p} />;
+    if (tab === "me") return <CreatorProfile {...p} creatorId={GS.user.id} />;
     return <Home {...p} />;
   };
 
@@ -289,7 +288,7 @@ export default function App() {
 
       {/* ── DESKTOP TOP NAV ── */}
       {isMain && <div className="toono-desktop-nav" style={{ background: "#FFFFFF", borderBottom: `1px solid ${T.border}`, padding: "0 32px", position: "sticky", top: 0, zIndex: 100, justifyContent: "center" }}>
-        <div style={{ maxWidth: 1200, width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", height: 56 }}>
+        <div style={{ maxWidth: "100%", width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", height: 56 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
             <div onClick={() => nav("home")} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
               <img src="/uliger-world-logo.png?v=2" alt="Uliger World" style={{ height: 52, width: "auto", display: "block" }} />

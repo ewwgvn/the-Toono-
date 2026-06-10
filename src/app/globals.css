@@ -173,7 +173,7 @@ input[type="checkbox"], input[type="radio"] { -webkit-appearance: auto !importan
 @media (min-width: 768px) {
   .toono-mobile-nav { display: none !important; }
   .toono-desktop-nav { display: flex !important; }
-  .toono-content { max-width: 800px; padding: 0 24px; margin: 0 auto; }
+  .toono-content { max-width: 100%; padding: 0; margin: 0; }
   .toono-grid-2 { grid-template-columns: repeat(3, 1fr) !important; }
   .toono-desktop-only { display: flex !important; }
   .toono-mobile-only { display: none !important; }
@@ -182,11 +182,12 @@ input[type="checkbox"], input[type="radio"] { -webkit-appearance: auto !importan
 
 /* ── DESKTOP (1024px+) ── */
 @media (min-width: 1024px) {
-  .toono-content { max-width: 1000px; padding: 0 32px; }
+  .toono-content { max-width: 100%; padding: 0; }
   .toono-grid-2 { grid-template-columns: repeat(4, 1fr) !important; }
 }
 
 /* ── WIDE DESKTOP (1400px+) ── */
 @media (min-width: 1400px) {
-  .toono-content { max-width: 1200px; }
+  .toono-content { max-width: 100%; }
+  .toono-grid-2 { grid-template-columns: repeat(5, 1fr) !important; }
 }

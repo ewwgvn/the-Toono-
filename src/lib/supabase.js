@@ -114,6 +114,18 @@ export const DB = {
     } catch (e) { if (DEV) console.error("updateProfile:", e.message); toast("Профайл шинэчлэхэд алдаа гарлаа", "error"); return null; }
   },
 
+  // Best-effort social-links update — silently no-ops if columns don't exist
+  // (so a missing migration never blocks the main profile save). Run the SQL
+  // in supabase to persist: alter table profiles add column instagram text, ...
+  async updateSocials(userId, socials) {
+    if (!isSupabaseReady() || !userId) return;
+    const ALLOWED = ["instagram", "facebook", "twitter"];
+    const safe = Object.fromEntries(Object.entries(socials).filter(([k]) => ALLOWED.includes(k)));
+    if (!Object.keys(safe).length) return;
+    try { await supabase.from("profiles").update(safe).eq("id", userId); }
+    catch (e) { if (DEV) console.warn("updateSocials skipped:", e.message); }
+  },
+
   // Works
   async getWorks(filters = {}) {
     if (!isSupabaseReady()) return [];
@@ -579,6 +591,9 @@ export async function syncFromSupabase() {
       following_count: profile.following_count || 0,
       rating: profile.rating || 0,
       commOpen: profile.comm_open || false,
+      instagram: profile.instagram || "",
+      facebook: profile.facebook || "",
+      twitter: profile.twitter || "",
     };
     GS.trustMetrics = {
       responseRate: profile.response_rate || 100,

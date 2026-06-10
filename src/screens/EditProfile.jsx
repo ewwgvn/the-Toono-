@@ -8,6 +8,10 @@ import { IcBack, IcProfile, IcCamera, IcX } from "@/components/icons";
 import PBtn from "@/components/atoms/PBtn";
 import ImageCropper from "@/components/shared/ImageCropper";
 
+const igIcon = <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" strokeWidth="1.8" /><circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.8" /><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" /></svg>;
+const fbIcon = <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M14 9V7c0-1 .3-1.5 1.6-1.5H17V2.5h-2.6C11.6 2.5 10.5 4 10.5 6.4V9H8.5v3h2v9.5h3.5V12h2.5l.4-3H14z" /></svg>;
+const xIcon = <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.2 2.5h3.3l-7.2 8.2 8.5 11.3h-6.7l-5.2-6.9-6 6.9H1.8l7.7-8.8L1.3 2.5h6.8l4.7 6.3 5.4-6.3zm-1.2 17.6h1.8L7.1 4.3H5.2L17 20.1z" /></svg>;
+
 export default function EditProfile({ nav, refresh, goBack }) {
   const [saving, setSaving] = useState(false);
   const [name, setName] = useState(GS.user.name);
@@ -19,6 +23,10 @@ export default function EditProfile({ nav, refresh, goBack }) {
   const [photo, setPhoto] = useState(GS.user.photo); // base64 or null
   const [cropSrc, setCropSrc] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [instagram, setInstagram] = useState(GS.user.instagram || "");
+  const [facebook, setFacebook] = useState(GS.user.facebook || "");
+  const [twitter, setTwitter] = useState(GS.user.twitter || "");
+  const cleanHandle = (v) => v.trim().replace(/^@/, "").replace(/\s/g, "");
 
   const handlePhoto = (e) => {
     const f = e.target.files?.[0];
@@ -49,6 +57,9 @@ export default function EditProfile({ nav, refresh, goBack }) {
       GS.user.field = field.trim();
       GS.user.bio = bio.trim();
       GS.user.tags = tags.filter(t => t.length > 0);
+      GS.user.instagram = cleanHandle(instagram);
+      GS.user.facebook = cleanHandle(facebook);
+      GS.user.twitter = cleanHandle(twitter);
       if (photoUrl) GS.user.photo = photoUrl;
       if (isSupabaseReady() && GS.user.id) {
         await DB.updateProfile(GS.user.id, {
@@ -59,6 +70,8 @@ export default function EditProfile({ nav, refresh, goBack }) {
           photo: photoUrl,
           comm_open: GS.user.commOpen,
         });
+        // best-effort — won't block main save if columns are missing
+        DB.updateSocials(GS.user.id, { instagram: GS.user.instagram, facebook: GS.user.facebook, twitter: GS.user.twitter });
       }
       saveGS();
       refresh();
@@ -130,6 +143,21 @@ export default function EditProfile({ nav, refresh, goBack }) {
             <input value={newTag} onChange={e => setNewTag(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && newTag.trim()) { setTags([...tags, newTag.trim()]); setNewTag(""); } }} placeholder="Шинэ таг..." style={{ flex: 1, background: T.s1, border: `1px solid ${T.border}`, borderRadius: 12, padding: "10px 14px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, color: T.textH, outline: "none" }} />
             <PBtn small onClick={() => { if (newTag.trim()) { setTags([...tags, newTag.trim()]); setNewTag(""); } }} disabled={!newTag.trim()}>Нэмэх</PBtn>
           </div>
+        </div>
+
+        {/* Social links */}
+        <div style={{ marginBottom: 18 }}>
+          <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 600, color: T.textSub, marginBottom: 10 }}>Сошиал холбоос</div>
+          {[
+            ["Instagram", instagram, setInstagram, "@username", igIcon],
+            ["Facebook", facebook, setFacebook, "username эсвэл хуудас", fbIcon],
+            ["X / Twitter", twitter, setTwitter, "@username", xIcon],
+          ].map(([label, val, setter, ph, icon]) => (
+            <div key={label} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+              <div style={{ width: 38, height: 38, borderRadius: 10, background: T.accentSub, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color: T.accent }}>{icon}</div>
+              <input value={val} onChange={e => setter(e.target.value)} placeholder={ph} style={{ flex: 1, background: T.s1, border: `1px solid ${T.border}`, borderRadius: 12, padding: "11px 14px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 14, color: T.textH, outline: "none", boxSizing: "border-box" }} />
+            </div>
+          ))}
         </div>
 
         <div style={{ height: 30 }} />
