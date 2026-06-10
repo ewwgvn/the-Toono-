@@ -178,28 +178,39 @@ export default function Portfolio({ nav, goBack }) {
     <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", padding: "0 20px" }}>
       {filtered.length === 0 && <Empty icon={<IcFolderEmpty />} title="Бүтээл олдсонгүй" sub="Хайлтаа өөрчилж үзнэ үү" />}
 
-      {/* GRID VIEW */}
-      {view === "grid" && filtered.length > 0 && <div className="toono-grid-2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, paddingTop: 4 }}>
+      {/* GRID VIEW — exhibition gallery */}
+      {view === "grid" && filtered.length > 0 && <div className="portfolio-gallery">
         {filtered.map(w => {
           const isSel = selected.has(w.id);
           const sc = statusCfg[w.digital ? "digital" : w.status] || statusCfg.published;
+          const showBadge = w.status !== "published" || w.digital;
           return <div key={w.id}
             onClick={() => bulkMode ? toggleSelect(w.id) : setActiveWork(w)}
-            style={{ position: "relative", aspectRatio: "1", borderRadius: 14, overflow: "hidden", background: (w.accent||`${T.textH}`) + "18", border: `2px solid ${isSel ? T.accent : (w.accent||`${T.textH}`) + "25"}`, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 4 }}>
-            {w.images?.[0] ? <img src={w.images[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }} /> : <Toono size={38} color={w.accent || `${T.textH}`} />}
-            <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 9, fontWeight: 700, color: T.textSub, textAlign: "center", padding: "0 4px", lineHeight: 1.3 }}>{(w.title||"").length > 18 ? (w.title||"").slice(0, 17) + "…" : w.title}</div>
-            <div style={{ position: "absolute", top: 5, left: 5, background: sc.bg, borderRadius: 5, padding: "2px 5px" }}>
-              <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 7, fontWeight: 700, color: sc.color }}>{sc.label}</span>
+            className="toono-card-tap"
+            style={{ cursor: "pointer" }}>
+            <div style={{ position: "relative", width: "100%", aspectRatio: "4/5", borderRadius: 10, overflow: "hidden", background: T.s2, border: isSel ? `2px solid ${T.accent}` : `1px solid #ECECEC` }}>
+              {w.images?.[0]
+                ? <img src={w.images[0]} alt={w.title} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}><Toono size={44} color={T.borderMid} /></div>}
+              {showBadge && <div style={{ position: "absolute", top: 8, left: 8, background: "rgba(255,255,255,0.92)", borderRadius: 6, padding: "3px 8px" }}>
+                <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 9, fontWeight: 700, color: sc.color }}>{sc.label}</span>
+              </div>}
+              {bulkMode && <div style={{ position: "absolute", top: 8, right: 8, width: 20, height: 20, borderRadius: "50%", background: isSel ? T.accent : "rgba(255,255,255,0.9)", border: `2px solid ${isSel ? T.accent : T.textDim}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                {isSel && <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#fff" }} />}
+              </div>}
             </div>
-            {bulkMode && <div style={{ position: "absolute", top: 5, right: 5, width: 18, height: 18, borderRadius: "50%", background: isSel ? T.accent : T.border, border: `2px solid ${isSel ? T.accent : T.textDim}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              {isSel && <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#fff" }} />}
-            </div>}
-            {w.digital && <div style={{ position: "absolute", bottom: 5, right: 5, background: "rgba(136,80,212,0.85)", borderRadius: 4, padding: "1px 5px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 7, fontWeight: 700, color: "#fff" }}>⬇</div>}
+            <div style={{ marginTop: 10, paddingRight: 4 }}>
+              <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13.5, fontWeight: 600, color: T.textH, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</div>
+              <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11.5, color: T.textDim, marginTop: 3, display: "flex", gap: 6, alignItems: "center" }}>
+                <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.cat || w.medium || "—"}</span>
+                {w.year ? <><span>·</span><span>{w.year}</span></> : null}
+              </div>
+            </div>
           </div>;
         })}
-        <button type="button" onClick={() => nav("upload")} style={{ aspectRatio: "1", borderRadius: 14, background: T.s1, border: `2px dashed ${T.border}`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", gap: 4 }}>
-          <div style={{ width: 30, height: 30, borderRadius: 10, background: T.accentSub, display: "flex", alignItems: "center", justifyContent: "center", color: T.accent, fontSize: 18 }}>+</div>
-          <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 9, color: T.textSub }}>Нэмэх</span>
+        <button type="button" onClick={() => nav("upload")} style={{ aspectRatio: "4/5", borderRadius: 10, background: T.s1, border: `2px dashed ${T.border}`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", gap: 8 }}>
+          <div style={{ width: 38, height: 38, borderRadius: 12, background: T.accentSub, display: "flex", alignItems: "center", justifyContent: "center", color: T.accent, fontSize: 22 }}>+</div>
+          <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, color: T.textSub }}>Бүтээл нэмэх</span>
         </button>
       </div>}
 

@@ -203,6 +203,11 @@ input[type="checkbox"], input[type="radio"] { -webkit-appearance: auto !importan
 @media (min-width: 1280px) { .feed-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 1700px) { .feed-grid { grid-template-columns: repeat(4, 1fr); } }
 
+/* ── Portfolio gallery (exhibition) ── */
+.portfolio-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding-top: 4px; }
+@media (min-width: 768px) { .portfolio-gallery { grid-template-columns: repeat(3, 1fr); gap: 24px; } }
+@media (min-width: 1280px) { .portfolio-gallery { grid-template-columns: repeat(4, 1fr); gap: 28px; } }
+
 /* single view: one centered column on all sizes */
 .feed-single { display: flex; flex-direction: column; max-width: 600px; margin: 0 auto; }
 .feed-single .feed-post { margin-bottom: 6px; }
