@@ -13,7 +13,7 @@ import PBtn from "@/components/atoms/PBtn";
 import Crd from "@/components/atoms/Crd";
 import Toono from "@/components/atoms/Toono";
 import Empty from "@/components/atoms/Empty";
-import { ScriptTitle, SCRIPT } from "@/components/shared/Editorial";
+import { SCRIPT } from "@/components/shared/Editorial";
 
 const HELV = "'Helvetica Neue', Arial, sans-serif";
 
@@ -60,12 +60,16 @@ export default function MyProfile({ nav, refresh }) {
       </div>
       <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none" }}>
         <div style={{ padding: "24px 20px 0", display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <div style={{ width: 116, height: 116, borderRadius: "50%", overflow: "hidden", background: T.s2, position: "relative" }}>
-            {GS.user.photo
-              ? <img src={GS.user.photo} alt={GS.user.name} style={{ width: "100%", height: "100%", objectFit: "cover", filter: "grayscale(1)" }} />
-              : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}><Toono size={48} color={T.textDim} /></div>}
+          <div style={{ position: "relative", width: 200, height: 200, margin: "0 auto", overflow: "visible" }}>
+            <div style={{ width: 200, height: 200, borderRadius: "50%", overflow: "hidden", background: T.s2 }}>
+              {GS.user.photo
+                ? <img src={GS.user.photo} alt={GS.user.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}><Toono size={60} color={T.textDim} /></div>}
+            </div>
+            <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", textAlign: "center", pointerEvents: "none", width: "150%" }}>
+              <span style={{ fontFamily: SCRIPT, fontSize: 58, fontWeight: 700, color: T.accent, lineHeight: 0.9, textShadow: "0 2px 22px rgba(255,255,255,0.95), 0 0 8px rgba(255,255,255,0.9)", wordBreak: "break-word" }}>{GS.user.name || "Uliger"}</span>
+            </div>
           </div>
-          <ScriptTitle size={48} style={{ marginTop: 14 }}>{GS.user.name || "Uliger"}</ScriptTitle>
           <div style={{ fontFamily: HELV, fontSize: 11, fontWeight: 600, letterSpacing: "0.22em", textTransform: "uppercase", color: T.textDim, marginTop: 6 }}>{GS.user.field || "ULIGER USER"}</div>
           {GS.trustMetrics.avgRating >= 4.8 && <div style={{ marginTop: 12 }}><StarSellerBadge /></div>}
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center", marginTop: 16 }}>
