@@ -46,7 +46,7 @@ export default function DesktopNav({
             onClick={() => onNav("home")}
             style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}
           >
-            <img src="/uliger-world-logo.png" alt="Uliger World" style={{ height: 32, width: "auto", display: "block" }} />
+            <img src="/uliger-world-logo.png" alt="Uliger World" style={{ height: 56, width: "auto", display: "block" }} />
           </div>
           <div style={{ display: "flex", gap: 6 }}>
             {[

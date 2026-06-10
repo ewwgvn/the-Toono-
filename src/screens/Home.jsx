@@ -163,7 +163,7 @@ export default function Home({ nav, refresh }) {
       {/* ── 헤더 ── */}
       <div className="toono-mobile-nav" style={{ padding: "12px 16px", paddingTop: "max(12px, env(safe-area-inset-top, 12px))", justifyContent: "space-between", alignItems: "center", background: T.s1, flexShrink: 0, borderBottom: `1px solid ${T.borderLight}`, position: "relative" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <img src="/uliger-world-logo.png" alt="Uliger World" style={{ height: 28, width: "auto", display: "block" }} />
+          <img src="/uliger-world-logo.png" alt="Uliger World" style={{ height: 44, width: "auto", display: "block" }} />
         </div>
         <div style={{ display: "flex", gap: 6 }}>
           <button type="button" aria-label="Хайх" className="toono-pressable" onClick={() => nav("explore")} style={{ width: 34, height: 34, borderRadius: 10, background: T.s2, border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: T.textH }}><IcSearch /></button>
