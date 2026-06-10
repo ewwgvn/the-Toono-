@@ -23,8 +23,10 @@ export default function Simple({ children, nav, title, back = "home", right, goB
         {right && <div style={{ marginLeft: "auto" }}>{right}</div>}
       </div>
       <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", padding: "0 16px" }}>
-        {children}
-        <div style={{ height: 30 }} />
+        <div className="toono-readable">
+          {children}
+          <div style={{ height: 30 }} />
+        </div>
       </div>
     </div>
   );

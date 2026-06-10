@@ -86,7 +86,7 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
         ))}
       </div>
     </div>
-    <div style={{flex:1,overflowY:"auto",scrollbarWidth:"none"}}>
+    <div className="toono-readable" style={{flex:1,overflowY:"auto",scrollbarWidth:"none"}}>
       {/* Fullscreen zoom modal */}
       {zoomOpen&&<div onClick={()=>setZoomOpen(false)} style={{position:"fixed",inset:0,zIndex:1000,background:"rgba(0,0,0,0.95)",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column"}}>
         <button type="button" onClick={()=>setZoomOpen(false)} style={{position:"absolute",top:20,right:20,background:"rgba(255,255,255,0.15)",border:"none",borderRadius:12,width:40,height:40,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:"#fff",zIndex:1001}}><IcX/></button>
@@ -235,7 +235,7 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
     </div>}
 
     {/* 액션 바 — 수량 + 버튼 한 줄 */}
-    <div style={{padding:"10px 16px calc(14px + env(safe-area-inset-bottom,0px))",background:T.bg,borderTop:`1px solid ${T.border}`,display:"flex",gap:8,alignItems:"center"}}>
+    <div className="toono-readable" style={{padding:"10px 16px calc(14px + env(safe-area-inset-bottom,0px))",background:T.bg,borderTop:`1px solid ${T.border}`,display:"flex",gap:8,alignItems:"center"}}>
 
       {/* 수량 (구매 가능할 때만) */}
       {w.price>0&&(w.stock===undefined||w.stock>0)&&!(w.creator_id===GS.user.id||w.cid===GS.user.id)&&<div style={{display:"flex",alignItems:"center",gap:4,flexShrink:0}}>

@@ -93,7 +93,7 @@ export default function EditProfile({ nav, refresh, goBack }) {
         <PBtn small loading={loading} onClick={save}>Хадгалах</PBtn>
       </div>
 
-      <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", padding: "0 20px" }}>
+      <div className="toono-form" style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", padding: "0 20px" }}>
 
         {/* Avatar */}
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingBottom: 20, borderBottom: `1px solid ${T.border}`, marginBottom: 20 }}>

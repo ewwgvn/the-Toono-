@@ -120,7 +120,7 @@ export default function Login({ nav, initialMode = "login" }) {
       <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:18,fontWeight:700,color:T.textH}}>{mode==="login"?"Нэвтрэх":"Бүртгүүлэх"}</div>
     </div>
 
-    <div style={{flex:1,padding:"24px 24px 40px",overflowY:"auto",scrollbarWidth:"none"}}>
+    <div className="toono-form" style={{flex:1,padding:"24px 24px 40px",overflowY:"auto",scrollbarWidth:"none"}}>
       {/* Logo */}
       <div style={{textAlign:"center",marginBottom:28,position:"relative"}}>
         <img src="/uliger-world-logo.png?v=2" alt="Uliger World" style={{width:160,height:"auto",display:"block",margin:"0 auto 8px"}} />

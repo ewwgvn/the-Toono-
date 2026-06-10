@@ -138,7 +138,7 @@ export default function ChatRoom({ nav, refresh, goBack }) {
       </div>
       <PBtn small secondary onClick={()=>convo?.creatorId&&nav("commission",{creatorId:convo.creatorId})}>Захиалга</PBtn>
     </div>
-    <div ref={scrollRef} style={{flex:1,overflowY:"auto",scrollbarWidth:"none",padding:"16px 20px"}}>
+    <div ref={scrollRef} className="toono-readable" style={{flex:1,overflowY:"auto",scrollbarWidth:"none",padding:"16px 20px"}}>
       <div style={{textAlign:"center",marginBottom:16}}>
         <span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:11,color:T.textSub,background:T.s1,padding:"4px 12px",borderRadius:20}}>Өнөөдөр</span>
       </div>
@@ -171,7 +171,7 @@ export default function ChatRoom({ nav, refresh, goBack }) {
         </div>;
       })}
     </div>
-    <div style={{padding:"10px 16px 28px",borderTop:`1px solid ${T.border}`,display:"flex",gap:10,alignItems:"flex-end"}}>
+    <div className="toono-readable" style={{padding:"10px 16px 28px",borderTop:`1px solid ${T.border}`,display:"flex",gap:10,alignItems:"flex-end",boxSizing:"border-box"}}>
       <label style={{width:38,height:38,borderRadius:"50%",background:T.s1,border:`1px solid ${T.border}`,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:T.textSub,flexShrink:0}}>
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="4" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.4"/><circle cx="9" cy="9" r="2.5" stroke="currentColor" strokeWidth="1.3"/></svg>
         <input type="file" accept="image/*,video/*" onChange={async e=>{

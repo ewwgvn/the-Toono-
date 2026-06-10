@@ -113,7 +113,7 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
       <div style={{ fontFamily: F, fontSize: 12, color: T.textSub, marginBottom: 12 }}>{stepL[step]}</div>
     </div>
 
-    <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", padding: "0 16px" }}>
+    <div className="toono-readable" style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", padding: "0 16px" }}>
 
       {/* Order items summary */}
       {items.map((it, idx) => <div key={it.id || idx} style={{ display: "flex", gap: 10, alignItems: "center", padding: "10px 0", borderBottom: `1px solid ${T.borderLight}` }}>

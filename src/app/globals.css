@@ -203,6 +203,14 @@ input[type="checkbox"], input[type="radio"] { -webkit-appearance: auto !importan
 @media (min-width: 1280px) { .feed-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 1700px) { .feed-grid { grid-template-columns: repeat(4, 1fr); } }
 
+/* ── Readable content width for form/detail screens on desktop ── */
+.toono-readable { width: 100%; }
+.toono-form { width: 100%; }
+@media (min-width: 768px) {
+  .toono-readable { max-width: 860px; margin: 0 auto; }
+  .toono-form { max-width: 480px; margin: 0 auto; }
+}
+
 /* ── Portfolio gallery (exhibition) ── */
 .portfolio-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding-top: 4px; }
 @media (min-width: 768px) { .portfolio-gallery { grid-template-columns: repeat(3, 1fr); gap: 24px; } }
