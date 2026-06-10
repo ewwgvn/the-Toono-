@@ -18,7 +18,7 @@ const FeedPost = memo(function FeedPost({ w, creator, nav, tLike, tSave }) {
   const img = w.images?.[0] || null;
   const [imgLoaded, setImgLoaded] = useState(false);
   const [imgRatio, setImgRatio] = useState(null);
-  return <div style={{ marginBottom: 4 }}>
+  return <div className="feed-post">
     {/* Header */}
     <div style={{ padding: "10px 16px", display: "flex", alignItems: "center", gap: 10 }}>
       <div onClick={() => creator?.id && nav("profile", { creatorId: creator.id })} style={{ width: 32, height: 32, borderRadius: "50%", background: T.s2, border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", overflow: "hidden", flexShrink: 0 }}>
@@ -166,10 +166,12 @@ export default function FeedScreen({ nav, refresh, goBack }) {
               <div style={{ fontFamily: F, fontSize: 13, color: T.textSub, lineHeight: 1.6, marginBottom: 20 }}>Бүтээлчийг дагаад тэдний шинэ<br />бүтээлийг энд харна уу</div>
               <PBtn onClick={() => nav("explore")}>Бүтээлч хайх</PBtn>
             </div>
-          : feedWorks.map(w => {
-              const creator = allCreators.find(c => c.id === w.creator_id) || { name: w.creator, photo: w.profiles?.photo || null, field: "" };
-              return <FeedPost key={w.id} w={w} creator={creator} nav={nav} tLike={tLike} tSave={tSave} />;
-            })
+          : <div className="feed-grid">
+              {feedWorks.map(w => {
+                const creator = allCreators.find(c => c.id === w.creator_id) || { name: w.creator, photo: w.profiles?.photo || null, field: "" };
+                return <FeedPost key={w.id} w={w} creator={creator} nav={nav} tLike={tLike} tSave={tSave} />;
+              })}
+            </div>
       }
       <div style={{ height: 20 }} />
     </div>

@@ -191,3 +191,13 @@ input[type="checkbox"], input[type="radio"] { -webkit-appearance: auto !importan
   .toono-content { max-width: 100%; }
   .toono-grid-2 { grid-template-columns: repeat(5, 1fr) !important; }
 }
+
+/* ── Feed: single column on mobile, masonry-ish grid on desktop ── */
+.feed-grid { display: flex; flex-direction: column; }
+.feed-post { margin-bottom: 6px; }
+@media (min-width: 768px) {
+  .feed-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; padding: 18px 24px; align-items: start; }
+  .feed-post { margin-bottom: 0; border: 1px solid #ECECEC; border-radius: 14px; overflow: hidden; }
+}
+@media (min-width: 1280px) { .feed-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1700px) { .feed-grid { grid-template-columns: repeat(4, 1fr); } }

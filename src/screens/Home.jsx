@@ -25,7 +25,7 @@ function HeroBanner({ works, nav }) {
 
   return (
     <div style={{ position: "relative", width: "100%", overflow: "hidden", cursor: "pointer" }} onClick={() => nav("work", { workId: w.id })}>
-      <div style={{ width: "100%", aspectRatio: "16/9", background: "#111", position: "relative", overflow: "hidden" }}>
+      <div style={{ width: "100%", aspectRatio: "16/9", maxHeight: 480, background: "#111", position: "relative", overflow: "hidden" }}>
         <img src={w.images[0]} alt={w.title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", opacity: 0.75 }} />
         {/* 그라데이션 오버레이 */}
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0) 100%)" }} />
