@@ -86,7 +86,7 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
         ))}
       </div>
     </div>
-    <div className="toono-readable" style={{flex:1,overflowY:"auto",scrollbarWidth:"none"}}>
+    <div style={{flex:1,overflowY:"auto",scrollbarWidth:"none"}}>
       {/* Fullscreen zoom modal */}
       {zoomOpen&&<div onClick={()=>setZoomOpen(false)} style={{position:"fixed",inset:0,zIndex:1000,background:"rgba(0,0,0,0.95)",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column"}}>
         <button type="button" onClick={()=>setZoomOpen(false)} style={{position:"absolute",top:20,right:20,background:"rgba(255,255,255,0.15)",border:"none",borderRadius:12,width:40,height:40,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:"#fff",zIndex:1001}}><IcX/></button>
@@ -99,6 +99,8 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
         </div>}
         <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:"rgba(255,255,255,0.5)",marginTop:10}}>{(imgIdx||0)+1} / {w.images.length} · Зүүн баруун шудрах</div>
       </div>}
+      <div className="wd-grid">
+      <div className="wd-img-col">
       {/* Hero image / gallery */}
       {w.images?.length>0
         ?<div style={{margin:"0 20px",borderRadius:20,overflow:"hidden",position:"relative",cursor:"zoom-in",background:T.s2}} onClick={()=>setZoomOpen(true)}
@@ -129,7 +131,8 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
       {w.video&&<div style={{margin:"10px 20px 0",borderRadius:14,overflow:"hidden"}}>
         <video src={w.video} controls style={{width:"100%",maxHeight:200,objectFit:"cover",display:"block",background:T.s2}}/>
       </div>}
-      <div style={{padding:"18px 20px 0"}}>
+      </div>{/* /wd-img-col */}
+      <div className="wd-info" style={{padding:"18px 20px 0"}}>
         <div style={{marginBottom:12}}>
           <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:22,fontWeight:800,color:T.textH,lineHeight:1.2,letterSpacing:"-0.02em",marginBottom:6}}>{w.title}</div>
           <div style={{display:"flex",alignItems:"center",gap:10}}>
@@ -162,6 +165,9 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
             {w.stock>0&&<span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:11,fontWeight:500,color:"#555",background:T.s2,padding:"4px 10px",borderRadius:20,border:`1px solid ${T.border}`}}>{w.stock}ш</span>}
           </div>
         </div>}
+      </div>{/* /wd-info */}
+      </div>{/* /wd-grid */}
+      <div className="toono-readable" style={{padding:"0 20px"}}>
         {/* Comments section */}
         <div style={{marginTop:4,marginBottom:24,borderTop:`1px solid ${T.borderLight}`,paddingTop:16}}>
           <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:30,fontWeight:700,color:T.textH,marginBottom:12,lineHeight:1}}>Сэтгэгдэл {comments.length>0?`(${comments.length})`:""}</div>

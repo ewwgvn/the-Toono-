@@ -211,6 +211,14 @@ input[type="checkbox"], input[type="radio"] { -webkit-appearance: auto !importan
   .toono-form { max-width: 480px; margin: 0 auto; }
 }
 
+/* ── WorkDetail: stacked on mobile, 2-column product layout on desktop ── */
+.wd-grid { display: block; }
+@media (min-width: 1024px) {
+  .wd-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 36px; max-width: 1180px; margin: 0 auto; padding: 14px 24px 0; align-items: start; }
+  .wd-grid .wd-img-col > div { margin-left: 0 !important; margin-right: 0 !important; }
+  .wd-grid .wd-info { padding-left: 0 !important; padding-right: 0 !important; padding-top: 0 !important; }
+}
+
 /* ── Portfolio gallery (exhibition) ── */
 .portfolio-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding-top: 4px; }
 @media (min-width: 768px) { .portfolio-gallery { grid-template-columns: repeat(3, 1fr); gap: 24px; } }
