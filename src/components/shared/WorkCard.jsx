@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useRef, useCallback, memo } from "react";
-import Image from "next/image";
 import { T } from "@/theme/colors";
-import { fmtP } from "@/lib/utils";
+import { fmtP, creatorPhotoOf } from "@/lib/utils";
 import { IcHeart, IcBookmark, IcShare } from "@/components/icons";
 import Avt from "@/components/atoms/Avt";
 
@@ -64,7 +63,7 @@ const WorkCard = memo(function WorkCard({ work: w, onClick, onCreatorClick, onTo
       <div style={{ marginBottom: 0, background: "#FFFFFF", borderBottom: `1px solid ${T.borderLight}` }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 16px" }}>
           <div onClick={onCreatorClick} style={{ cursor: onCreatorClick ? "pointer" : "default", display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
-            <Avt size={32} photo={w.creatorPhoto || w.profiles?.photo} />
+            <Avt size={32} photo={creatorPhotoOf(w.creator_id || w.cid, w.creatorPhoto, w.profiles?.photo)} />
             <div style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: T.textH }}>{w.creator}</div>
           </div>
           {w.createdAt && <div style={{ fontFamily: F, fontSize: 11, color: T.textSub }}>{timeAgo(w.createdAt)}</div>}
@@ -77,10 +76,9 @@ const WorkCard = memo(function WorkCard({ work: w, onClick, onCreatorClick, onTo
                 onLoad={(e) => { const { naturalWidth: nw, naturalHeight: nh } = e.currentTarget; if (nw && nh) setImgRatio(`${nw}/${nh}`); }}
                 style={{ width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }} />
             ) : (
-              <Image src={imgs[imgIdx]} fill alt={w.title} draggable={false}
-                sizes="(max-width: 768px) 100vw, 600px"
-                style={{ objectFit: "cover", pointerEvents: "none" }}
-                onLoad={(e) => { const { naturalWidth: nw, naturalHeight: nh } = e.target; if (nw && nh) setImgRatio(`${nw}/${nh}`); }} />
+              <img src={imgs[imgIdx]} alt={w.title} loading="lazy" draggable={false}
+                style={{ width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }}
+                onLoad={(e) => { const { naturalWidth: nw, naturalHeight: nh } = e.currentTarget; if (nw && nh) setImgRatio(`${nw}/${nh}`); }} />
             )
           ) : (
             <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: T.textSub, fontSize: 14, fontFamily: F }}>Зураг байхгүй</div>
@@ -151,11 +149,7 @@ const WorkCard = memo(function WorkCard({ work: w, onClick, onCreatorClick, onTo
     return (
       <div onClick={onClick} style={{ display: "flex", gap: 12, padding: "12px 0", borderBottom: `1px solid ${T.borderLight}`, cursor: "pointer" }}>
         <div style={{ width: 80, height: 80, background: T.s2, borderRadius: 8, flexShrink: 0, overflow: "hidden", position: "relative" }}>
-          {thumb ? (
-            thumb.startsWith("data:")
-              ? <img src={thumb} alt={w.title} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-              : <Image src={thumb} fill alt={w.title} sizes="80px" style={{ objectFit: "cover" }} />
-          ) : null}
+          {thumb ? <img src={thumb} alt={w.title} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : null}
         </div>
         <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
           <div style={{ fontFamily: F, fontSize: 14, fontWeight: 600, color: T.textH, marginBottom: 2 }}>{w.title}</div>
@@ -172,9 +166,7 @@ const WorkCard = memo(function WorkCard({ work: w, onClick, onCreatorClick, onTo
     <div onClick={onClick} style={{ cursor: "pointer" }}>
       <div style={{ aspectRatio: "3/4", background: T.s2, overflow: "hidden", marginBottom: 8, position: "relative" }}>
         {thumb ? (
-          thumb.startsWith("data:")
-            ? <img src={thumb} alt={w.title} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-            : <Image src={thumb} fill alt={w.title} sizes="(max-width: 768px) 50vw, 300px" style={{ objectFit: "cover" }} />
+          <img src={thumb} alt={w.title} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         ) : (
           <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: T.textSub, fontSize: 12, fontFamily: F }}>Зураг байхгүй</div>
         )}

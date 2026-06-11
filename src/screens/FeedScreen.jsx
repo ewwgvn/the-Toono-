@@ -4,7 +4,7 @@ import { useState, useEffect, memo } from "react";
 import { T } from "@/theme/colors";
 import { GS, saveGS } from "@/lib/store";
 import { DB, isSupabaseReady, fetchPublicData } from "@/lib/supabase";
-import { getAllWorks, getCreators, fmtP } from "@/lib/utils";
+import { getAllWorks, getCreators, fmtP, creatorPhotoOf } from "@/lib/utils";
 import { IcSearch, IcBell, IcHeart, IcBookmark, IcDots, IcFeedEmpty, IcMsg } from "@/components/icons";
 import Toono from "@/components/atoms/Toono";
 import PBtn from "@/components/atoms/PBtn";
@@ -174,7 +174,8 @@ export default function FeedScreen({ nav, refresh, goBack }) {
             </div>
           : <div className={view === "grid" ? "feed-grid" : "feed-single"}>
               {feedWorks.map(w => {
-                const creator = allCreators.find(c => c.id === w.creator_id) || { name: w.creator, photo: w.profiles?.photo || null, field: "" };
+                const base = allCreators.find(c => c.id === w.creator_id) || { name: w.creator, field: "" };
+                const creator = { ...base, id: base.id || w.creator_id, photo: creatorPhotoOf(w.creator_id || w.cid, base.photo, w.profiles?.photo) };
                 return <FeedPost key={w.id} w={w} creator={creator} nav={nav} tLike={tLike} tSave={tSave} />;
               })}
             </div>

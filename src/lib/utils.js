@@ -19,13 +19,14 @@ export function getAllWorks() {
   return combined;
 }
 
-let _creatorsCache = { result: null, pubRef: null, myLen: -1, userId: null };
+let _creatorsCache = { result: null, pubRef: null, myLen: -1, userId: null, userPhoto: null };
 export function getCreators() {
   if (
     _creatorsCache.result &&
     _creatorsCache.pubRef === GS.publicCreators &&
     _creatorsCache.myLen === GS.myWorks.length &&
-    _creatorsCache.userId === GS.user.id
+    _creatorsCache.userId === GS.user.id &&
+    _creatorsCache.userPhoto === GS.user.photo
   ) return _creatorsCache.result;
   const allWorks = getAllWorks();
   const list = GS.publicCreators.map(c => ({
@@ -51,8 +52,17 @@ export function getCreators() {
     if (idx >= 0) list[idx] = { ...list[idx], ...myData };
     else list.unshift(myData);
   }
-  _creatorsCache = { result: list, pubRef: GS.publicCreators, myLen: GS.myWorks.length, userId: GS.user.id };
+  _creatorsCache = { result: list, pubRef: GS.publicCreators, myLen: GS.myWorks.length, userId: GS.user.id, userPhoto: GS.user.photo };
   return list;
+}
+
+// Single source of truth for a creator's avatar across all screens.
+// The current user always resolves to GS.user.photo (never a stale snapshot),
+// so their avatar is identical everywhere (nav, feed, work cards, profile).
+export function creatorPhotoOf(creatorId, ...fallbacks) {
+  if (creatorId && GS.user.id && creatorId === GS.user.id) return GS.user.photo || fallbacks.find(Boolean) || null;
+  const c = getCreators().find(x => x.id === creatorId);
+  return c?.photo || fallbacks.find(Boolean) || null;
 }
 
 export const fmtP = (w) => w.price > 0 ? "₮" + w.price.toLocaleString() : "Захиалга";

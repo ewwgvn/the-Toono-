@@ -1,11 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 import { T } from "@/theme/colors";
 import { GS, saveGS } from "@/lib/store";
 import { DB, isSupabaseReady } from "@/lib/supabase";
-import { getAllWorks, getCreators, fmtP } from "@/lib/utils";
+import { getAllWorks, getCreators, fmtP, creatorPhotoOf } from "@/lib/utils";
 import {
   IcBack, IcHeart, IcBookmark, IcShare, IcReport, IcX,
   IcChevron, IcMsg, IcCart, IcBell, IcCommission,
@@ -21,7 +20,7 @@ import { toast } from "@/components/layout/Toast";
 export default function WorkDetail({ nav, refresh, goBack, workId }) {
   const w=getAllWorks().find(x=>x.id===workId)||GS.myWorks.find(x=>x.id===workId)||{id:0,title:"—",creator:"—",creator_id:null,price:0,accent:T.textH,likes:0,description:"",desc:"",sizes:[],colors:[],stock:0,images:[],tags:[],cat:"",medium:"",digital:false,badge:null,video:null,profiles:{photo:null,name:""}};
   const creatorObj = getCreators().find(c => c.id === (w.creator_id || w.cid));
-  const localPhoto = w.profiles?.photo || w.creatorPhoto || creatorObj?.photo || (w.creator_id === GS.user.id ? GS.user.photo : null) || null;
+  const localPhoto = creatorPhotoOf(w.creator_id || w.cid, w.creatorPhoto, w.profiles?.photo, creatorObj?.photo);
   const creatorName = w.creator || w.profiles?.name || creatorObj?.name || GS.user.name;
   const [fetchedPhoto, setFetchedPhoto] = useState(null);
   const creatorPhoto = localPhoto || fetchedPhoto;

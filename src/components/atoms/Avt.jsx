@@ -1,11 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import { T } from "@/theme/colors";
 import Toono from "@/components/atoms/Toono";
 
+// Avatar — plain <img> (handles both storage URLs and base64 data URLs).
+// Intentionally NOT next/image: avatars are tiny and the optimizer caused
+// inconsistent rendering across screens.
 export default function Avt({ size = 44, color = T.accent, photo, children, onClick }) {
-  const isUrl = photo && !photo.startsWith("data:");
   return (
     <div
       onClick={onClick}
@@ -25,9 +26,7 @@ export default function Avt({ size = 44, color = T.accent, photo, children, onCl
       }}
     >
       {photo ? (
-        isUrl
-          ? <Image src={photo} fill alt="" sizes={`${size}px`} style={{ objectFit: "cover" }} />
-          : <img src={photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        <img src={photo} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
       ) : (
         children || <Toono size={Math.round(size * 0.55)} color={T.textH} />
       )}

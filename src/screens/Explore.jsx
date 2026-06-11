@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 import { T } from "@/theme/colors";
 import { GS, saveGS } from "@/lib/store";
 import { DB, isSupabaseReady } from "@/lib/supabase";
@@ -225,9 +224,7 @@ export default function Explore({ nav, refresh, goBack }) {
               :userResults.map(u=><div key={u.id} onClick={()=>nav("profile",{creatorId:u.id})} style={{display:"flex",alignItems:"center",gap:14,padding:"12px 0",borderBottom:`1px solid ${T.border}`,cursor:"pointer"}}>
                 <div style={{width:48,height:48,borderRadius:16,background:T.accentSub,border:`1px solid ${T.accentGlow}`,overflow:"hidden",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}}>
                   {u.photo
-                    ? (u.photo.startsWith("data:")
-                        ? <img src={u.photo} alt={u.name} style={{width:"100%",height:"100%",objectFit:"cover"}}/>
-                        : <Image src={u.photo} fill alt={u.name} sizes="48px" style={{objectFit:"cover"}}/>)
+                    ? <img src={u.photo} alt={u.name} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
                     : <Toono size={28} color={T.accent}/>}
                 </div>
                 <div style={{flex:1,minWidth:0}}>
