@@ -132,7 +132,7 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
             <span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:"#fff"}}>{(imgIdx||0)+1}/{w.images.length}</span>
           </div>}
         </div>
-        :<div style={{height:260,background:`linear-gradient(135deg,#1A2A5A,${w.accent},#1A2A5A)`,display:"flex",alignItems:"center",justifyContent:"center",position:"relative",margin:"0 20px",borderRadius:20}}>
+        :<div style={{height:260,background:`linear-gradient(135deg,${T.accent},#1A6BC0,${T.accent})`,display:"flex",alignItems:"center",justifyContent:"center",position:"relative",margin:"0 20px",borderRadius:20}}>
           <div style={{opacity:.25}}><Toono size={200} color="#fff"/></div>
           {w.badge&&<span style={{position:"absolute",top:14,left:14,fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,fontWeight:700,color:"#fff",background:"#2681DA",padding:"5px 12px",borderRadius:10}}>{w.badge}</span>}
           <div style={{position:"absolute",bottom:14,right:14,background:"rgba(0,0,0,0.5)",borderRadius:10,padding:"6px 12px"}}>

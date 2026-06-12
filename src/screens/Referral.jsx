@@ -42,7 +42,7 @@ export default function Referral({ nav, goBack }) {
       <PBtn full secondary onClick={async () => {
         const link = `${typeof window !== "undefined" ? window.location.origin : "https://the-toono.vercel.app"}?ref=${myCode}`;
         if (typeof navigator !== "undefined" && navigator.share) {
-          navigator.share({ title: "Үлгэр урилга", text: `Миний урилгын кодыг ашиглана уу: ${myCode}`, url: link }).catch(() => {});
+          navigator.share({ title: "Uliger World урилга", text: `Миний урилгын кодыг ашиглана уу: ${myCode}`, url: link }).catch(() => {});
         } else {
           try { await navigator.clipboard.writeText(link); toast("Холбоос хуулагдлаа", "success"); }
           catch { toast("Холбоос: " + link, "info"); }
@@ -60,7 +60,7 @@ export default function Referral({ nav, goBack }) {
 
     {/* How it works */}
     <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 700, color: T.textH, marginBottom: 12 }}>Хэрхэн ажилладаг вэ?</div>
-    {[["1", "Кодоо хуваалц", "Найздаа код эсвэл холбоос илгээ"], ["2", "Найз бүртгүүлнэ", "Найзынхаа Үлгэр бүртгэл нээхэд ашиглана"], ["3", "Хоёулаа шагнал авна", "Найзынхаа эхний худалдан авалтын дараа ₮10,000 тус бүр авна"]].map(s => <div key={s[0]} style={{ display: "flex", gap: 14, marginBottom: 14, alignItems: "flex-start" }}>
+    {[["1", "Кодоо хуваалц", "Найздаа код эсвэл холбоос илгээ"], ["2", "Найз бүртгүүлнэ", "Найзынхаа Uliger World бүртгэл нээхэд ашиглана"], ["3", "Хоёулаа шагнал авна", "Найзынхаа эхний худалдан авалтын дараа ₮10,000 тус бүр авна"]].map(s => <div key={s[0]} style={{ display: "flex", gap: 14, marginBottom: 14, alignItems: "flex-start" }}>
       <div style={{ width: 28, height: 28, borderRadius: "50%", background: T.accentSub, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 700, color: T.accent, flexShrink: 0 }}>{s[0]}</div>
       <div>
         <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 14, fontWeight: 700, color: T.textH, marginBottom: 2 }}>{s[1]}</div>

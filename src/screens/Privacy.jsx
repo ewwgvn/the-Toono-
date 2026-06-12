@@ -5,7 +5,7 @@ import Simple from "@/components/layout/Simple";
 export default function Privacy({ nav, goBack }) {
   return <Simple nav={nav} title="Нууцлалын бодлого" back="settings">
     <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 14, color: T.textB, lineHeight: 1.8, padding: "0 4px" }}>
-      <h3 style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 18, fontWeight: 700, color: T.textH, marginBottom: 16 }}>Үлгэр — Нууцлалын бодлого</h3>
+      <h3 style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 18, fontWeight: 700, color: T.textH, marginBottom: 16 }}>Uliger World — Нууцлалын бодлого</h3>
       <p style={{ marginBottom: 16 }}>Сүүлд шинэчлэгдсэн: 2026 оны 4-р сарын 1</p>
       <h4 style={{ fontSize: 15, fontWeight: 700, color: T.textH, marginBottom: 8 }}>1. Цуглуулах мэдээлэл</h4>
       <p style={{ marginBottom: 16 }}>Бид таны нэр, имэйл, профайл зураг, байршуулсан бүтээлүүд, худалдан авалтын түүхийг цуглуулна.</p>

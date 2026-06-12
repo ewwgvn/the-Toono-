@@ -70,7 +70,7 @@ export default function DisputeCenter({ nav, goBack, refresh }) {
           <div style={{ width: 36, height: 36, borderRadius: 8, background: T.s2, display: "flex", alignItems: "center", justifyContent: "center", color: T.textH }}><IcDispute /></div>
           <div>
             <div style={{ fontFamily: F, fontSize: 14, fontWeight: 600, color: T.textH, marginBottom: 4 }}>Мөнгөн баталгаа</div>
-            <div style={{ fontFamily: F, fontSize: 12, color: T.textSub, lineHeight: 1.6 }}>Таны төлбөрийг бүтээлч хүлээлгэн өгөхөөс өмнө Үлгэр хамгаалж байна.</div>
+            <div style={{ fontFamily: F, fontSize: 12, color: T.textSub, lineHeight: 1.6 }}>Таны төлбөрийг бүтээлч хүлээлгэн өгөхөөс өмнө Uliger World хамгаалж байна.</div>
           </div>
         </div>
       </div>

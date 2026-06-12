@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { T } from "@/theme/colors";
-import { GS } from "@/lib/store";
+import { GS, saveGS } from "@/lib/store";
+import { DB, isSupabaseReady } from "@/lib/supabase";
 import { getAllWorks } from "@/lib/utils";
 import { IcBookmarkEmpty } from "@/components/icons";
 import Simple from "@/components/layout/Simple";
@@ -12,7 +13,12 @@ import WorkCard from "@/components/shared/WorkCard";
 export default function SavedWorks({ nav, refresh }) {
   const [view, setView] = useState("grid");
   const savedWorks = getAllWorks().filter(w => GS.saved.has(w.id));
-  const tSave = id => { GS.saved.delete(id); refresh(); };
+  const tSave = id => {
+    GS.saved.delete(id);
+    saveGS();
+    refresh();
+    if (GS.user.id && isSupabaseReady()) DB.toggleSave(GS.user.id, id).catch(() => {});
+  };
   const ViewBtns = <div style={{ display: "flex", gap: 4, background: T.s2, borderRadius: 10, padding: 3 }}>
     {["grid", "list"].map(v => <button type="button" key={v} onClick={() => setView(v)} style={{ width: 30, height: 30, borderRadius: 8, background: view === v ? "#FFFFFF" : "transparent", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: view === v ? "#111" : "#999", boxShadow: view === v ? "0 1px 3px rgba(0,0,0,0.1)" : "none", transition: "all .15s" }}>
       {v === "grid"

@@ -8,7 +8,6 @@ import Toono from "@/components/atoms/Toono";
 import { IcCart, IcBell, IcSearch, IcHeart } from "@/components/icons";
 
 const F = "'Helvetica Neue', Arial, sans-serif";
-const STARDOM = "'Stardom', 'Helvetica Neue', Arial, sans-serif";
 const CATS = ["Fashion Design","Interior Design","Jewelry Design","Industrial Design","Graphic Design","Textile Design","Fine Art","3D Design","Photography"];
 
 // ── 히어로 배너 (슬라이더) ────────────────────────────────────────────────────

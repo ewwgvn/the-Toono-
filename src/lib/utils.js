@@ -13,7 +13,9 @@ export function getAllWorks() {
   ) return _worksCache.result;
   const combined = [...GS.publicWorks];
   GS.myWorks.forEach(w => {
-    if (!combined.find(x => x.id === w.id)) combined.unshift(w);
+    const idx = combined.findIndex(x => x.id === w.id);
+    if (idx >= 0) combined[idx] = { ...combined[idx], ...w };
+    else combined.unshift(w);
   });
   _worksCache = { result: combined, pubRef: GS.publicWorks, myRef: GS.myWorks, myLen: GS.myWorks.length };
   return combined;

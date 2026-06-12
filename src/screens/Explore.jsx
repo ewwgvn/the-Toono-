@@ -229,7 +229,7 @@ export default function Explore({ nav, refresh, goBack }) {
                 </div>
                 <div style={{flex:1,minWidth:0}}>
                   <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:15,fontWeight:700,color:T.textH,marginBottom:2}}>{u.name}</div>
-                  <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.textSub}}>{u.field||"Үлгэр хэрэглэгч"}</div>
+                  <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.textSub}}>{u.field||"Uliger хэрэглэгч"}</div>
                 </div>
                 <span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:10,fontWeight:700,padding:"3px 9px",borderRadius:8,background:u.role==="creator"?T.accentSub:T.s2,color:u.role==="creator"?T.accent:T.textSub}}>{u.role==="creator"?"Бүтээлч":"Худалдан авагч"}</span>
               </div>)}

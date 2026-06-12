@@ -129,7 +129,7 @@ export default function ChatRoom({ nav, refresh, goBack }) {
       <button type="button" onClick={()=>{GS.activeChatId=null;nav("chat");}} style={{background:"none",border:"none",color:T.textH,cursor:"pointer",display:"flex"}}><IcBack/></button>
       <Avt size={38} color={convo?.accent||T.accent} photo={convo?.photo} onClick={()=>convo?.creatorId&&nav("profile",{creatorId:convo.creatorId})}/>
       <div style={{flex:1}}>
-        <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:15,fontWeight:700,color:T.textH}}>{convo?.name||"Үлгэр"}</div>
+        <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:15,fontWeight:700,color:T.textH}}>{convo?.name||"Uliger World"}</div>
         <div style={{display:"flex",alignItems:"center",gap:5}}>
           {convo?.online
             ?<><div style={{width:7,height:7,borderRadius:"50%",background:T.green}}/><span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.green}}>Онлайн</span></>

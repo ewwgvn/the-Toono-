@@ -236,7 +236,7 @@ export function seedDemoData(role, userName) {
   }
   // Welcome notification
   GS.notifications = [
-    { id: Date.now(), icon: "follow", title: "Үлгэр-д тавтай морил!", desc: "Профайлаа тохируулаад, бүтээлээ байршуулаарай.", time: "Сая", read: false, to: "me" },
+    { id: Date.now(), icon: "follow", title: "Uliger World-д тавтай морил!", desc: "Профайлаа тохируулаад, бүтээлээ байршуулаарай.", time: "Сая", read: false, to: "me" },
   ];
   GS.seeded = true;
   GS.unreadNotif = getUnreadNotif();
@@ -248,7 +248,7 @@ export function resetGS() {
   GS.isLoggedIn = false;
   GS.needsProfileSetup = false;
   GS.currentRole = null;
-  GS.user = { name: "", field: "", bio: "", tags: [], photo: null, revenue: "₮0", works: 0, followers: "0", following_count: 0, rating: 0, commOpen: false };
+  GS.user = { id: null, name: "", field: "", bio: "", tags: [], photo: null, revenue: "₮0", works: 0, followers: "0", following_count: 0, rating: 0, commOpen: false, instagram: "", facebook: "", twitter: "" };
   GS.myWorks = [];
   GS.orders = [];
   GS.myCommissions = [];
@@ -270,5 +270,12 @@ export function resetGS() {
   GS.trustMetrics = { responseRate: 0, onTimeRate: 0, avgRating: 0, totalOrders: 0, memberSince: "" };
   GS.publicWorks = [];
   GS.publicCreators = [];
+  GS.disputes = [];
+  GS.syncQueue = [];
+  GS.directBuyItem = null;
+  GS.editingWorkId = null;
+  GS.viewingFollowsUserId = null;
+  GS.viewingFollowsTab = null;
+  GS.selectedOrderId = null;
   _doSaveGS();
 }

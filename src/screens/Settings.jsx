@@ -75,7 +75,7 @@ export default function Settings({ nav, refresh }) {
             const blob = new Blob([data], { type: "application/json" });
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
-            a.href = url; a.download = "thetoono-data.json"; a.click();
+            a.href = url; a.download = "uliger-world-data.json"; a.click();
             URL.revokeObjectURL(url);
             toast("Мэдээлэл татагдлаа", "success");
           }
