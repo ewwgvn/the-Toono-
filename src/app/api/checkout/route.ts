@@ -17,7 +17,7 @@ const supabaseAdmin = createClient(
 
 export async function POST(req: NextRequest) {
   try {
-    const { creatorId, workId, buyerEmail, buyerName, itemTitle, amount } =
+    const { creatorId, workId, buyerEmail, buyerName, itemTitle, amount, ebarimtRegisterNo } =
       await req.json();
 
     if (!creatorId || !buyerEmail || !itemTitle || !amount || amount <= 0) {
@@ -76,6 +76,7 @@ export async function POST(req: NextRequest) {
       description: `Uliger World: ${itemTitle}`.slice(0, 255),
       amount: Number(amount),
       callbackUrl,
+      ...(ebarimtRegisterNo ? { ebarimt_register_no: ebarimtRegisterNo } : {}),
     });
 
     await prisma.payPayment.create({

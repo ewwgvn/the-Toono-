@@ -5,7 +5,7 @@ import { DB, isSupabaseReady } from "@/lib/supabase";
 import { toast } from "@/components/layout/Toast";
 import {
   IcEdit, IcPortfolio, IcDashboard, IcDispute,
-  IcOrder, IcInfo, IcShield, IcX, IcChevron, IcCommission,
+  IcOrder, IcInfo, IcShield, IcX, IcChevron, IcCommission, IcMoney,
 } from "@/components/icons";
 import Simple from "@/components/layout/Simple";
 
@@ -44,6 +44,10 @@ export default function Settings({ nav, refresh }) {
         { icon: <IcCommission />, label: "Захиалга удирдах", action: () => nav("comm-manage") },
         { icon: <IcOrder />, label: "Захиалгууд", action: () => nav("order-list") },
         { icon: <IcDispute />, label: "Маргаан", action: () => nav("dispute") },
+        { icon: <IcMoney />, label: "정산 · 계좌 관리", action: () => nav("creator-payout") },
+      ]} />}
+      {GS.user.role === "admin" && <Sec title="Admin" items={[
+        { icon: <IcShield />, label: "Admin 패널", action: () => nav("admin") },
       ]} />}
       <Sec title="Эрх" items={[
         {

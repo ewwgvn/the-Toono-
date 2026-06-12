@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
+import { useOrderStatus } from "@/hooks/useOrderStatus";
 import { T } from "@/theme/colors";
 import { GS, saveGS } from "@/lib/store";
 import { SQ, isSupabaseReady, supabase } from "@/lib/supabase";
@@ -19,8 +20,10 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
   const [errors, setErrors] = useState({});
   const [doneOrder, setDoneOrder] = useState(null);
   const [qpayData, setQpayData] = useState(null); // { orderId, qrImage, qrText, shortUrl, deeplinks }
-  const [qpayStatus, setQpayStatus] = useState("waiting"); // waiting | checking | paid | failed
-  const pollRef = useRef(null);
+  const [ebarimt, setEbarimt] = useState(false);
+  const [ebarimtReg, setEbarimtReg] = useState("");
+  const realtimeOrderId = qpayData?.orderId || null;
+  const { status: rtStatus, offline } = useOrderStatus(realtimeOrderId);
   const [addr, setAddr] = useState({ name: GS.user.name || "", phone: "", city: "Улаанбаатар", district: "", detail: "", memo: "" });
 
   const directItem = GS.directBuyItem;
@@ -38,28 +41,16 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
   ];
   const stepL = ["Хүргэлтийн мэдээлэл", "Төлбөрийн хэлбэр", "Баталгаажуулах"];
 
-  // Poll QPay order status while QR is shown
+  // Persist orderId to sessionStorage for crash/refresh recovery
   useEffect(() => {
-    if (!qpayData || qpayStatus === "paid" || qpayStatus === "failed") return;
-    const poll = async () => {
-      try {
-        setQpayStatus("checking");
-        const res = await fetch(`/api/orders/${qpayData.orderId}/status`);
-        const json = await res.json();
-        if (json?.data?.status === "PAID") {
-          clearInterval(pollRef.current);
-          setQpayStatus("paid");
-          finishOrder(qpayData.orderId);
-        } else {
-          setQpayStatus("waiting");
-        }
-      } catch {
-        setQpayStatus("waiting");
-      }
-    };
-    pollRef.current = setInterval(poll, 2000);
-    return () => clearInterval(pollRef.current);
+    if (qpayData?.orderId) sessionStorage.setItem("uliger-pending-order", qpayData.orderId);
+    else sessionStorage.removeItem("uliger-pending-order");
   }, [qpayData]);
+
+  // Realtime hook handles status — react to PAID transition
+  useEffect(() => {
+    if (rtStatus === "PAID" && qpayData) finishOrder(qpayData.orderId);
+  }, [rtStatus]);
 
   const finishOrder = (remoteOrderId) => {
     const newOrder = {
@@ -110,6 +101,7 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
           buyerName: addr.name,
           itemTitle: items.length === 1 ? items[0].title : `${items.length}개 상품`,
           amount: total,
+          ebarimtRegisterNo: ebarimt && ebarimtReg.length >= 7 ? ebarimtReg : undefined,
         }),
       });
       const json = await res.json();
@@ -189,11 +181,12 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
 
   // ── QPay QR screen ─────────────────────────────────────────────
   if (qpayData) {
+    const isPaid = rtStatus === "PAID";
     const isMobile = typeof window !== "undefined" && /Android|iPhone|iPad/i.test(navigator.userAgent);
     return (
       <div style={{ height: "100%", display: "flex", flexDirection: "column", background: "#FFFFFF" }}>
         <div style={{ padding: "16px 16px 12px", display: "flex", alignItems: "center", gap: 12, borderBottom: `1px solid ${T.borderLight}` }}>
-          <button type="button" onClick={() => { clearInterval(pollRef.current); setQpayData(null); setQpayStatus("waiting"); }} style={{ background: "none", border: "none", color: T.textH, cursor: "pointer", display: "flex" }}><IcBack /></button>
+          <button type="button" onClick={() => setQpayData(null)} style={{ background: "none", border: "none", color: T.textH, cursor: "pointer", display: "flex" }}><IcBack /></button>
           <div style={{ fontFamily: F, fontSize: 16, fontWeight: 600, color: T.textH }}>QPay төлбөр</div>
         </div>
         <div style={{ flex: 1, overflowY: "auto", padding: "24px 16px", display: "flex", flexDirection: "column", alignItems: "center" }}>
@@ -207,15 +200,22 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
             </div>
           )}
 
+          {/* Offline banner */}
+          {offline && (
+            <div style={{ width: "100%", maxWidth: 360, background: "#FFF8E1", border: "1px solid #F9A825", borderRadius: 10, padding: "10px 14px", marginBottom: 12, fontFamily: F, fontSize: 12, color: "#7B4F00", lineHeight: 1.5, textAlign: "center" }}>
+              연결이 끊겼지만 결제는 계속 진행됩니다.<br/>연결되면 자동으로 확인돼요.
+            </div>
+          )}
+
           {/* Status pill */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20, padding: "8px 16px", borderRadius: 20, background: qpayStatus === "paid" ? "#F0FAF0" : T.s2 }}>
-            {qpayStatus === "paid" ? (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20, padding: "8px 16px", borderRadius: 20, background: isPaid ? "#F0FAF0" : T.s2 }}>
+            {isPaid ? (
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8L7 12L13 4" stroke={T.green} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
             ) : (
-              <div style={{ width: 10, height: 10, borderRadius: "50%", background: qpayStatus === "checking" ? T.textH : T.textSub, animation: "pulse 1.5s ease-in-out infinite" }} />
+              <div style={{ width: 10, height: 10, borderRadius: "50%", background: T.textSub, animation: "pulse 1.5s ease-in-out infinite" }} />
             )}
-            <span style={{ fontFamily: F, fontSize: 13, color: qpayStatus === "paid" ? T.green : T.textSub }}>
-              {qpayStatus === "paid" ? "Төлбөр баталгаажлаа!" : qpayStatus === "checking" ? "Шалгаж байна..." : "Төлбөрийн хариу хүлээж байна"}
+            <span style={{ fontFamily: F, fontSize: 13, color: isPaid ? T.green : T.textSub }}>
+              {isPaid ? "Төлбөр баталгаажлаа!" : "Төлбөрийн хариу хүлээж байна"}
             </span>
           </div>
 
@@ -377,6 +377,26 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
             <span style={{ fontFamily: F, fontSize: i === 2 ? 16 : 13, fontWeight: i === 2 ? 700 : 400, color: T.textH }}>{r[1]}</span>
           </div>)}
         </div>
+        {/* eBarimt */}
+        <div style={{ border: `1px solid ${T.border}`, borderRadius: 8, padding: 16, marginBottom: 14 }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
+            <input type="checkbox" checked={ebarimt} onChange={e => setEbarimt(e.target.checked)} style={{ width: 16, height: 16, cursor: "pointer" }} />
+            <span style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: T.textH }}>eBarimt авах</span>
+          </label>
+          {ebarimt && (
+            <div style={{ marginTop: 10 }}>
+              <input
+                value={ebarimtReg}
+                onChange={e => setEbarimtReg(e.target.value.replace(/\D/g, "").slice(0, 9))}
+                placeholder="Регистрийн дугаар (7 эсвэл 9 оронтой)"
+                inputMode="numeric"
+                style={{ width: "100%", background: T.s1, border: `1px solid ${T.border}`, borderRadius: 8, padding: "10px 12px", fontFamily: F, fontSize: 13, color: T.textH, outline: "none", boxSizing: "border-box" }}
+              />
+              <div style={{ fontFamily: F, fontSize: 11, color: T.textSub, marginTop: 4 }}>Хувь хүн: 9 оронтой · ААН: 7 оронтой</div>
+            </div>
+          )}
+        </div>
+
         <div style={{ border: `1px solid ${T.border}`, borderRadius: 8, padding: 16, marginBottom: 16, background: T.s2 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
             <IcShield />

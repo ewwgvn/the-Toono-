@@ -42,6 +42,8 @@ async function handle(req: NextRequest) {
     return NextResponse.json({ ok: false, status: "not_paid" });
   }
 
+  const autoConfirmAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
   await prisma.$transaction(async (tx) => {
     await tx.payPayment.update({
       where: { id: payment.id },
@@ -55,6 +57,13 @@ async function handle(req: NextRequest) {
     await tx.payOrder.update({ where: { id: orderId }, data: { status: "PAID" } });
     await recordSaleLedger(tx, orderId);
   });
+
+  // Also update Supabase orders table escrow_auto_confirm_at (if order exists there)
+  try {
+    const { createClient } = await import("@supabase/supabase-js");
+    const supa = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
+    await supa.from("orders").update({ escrow_auto_confirm_at: autoConfirmAt.toISOString(), payment_status: "paid" }).eq("id", orderId);
+  } catch {}
 
   return NextResponse.json({ ok: true });
 }

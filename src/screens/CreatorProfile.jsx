@@ -159,7 +159,14 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
             ? <img src={hp} alt={c.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}><Toono size={56} color={T.textDim} /></div>; })()}
         </div>
-        <div style={{ fontFamily: HELV, fontSize: 27, fontWeight: 800, color: T.textH, letterSpacing: "-0.02em", lineHeight: 1.1, marginTop: 18, textAlign: "center", wordBreak: "break-word" }}>{c.name || "..."}</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 18 }}>
+          <div style={{ fontFamily: HELV, fontSize: 27, fontWeight: 800, color: T.textH, letterSpacing: "-0.02em", lineHeight: 1.1, textAlign: "center", wordBreak: "break-word" }}>{c.name || "..."}</div>
+          {(isOwn ? GS.user.verified : c.verified) && (
+            <span title="Улигер World баталгаажуулсан бүтээлч" style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", width: 22, height: 22, borderRadius: "50%", background: T.accent }}>
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </span>
+          )}
+        </div>
         <div style={{ fontFamily: HELV, fontSize: 11, fontWeight: 600, letterSpacing: "0.22em", textTransform: "uppercase", color: T.textDim, marginTop: 8 }}>{c.field || "БҮТЭЭЛЧ"}</div>
         {c.rating >= 4.8 && <div style={{ marginTop: 12 }}><StarSellerBadge /></div>}
         <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 16 }}>

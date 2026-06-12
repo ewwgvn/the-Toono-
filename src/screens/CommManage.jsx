@@ -208,23 +208,67 @@ export default function CommManage({ nav, goBack, refresh }) {
             <PBtn full onClick={() => acceptComm(r)}>Зөвшөөрөх</PBtn>
           </div>
         </Crd>))}
-      {tab === "ongoing" && ongoing.map(r => <Crd key={r.id} style={{ padding: "16px", marginBottom: 12 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
-          <div>
-            <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 15, fontWeight: 700, color: T.textH, marginBottom: 2 }}>{r.buyer}</div>
-            <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.textSub }}>{r.type}</div>
+      {tab === "ongoing" && ongoing.map(r => {
+        const [milestoneQR, setMilestoneQR] = useState(null);
+        const [milestoneLoading, setMilestoneLoading] = useState(false);
+        const requestMilestoneInvoice = async (stage) => {
+          setMilestoneLoading(true);
+          try {
+            const res = await fetch(`/api/commissions/${r.id}/invoice`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ stage, buyerEmail: `${r.buyer_id}@uliger.world`, buyerName: r.buyer }),
+            });
+            const json = await res.json();
+            if (json?.data?.qrImage) setMilestoneQR({ stage, ...json.data });
+            else toast("QPay 연결 실패", "error");
+          } catch { toast("오류 발생", "error"); }
+          finally { setMilestoneLoading(false); }
+        };
+        return <Crd key={r.id} style={{ padding: "16px", marginBottom: 12 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
+            <div>
+              <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 15, fontWeight: 700, color: T.textH, marginBottom: 2 }}>{r.buyer}</div>
+              <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.textSub }}>{r.type}</div>
+            </div>
+            <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 14, fontWeight: 700, color: T.green }}>{r.budget}</div>
           </div>
-          <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 14, fontWeight: 700, color: T.green }}>{r.budget}</div>
-        </div>
-        <div style={{ display: "flex", gap: 4, marginBottom: 6 }}>
-          {stepL.map((_, i) => <div key={i} style={{ flex: 1, height: 4, borderRadius: 2, background: i < r.step ? T.accent : T.border }} />)}
-        </div>
-        <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, color: T.textSub, marginBottom: 12 }}>{stepL[r.step - 1]}</div>
-        <div style={{ display: "flex", gap: 8 }}>
-          <PBtn full secondary onClick={() => { openChatWith(r); }}>Харилцаа</PBtn>
-          {r.step < 4 && <PBtn full onClick={() => advanceStep(r)}>Дараах шат</PBtn>}
-        </div>
-      </Crd>)}
+          <div style={{ display: "flex", gap: 4, marginBottom: 6 }}>
+            {stepL.map((_, i) => <div key={i} style={{ flex: 1, height: 4, borderRadius: 2, background: i < r.step ? T.accent : T.border }} />)}
+          </div>
+          <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, color: T.textSub, marginBottom: 10 }}>{stepL[r.step - 1]}</div>
+
+          {/* Milestone status */}
+          <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
+            <div style={{ flex: 1, padding: "8px 10px", borderRadius: 8, background: r.deposit_paid ? "#F0FAF0" : T.s2, border: `1px solid ${r.deposit_paid ? T.green + "40" : T.border}`, textAlign: "center" }}>
+              <div style={{ fontFamily: F, fontSize: 10, color: T.textSub }}>계약금 50%</div>
+              <div style={{ fontFamily: F, fontSize: 11, fontWeight: 700, color: r.deposit_paid ? T.green : T.textSub }}>{r.deposit_paid ? "납부됨" : "미납"}</div>
+            </div>
+            <div style={{ flex: 1, padding: "8px 10px", borderRadius: 8, background: r.final_paid ? "#F0FAF0" : T.s2, border: `1px solid ${r.final_paid ? T.green + "40" : T.border}`, textAlign: "center" }}>
+              <div style={{ fontFamily: F, fontSize: 10, color: T.textSub }}>잔금 50%</div>
+              <div style={{ fontFamily: F, fontSize: 11, fontWeight: 700, color: r.final_paid ? T.green : T.textSub }}>{r.final_paid ? "납부됨" : "미납"}</div>
+            </div>
+          </div>
+
+          {/* Milestone QR popup */}
+          {milestoneQR && (
+            <div style={{ background: T.s2, borderRadius: 12, padding: 16, marginBottom: 12, textAlign: "center" }}>
+              <div style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: T.textH, marginBottom: 10 }}>
+                {milestoneQR.stage === "deposit" ? "계약금 50% QPay" : "잔금 50% QPay"}
+              </div>
+              <img src={`data:image/png;base64,${milestoneQR.qrImage}`} alt="QPay QR" style={{ width: 160, height: 160, display: "block", margin: "0 auto 10px" }} />
+              <button onClick={() => setMilestoneQR(null)} style={{ fontFamily: F, fontSize: 12, color: T.textSub, background: "none", border: "none", cursor: "pointer" }}>닫기</button>
+            </div>
+          )}
+
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <PBtn full secondary onClick={() => { openChatWith(r); }}>Харилцаа</PBtn>
+            {!r.deposit_paid && !milestoneQR && <PBtn full secondary loading={milestoneLoading} onClick={() => requestMilestoneInvoice("deposit")}>계약금 QR</PBtn>}
+            {r.deposit_paid && !r.final_paid && r.step >= 3 && !milestoneQR && <PBtn full secondary loading={milestoneLoading} onClick={() => requestMilestoneInvoice("final")}>잔금 QR</PBtn>}
+            {r.step < 4 && r.deposit_paid && <PBtn full onClick={() => advanceStep(r)}>Дараах шат</PBtn>}
+          </div>
+        </Crd>;
+      })}
       {tab === "done" && done.map(r => <Crd key={r.id} style={{ padding: "14px 16px", marginBottom: 10 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div>

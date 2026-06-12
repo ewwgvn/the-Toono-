@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { T } from "@/theme/colors";
 import { GS, saveGS } from "@/lib/store";
 import { DB, isSupabaseReady } from "@/lib/supabase";
@@ -10,6 +11,7 @@ import Avt from "@/components/atoms/Avt";
 import Simple from "@/components/layout/Simple";
 
 export default function OrderDetail({ nav, refresh, goBack }) {
+  const [downloading, setDownloading] = useState(false);
   const order = GS.orders.find(o => o.id === GS.selectedOrderId) || GS.orders?.[0] || { title: "—", creator: "—", price: 0, status: "pending", date: "—" };
   const isCancelled = order.status === "cancelled";
   const statusIdx = { "pending": 0, "making": 1, "shipped": 2, "delivered": 3, "done": 4 }[order.status] || 0;
@@ -85,6 +87,13 @@ export default function OrderDetail({ nav, refresh, goBack }) {
           <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: 600, color: T.textH }}>{r[1]}</span>
         </div>)}
         {order.protectionUntil && <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, color: T.textSub, lineHeight: 1.6, marginTop: 8 }}>Худалдан авагчийн хамгаалалт {order.protectionUntil} хүртэл хүчинтэй.</div>}
+        {/* Auto-confirm countdown */}
+        {order.escrowAutoConfirmAt && order.escrowStatus === "held" && order.status !== "done" && (() => {
+          const ms = new Date(order.escrowAutoConfirmAt).getTime() - Date.now();
+          if (ms <= 0) return <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, color: T.green, marginTop: 8 }}>✓ Автоматаар баталгаажих хугацаа болсон.</div>;
+          const days = Math.floor(ms / (1000 * 60 * 60 * 24));
+          return <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, color: T.textSub, marginTop: 8 }}>Автомат баталгаажуулалт: {days} өдрийн дараа (7 хоногийн хугацаа)</div>;
+        })()}
       </Crd>
       <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 15, fontWeight: 700, color: T.textH, marginBottom: 14 }}>Хүргэлт байдал</div>
       <Crd style={{ padding: "20px 16px", marginBottom: 18 }}>
@@ -138,6 +147,34 @@ export default function OrderDetail({ nav, refresh, goBack }) {
       {order.status === "done" && order.canReview && (
         <div style={{ marginTop: 12 }}>
           <PBtn full secondary onClick={() => nav("review-write")}>Сэтгэгдэл бичих</PBtn>
+        </div>
+      )}
+      {/* Digital download — shown when order paid and work is digital */}
+      {order.paymentStatus === "paid" && order.isDigital && (
+        <div style={{ marginTop: 12 }}>
+          <Crd style={{ padding: "14px 16px", background: "#F0F4FF", border: "1px solid #BBC8E830" }}>
+            <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 700, color: T.textH, marginBottom: 8 }}>📥 Дижитал файл татах</div>
+            <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.textSub, marginBottom: 12 }}>
+              Хамгийн ихдээ 5 удаа, 30 хоногийн хугацаатай татаж болно.
+            </div>
+            <PBtn full loading={downloading} onClick={async () => {
+              setDownloading(true);
+              try {
+                const workId = order.items?.[0]?.id || order.workId;
+                const res = await fetch(`/api/works/${workId}/download?orderId=${order.id}`);
+                const json = await res.json();
+                if (!res.ok) { toast(json?.error || "Татах боломжгүй", "error"); return; }
+                const a = document.createElement("a");
+                a.href = json.data.url;
+                a.download = json.data.fileName || "download";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                toast(`Татаж эхэллээ · Үлдсэн: ${json.data.remainingDownloads} удаа`, "success");
+              } catch { toast("Татах боломжгүй", "error"); }
+              finally { setDownloading(false); }
+            }}>Файл татах</PBtn>
+          </Crd>
         </div>
       )}
       {statusIdx >= 3 && (

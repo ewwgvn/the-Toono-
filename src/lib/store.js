@@ -25,6 +25,12 @@ export const GS = {
     works: 0, followers: "0", following_count: 0, rating: 0,
     commOpen: false,
     instagram: "", facebook: "", twitter: "",
+    role: "buyer",       // "buyer" | "creator" | "admin"
+    verified: false,     // admin-verified creator badge
+    bankCode: "",        // Khan Bank code
+    bankAccountNo: "",
+    bankAccountName: "",
+    suspended: false,
   },
   // Dynamic data stores
   myWorks: [],
@@ -248,7 +254,7 @@ export function resetGS() {
   GS.isLoggedIn = false;
   GS.needsProfileSetup = false;
   GS.currentRole = null;
-  GS.user = { id: null, name: "", field: "", bio: "", tags: [], photo: null, revenue: "₮0", works: 0, followers: "0", following_count: 0, rating: 0, commOpen: false, instagram: "", facebook: "", twitter: "" };
+  GS.user = { id: null, name: "", field: "", bio: "", tags: [], photo: null, revenue: "₮0", works: 0, followers: "0", following_count: 0, rating: 0, commOpen: false, instagram: "", facebook: "", twitter: "", role: "buyer", verified: false, bankCode: "", bankAccountNo: "", bankAccountName: "", suspended: false };
   GS.myWorks = [];
   GS.orders = [];
   GS.myCommissions = [];

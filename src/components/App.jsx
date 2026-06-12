@@ -67,6 +67,8 @@ const ReturnRequest = lazy(() => import("@/screens/ReturnRequest"));
 const Report = lazy(() => import("@/screens/Report"));
 const Terms = lazy(() => import("@/screens/Terms"));
 const Privacy = lazy(() => import("@/screens/Privacy"));
+const AdminPanel = lazy(() => import("@/screens/AdminPanel"));
+const CreatorPayout = lazy(() => import("@/screens/CreatorPayout"));
 
 const F = "'Helvetica Neue', Arial, sans-serif";
 const APP_VERSION = "2.1.0";
@@ -267,6 +269,8 @@ export default function App() {
     if (screen === "terms") return <Terms {...p} />;
     if (screen === "privacy") return <Privacy {...p} />;
     if (screen === "return-request") return <ReturnRequest {...p} />;
+    if (screen === "admin") return GS.user.role === "admin" ? <AdminPanel {...p} /> : <Home {...p} />;
+    if (screen === "creator-payout") return <CreatorPayout {...p} />;
     if (tab === "explore") return <Explore {...p} />;
     if (tab === "feed") return <FeedScreen {...p} />;
     if (tab === "chat") return <ChatList nav={nav} refresh={refresh} />;

@@ -20,6 +20,7 @@ export interface QPayInvoiceRequest {
   description: string;
   amount: number;
   callbackUrl: string;
+  ebarimt_register_no?: string;  // 몽골 전자영수증 등록번호 (7 or 9 digits)
 }
 
 export interface QPayInvoiceResponse {
@@ -92,6 +93,7 @@ export async function createInvoice(req: QPayInvoiceRequest): Promise<QPayInvoic
       invoice_description: req.description,
       amount: req.amount,
       callback_url: req.callbackUrl,
+      ...(req.ebarimt_register_no ? { ebarimt_register_no: req.ebarimt_register_no } : {}),
     }),
   });
 }

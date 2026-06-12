@@ -526,6 +526,102 @@ export const DB = {
     const { data } = await supabase.from("profiles").select("id,name,field,photo,role,bio,followers_count,rating").ilike("name", `%${s}%`).limit(30);
     return data || [];
   },
+
+  // ── Admin ──────────────────────────────────────────────────────
+  async adminGetDisputes() {
+    if (!isSupabaseReady()) return [];
+    const { data } = await supabase.from("disputes").select("*, profiles!reporter_id(name,photo), orders!order_id(total_price,status)").order("created_at", { ascending: false }).limit(100);
+    return data || [];
+  },
+
+  async adminResolveDispute(disputeId, action, adminNote = "") {
+    if (!isSupabaseReady()) return;
+    await supabase.from("disputes").update({ status: action, admin_note: adminNote, resolved_at: new Date().toISOString() }).eq("id", disputeId);
+  },
+
+  async adminGetReports() {
+    if (!isSupabaseReady()) return [];
+    const { data } = await supabase.from("reports").select("*, profiles!reporter_id(name,photo)").order("created_at", { ascending: false }).limit(100);
+    return data || [];
+  },
+
+  async adminResolveReport(reportId, action) {
+    if (!isSupabaseReady()) return;
+    await supabase.from("reports").update({ status: action, resolved_at: new Date().toISOString() }).eq("id", reportId);
+  },
+
+  async adminSuspendUser(userId, suspended) {
+    if (!isSupabaseReady()) return;
+    await supabase.from("profiles").update({ suspended }).eq("id", userId);
+  },
+
+  async adminSuspendWork(workId, suspended) {
+    if (!isSupabaseReady()) return;
+    await supabase.from("works").update({ suspended }).eq("id", workId);
+  },
+
+  async adminSetVerified(userId, verified) {
+    if (!isSupabaseReady()) return;
+    await supabase.from("profiles").update({ verified }).eq("id", userId);
+  },
+
+  async adminGetAllUsers(limit = 100) {
+    if (!isSupabaseReady()) return [];
+    const { data } = await supabase.from("profiles").select("id,name,field,photo,role,verified,suspended,created_at").order("created_at", { ascending: false }).limit(limit);
+    return data || [];
+  },
+
+  async adminGetAllWorks(limit = 100) {
+    if (!isSupabaseReady()) return [];
+    const { data } = await supabase.from("works").select("id,title,creator_id,category,price,suspended,status,created_at,profiles!creator_id(name)").order("created_at", { ascending: false }).limit(limit);
+    return data || [];
+  },
+
+  // ── Creator bank account / payout ───────────────────────────────
+  async updateBankAccount(userId, bankCode, bankAccountNo, bankAccountName) {
+    if (!isSupabaseReady()) return;
+    await supabase.from("profiles").update({ bank_code: bankCode, bank_account_no: bankAccountNo, bank_account_name: bankAccountName }).eq("id", userId);
+  },
+
+  // ── Digital files ────────────────────────────────────────────────
+  async uploadDigitalFile(bucket, path, fileBlob) {
+    if (!isSupabaseReady()) return null;
+    const { error } = await supabase.storage.from(bucket).upload(path, fileBlob, { upsert: true });
+    if (error) { if (DEV) console.error("[DigitalUpload]:", error.message); return null; }
+    return path;
+  },
+
+  async createDigitalFile(workId, uploaderId, storagePath, fileName, fileSize) {
+    if (!isSupabaseReady()) return null;
+    const { data } = await supabase.from("digital_files").insert({ work_id: workId, uploader_id: uploaderId, storage_path: storagePath, file_name: fileName, file_size: fileSize }).select().single();
+    return data;
+  },
+
+  async getDigitalFile(workId) {
+    if (!isSupabaseReady()) return null;
+    const { data } = await supabase.from("digital_files").select("*").eq("work_id", workId).order("created_at", { ascending: false }).limit(1).maybeSingle();
+    return data;
+  },
+
+  async createDigitalDownload(orderId, workId, buyerId) {
+    if (!isSupabaseReady()) return null;
+    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(); // 30 days
+    const { data } = await supabase.from("digital_downloads").upsert({ order_id: String(orderId), work_id: String(workId), buyer_id: buyerId, expires_at: expiresAt }, { onConflict: "order_id" }).select().single();
+    return data;
+  },
+
+  async getDigitalDownload(orderId) {
+    if (!isSupabaseReady()) return null;
+    const { data } = await supabase.from("digital_downloads").select("*").eq("order_id", String(orderId)).maybeSingle();
+    return data;
+  },
+
+  async incrementDownloadCount(downloadId) {
+    if (!isSupabaseReady()) return;
+    await supabase.rpc("increment_download_count", { download_id: downloadId }).catch(() => {
+      supabase.from("digital_downloads").update({ download_count: supabase.rpc("download_count + 1") }).eq("id", downloadId).catch(() => {});
+    });
+  },
 };
 
 function normalizeOrder(o) {
@@ -550,6 +646,8 @@ function normalizeOrder(o) {
     protectionUntil: o.protection_until || o.protectionUntil || "",
     tracking: o.tracking_number || o.tracking || null,
     date: o.created_at ? new Date(o.created_at).toISOString().slice(0, 10).replace(/-/g, ".") : o.date || "—",
+    escrowAutoConfirmAt: o.escrow_auto_confirm_at || o.escrowAutoConfirmAt || null,
+    isDigital: o.is_digital || o.isDigital || false,
   };
 }
 
@@ -594,6 +692,12 @@ export async function syncFromSupabase() {
       instagram: profile.instagram || "",
       facebook: profile.facebook || "",
       twitter: profile.twitter || "",
+      role: profile.role || "buyer",
+      verified: profile.verified || false,
+      bankCode: profile.bank_code || "",
+      bankAccountNo: profile.bank_account_no || "",
+      bankAccountName: profile.bank_account_name || "",
+      suspended: profile.suspended || false,
     };
     GS.trustMetrics = {
       responseRate: profile.response_rate || 100,
