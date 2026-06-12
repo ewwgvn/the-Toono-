@@ -1,0 +1,141 @@
+// Uliger World — 결제/정산 스키마
+// 기존 Supabase 테이블과 충돌 방지를 위해 모든 테이블명에 pay_ 접두어 사용.
+// 창작자 ID(creatorId)는 Supabase profiles.id 와 동일한 UUID를 공유.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// 결제 창작자 정보 — Supabase profiles 와 creatorId(UUID)로 연결
+model PayCreator {
+  id              String      @id // Supabase profiles.id 와 동일한 UUID
+  name            String
+  email           String      @unique
+  bankCode        String?     // 예: "050000" Khan Bank
+  bankAccountNo   String?
+  bankAccountName String?
+  commissionBps   Int         @default(1000) // 수수료 10% = 1000bps
+  orders          PayOrder[]
+  payouts         PayPayout[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@map("pay_creators")
+}
+
+model PayOrder {
+  id            String          @id @default(uuid())
+  creatorId     String
+  creator       PayCreator      @relation(fields: [creatorId], references: [id])
+  workId        String?         // Supabase works.id (선택적 연결)
+  buyerEmail    String
+  buyerName     String?
+  itemTitle     String
+  amount        Decimal         @db.Decimal(12, 2)
+  currency      String          @default("MNT")
+  status        PayOrderStatus  @default(PENDING)
+  payment       PayPayment?
+  ledgerEntries PayLedgerEntry[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@index([creatorId, status])
+  @@map("pay_orders")
+}
+
+enum PayOrderStatus {
+  PENDING
+  PAID
+  FULFILLED
+  REFUNDED
+  CANCELLED
+  EXPIRED
+}
+
+model PayPayment {
+  id               String           @id @default(uuid())
+  orderId          String           @unique
+  order            PayOrder         @relation(fields: [orderId], references: [id])
+  provider         String           @default("QPAY")
+  qpayInvoiceId    String?          @unique
+  senderInvoiceNo  String           @unique
+  qpayPaymentId    String?
+  qrText           String?
+  qrImage          String?          @db.Text
+  shortUrl         String?
+  deeplinks        Json?
+  amount           Decimal          @db.Decimal(12, 2)
+  status           PayPaymentStatus @default(CREATED)
+  paidAt           DateTime?
+  rawCheckResponse Json?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  @@map("pay_payments")
+}
+
+enum PayPaymentStatus {
+  CREATED
+  PAID
+  FAILED
+  REFUNDED
+  EXPIRED
+}
+
+// 복식 원장: 모든 돈의 이동 기록
+model PayLedgerEntry {
+  id        String           @id @default(uuid())
+  orderId   String?
+  order     PayOrder?        @relation(fields: [orderId], references: [id])
+  payoutId  String?
+  payout    PayPayout?       @relation(fields: [payoutId], references: [id])
+  account   PayLedgerAccount
+  direction PayDirection
+  amount    Decimal          @db.Decimal(12, 2)
+  memo      String?
+  createdAt DateTime         @default(now())
+
+  @@index([account, createdAt])
+  @@map("pay_ledger_entries")
+}
+
+enum PayLedgerAccount {
+  PLATFORM_CASH
+  CREATOR_PAYABLE
+  PLATFORM_REVENUE
+}
+
+enum PayDirection {
+  DEBIT
+  CREDIT
+}
+
+model PayPayout {
+  id            String          @id @default(uuid())
+  creatorId     String
+  creator       PayCreator      @relation(fields: [creatorId], references: [id])
+  amount        Decimal         @db.Decimal(12, 2)
+  bankCode      String
+  bankAccountNo String
+  status        PayPayoutStatus @default(PENDING)
+  bankRef       String?
+  ledgerEntries PayLedgerEntry[]
+  requestedAt   DateTime        @default(now())
+  completedAt   DateTime?
+
+  @@index([creatorId, status])
+  @@map("pay_payouts")
+}
+
+enum PayPayoutStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}

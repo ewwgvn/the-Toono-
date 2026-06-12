@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { T } from "@/theme/colors";
 import { GS, saveGS } from "@/lib/store";
 import { SQ, isSupabaseReady, supabase } from "@/lib/supabase";
@@ -17,7 +17,10 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
   const [method, setMethod] = useState("card");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  const [doneOrder, setDoneOrder] = useState(null); // set on payment success
+  const [doneOrder, setDoneOrder] = useState(null);
+  const [qpayData, setQpayData] = useState(null); // { orderId, qrImage, qrText, shortUrl, deeplinks }
+  const [qpayStatus, setQpayStatus] = useState("waiting"); // waiting | checking | paid | failed
+  const pollRef = useRef(null);
   const [addr, setAddr] = useState({ name: GS.user.name || "", phone: "", city: "Улаанбаатар", district: "", detail: "", memo: "" });
 
   const directItem = GS.directBuyItem;
@@ -34,6 +37,93 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
     ["qpay", <IcShield key="qpay" />, "QPay", "QR төлбөр"],
   ];
   const stepL = ["Хүргэлтийн мэдээлэл", "Төлбөрийн хэлбэр", "Баталгаажуулах"];
+
+  // Poll QPay order status while QR is shown
+  useEffect(() => {
+    if (!qpayData || qpayStatus === "paid" || qpayStatus === "failed") return;
+    const poll = async () => {
+      try {
+        setQpayStatus("checking");
+        const res = await fetch(`/api/orders/${qpayData.orderId}/status`);
+        const json = await res.json();
+        if (json?.data?.status === "PAID") {
+          clearInterval(pollRef.current);
+          setQpayStatus("paid");
+          finishOrder(qpayData.orderId);
+        } else {
+          setQpayStatus("waiting");
+        }
+      } catch {
+        setQpayStatus("waiting");
+      }
+    };
+    pollRef.current = setInterval(poll, 2000);
+    return () => clearInterval(pollRef.current);
+  }, [qpayData]);
+
+  const finishOrder = (remoteOrderId) => {
+    const newOrder = {
+      id: remoteOrderId || Date.now(),
+      title: items.length === 1 ? items[0].title : items.length + " items",
+      creator: items[0]?.creator || "—",
+      price: total, subtotal, shipping, platformFee, sellerPayout,
+      items: items.map(it => ({ id: it.id, title: it.title, price: it.price, qty: it.qty || 1, size: it.size, color: it.color })),
+      status: "pending", paymentStatus: "paid", escrowStatus: "held", payoutStatus: "pending",
+      date: new Date().toISOString().slice(0, 10).replace(/-/g, "."),
+      address: { ...addr }, method,
+      canReview: false, tracking: null,
+      protectionUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10).replace(/-/g, "."),
+    };
+    GS.orders.unshift(newOrder);
+    GS.selectedOrderId = newOrder.id;
+    GS.notifications.unshift({ id: Date.now(), icon: "sale", title: "Захиалга баталгаажлаа", desc: `"${w.title}" амжилттай захиалагдлаа.`, time: "Сая", read: false, to: "order-detail" });
+    GS.unreadNotif++;
+    if (directItem) GS.directBuyItem = null;
+    else GS.cart = [];
+    saveGS();
+    setDoneOrder(newOrder);
+  };
+
+  const launchQPay = async () => {
+    setLoading(true);
+    try {
+      const sellerId = items[0]?.creator_id || items[0]?.cid || getAllWorks().find(wk => wk.id === items[0]?.id)?.creator_id || null;
+      if (!sellerId) {
+        const { toast } = await import("@/components/layout/Toast");
+        toast("Борлуулагч олдсонгүй", "error");
+        setLoading(false); return;
+      }
+      let buyerEmail = `${addr.phone}@guest.uliger.world`;
+      if (GS.user.id && isSupabaseReady()) {
+        try {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user?.email) buyerEmail = user.email;
+        } catch {}
+      }
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          creatorId: sellerId,
+          workId: items[0]?.id ?? null,
+          buyerEmail,
+          buyerName: addr.name,
+          itemTitle: items.length === 1 ? items[0].title : `${items.length}개 상품`,
+          amount: total,
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json?.data?.orderId) {
+        throw new Error(json?.error?.message || "QPay error");
+      }
+      setQpayData(json.data);
+    } catch (e) {
+      const { toast } = await import("@/components/layout/Toast");
+      toast(e.message || "QPay холболт алдаатай", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const validateStep0 = () => {
     const e = {};
@@ -96,6 +186,64 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
       </div>
     </div>
   );
+
+  // ── QPay QR screen ─────────────────────────────────────────────
+  if (qpayData) {
+    const isMobile = typeof window !== "undefined" && /Android|iPhone|iPad/i.test(navigator.userAgent);
+    return (
+      <div style={{ height: "100%", display: "flex", flexDirection: "column", background: "#FFFFFF" }}>
+        <div style={{ padding: "16px 16px 12px", display: "flex", alignItems: "center", gap: 12, borderBottom: `1px solid ${T.borderLight}` }}>
+          <button type="button" onClick={() => { clearInterval(pollRef.current); setQpayData(null); setQpayStatus("waiting"); }} style={{ background: "none", border: "none", color: T.textH, cursor: "pointer", display: "flex" }}><IcBack /></button>
+          <div style={{ fontFamily: F, fontSize: 16, fontWeight: 600, color: T.textH }}>QPay төлбөр</div>
+        </div>
+        <div style={{ flex: 1, overflowY: "auto", padding: "24px 16px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div style={{ fontFamily: F, fontSize: 26, fontWeight: 800, color: T.textH, marginBottom: 4 }}>₮{total.toLocaleString()}</div>
+          <div style={{ fontFamily: F, fontSize: 13, color: T.textSub, marginBottom: 24 }}>{items[0]?.title || "Захиалга"}</div>
+
+          {/* QR code image */}
+          {!isMobile && qpayData.qrImage && (
+            <div style={{ border: `1px solid ${T.border}`, borderRadius: 16, padding: 16, marginBottom: 20, background: "#fff" }}>
+              <img src={`data:image/png;base64,${qpayData.qrImage}`} alt="QPay QR" style={{ width: 200, height: 200, display: "block" }} />
+            </div>
+          )}
+
+          {/* Status pill */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20, padding: "8px 16px", borderRadius: 20, background: qpayStatus === "paid" ? "#F0FAF0" : T.s2 }}>
+            {qpayStatus === "paid" ? (
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8L7 12L13 4" stroke={T.green} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            ) : (
+              <div style={{ width: 10, height: 10, borderRadius: "50%", background: qpayStatus === "checking" ? T.textH : T.textSub, animation: "pulse 1.5s ease-in-out infinite" }} />
+            )}
+            <span style={{ fontFamily: F, fontSize: 13, color: qpayStatus === "paid" ? T.green : T.textSub }}>
+              {qpayStatus === "paid" ? "Төлбөр баталгаажлаа!" : qpayStatus === "checking" ? "Шалгаж байна..." : "Төлбөрийн хариу хүлээж байна"}
+            </span>
+          </div>
+
+          {/* Mobile deeplinks */}
+          {isMobile && qpayData.deeplinks && Array.isArray(qpayData.deeplinks) && qpayData.deeplinks.length > 0 && (
+            <div style={{ width: "100%", maxWidth: 360, marginBottom: 20 }}>
+              <div style={{ fontFamily: F, fontSize: 12, color: T.textSub, marginBottom: 10, textAlign: "center" }}>Банкны апп сонгоно уу</div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                {qpayData.deeplinks.slice(0, 6).map((dl, i) => (
+                  <a key={i} href={dl.link} style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 12px", border: `1px solid ${T.border}`, borderRadius: 10, textDecoration: "none", background: "#fff" }}>
+                    {dl.logo ? <img src={dl.logo} alt={dl.name} style={{ width: 24, height: 24, borderRadius: 4, objectFit: "contain" }} /> : <div style={{ width: 24, height: 24, borderRadius: 4, background: T.s2 }} />}
+                    <span style={{ fontFamily: F, fontSize: 12, color: T.textH, fontWeight: 500 }}>{dl.name}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Desktop hint */}
+          {!isMobile && (
+            <div style={{ fontFamily: F, fontSize: 13, color: T.textSub, textAlign: "center", lineHeight: 1.7, maxWidth: 280 }}>
+              QPay апп нээж QR кодыг уншуулна уу.<br />Төлбөр хийгдсний дараа автоматаар дуусна.
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return <div style={{ height: "100%", display: "flex", flexDirection: "column", background: "#FFFFFF" }}>
     {/* Header */}
@@ -186,27 +334,13 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
         </button>)}
       </>}
 
-      {/* Step 1.5: QPay QR (shown inline when method === qpay) */}
+      {/* Step 1: QPay hint */}
       {step === 1 && method === "qpay" && (
-        <div style={{ border: `1px solid ${T.border}`, borderRadius: 12, padding: 20, marginTop: 12, textAlign: "center" }}>
-          <div style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: T.textH, marginBottom: 12 }}>QPay QR код</div>
-          {/* Placeholder QR — in production connect to QPay API */}
-          <div style={{ width: 160, height: 160, background: T.s2, borderRadius: 12, margin: "0 auto 12px", display: "flex", alignItems: "center", justifyContent: "center", border: `1px solid ${T.border}` }}>
-            <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
-              <rect x="5" y="5" width="35" height="35" rx="4" stroke={T.textH} strokeWidth="4"/>
-              <rect x="15" y="15" width="15" height="15" fill={T.textH}/>
-              <rect x="60" y="5" width="35" height="35" rx="4" stroke={T.textH} strokeWidth="4"/>
-              <rect x="70" y="15" width="15" height="15" fill={T.textH}/>
-              <rect x="5" y="60" width="35" height="35" rx="4" stroke={T.textH} strokeWidth="4"/>
-              <rect x="15" y="70" width="15" height="15" fill={T.textH}/>
-              <rect x="60" y="60" width="10" height="10" fill={T.textH}/>
-              <rect x="75" y="60" width="10" height="10" fill={T.textH}/>
-              <rect x="60" y="75" width="10" height="10" fill={T.textH}/>
-              <rect x="75" y="75" width="20" height="20" fill={T.textH}/>
-            </svg>
+        <div style={{ border: `1px solid ${T.border}`, borderRadius: 12, padding: 16, marginTop: 12, display: "flex", gap: 10, alignItems: "flex-start" }}>
+          <IcShield />
+          <div style={{ fontFamily: F, fontSize: 12, color: T.textSub, lineHeight: 1.6 }}>
+            "Дараах" дарахад QPay QR код үүсгэж, банкны апп-аар шууд төлнө.
           </div>
-          <div style={{ fontFamily: F, fontSize: 20, fontWeight: 800, color: T.textH, marginBottom: 4 }}>₮{total.toLocaleString()}</div>
-          <div style={{ fontFamily: F, fontSize: 12, color: T.textSub, lineHeight: 1.6 }}>QPay апп нээж QR кодыг уншуулна уу.<br/>Төлбөр хийгдсний дараа "Дараах" дарна уу.</div>
         </div>
       )}
       {step === 1 && method === "bank" && (
@@ -269,11 +403,14 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
           if (!validateStep0()) return;
           setStep(1);
         } else if (step === 1) {
-          setStep(2);
+          if (method === "qpay") {
+            await launchQPay();
+          } else {
+            setStep(2);
+          }
         } else {
           setLoading(true);
           try {
-            // Server-side price & stock verification
             if (isSupabaseReady()) {
               for (const it of items) {
                 const { data: latestWork } = await supabase.from("works").select("price, stock").eq("id", it.id).single();
@@ -295,54 +432,9 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
               }
             }
             const sellerId = items[0]?.creator_id || items[0]?.cid || getAllWorks().find(wk => wk.id === items[0]?.id)?.creator_id || null;
-            if (!sellerId) {
-              const { toast } = await import("@/components/layout/Toast");
-              toast("Борлуулагч олдсонгүй", "error");
-              setLoading(false); return;
-            }
-            const newOrder = {
-              id: Date.now(),
-              title: items.length === 1 ? items[0].title : items.length + " items",
-              creator: items[0]?.creator || "—",
-              price: total,
-              subtotal,
-              shipping,
-              platformFee,
-              sellerPayout,
-              items: items.map(it => ({ id: it.id, title: it.title, price: it.price, qty: it.qty || 1, size: it.size, color: it.color })),
-              status: "pending",
-              paymentStatus: "paid",
-              escrowStatus: "held",
-              payoutStatus: "pending",
-              date: new Date().toISOString().slice(0, 10).replace(/-/g, "."),
-              address: { ...addr },
-              method,
-              canReview: false,
-              tracking: null,
-              protectionUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10).replace(/-/g, "."),
-            };
-            if (GS.user.id) {
-              const orderPayload = {
-                buyer_id: GS.user.id, seller_id: sellerId,
-                items: newOrder.items, total_price: total,
-                shipping_fee: shipping, payment_method: method,
-                platform_fee: platformFee,
-                seller_payout: sellerPayout,
-                address: addr, status: "pending",
-              };
-              if (isSupabaseReady() && sellerId) {
-                const { data, error } = await supabase.from('orders').insert(orderPayload).select().single();
-                if (data) newOrder.id = data.id;
-                else { const sqId = SQ.push('createOrder', orderPayload); newOrder._sqId = sqId; }
-              } else if (sellerId) {
-                const sqId = SQ.push('createOrder', orderPayload);
-                newOrder._sqId = sqId;
-              }
-            }
-            GS.orders.unshift(newOrder);
-            GS.selectedOrderId = newOrder.id;
-            // Notify seller of new order
+            finishOrder(null);
             if (isSupabaseReady() && sellerId) {
+              const { DB } = await import("@/lib/supabase");
               DB.createNotification({
                 user_id: sellerId,
                 icon: "sale",
@@ -352,23 +444,16 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
                 read: false,
               }).catch(() => {});
             }
-            // Deduct stock
             items.forEach(it => {
               const work = getAllWorks().find(wk => wk.id === it.id);
               if (work && work.stock > 0) work.stock = Math.max(0, work.stock - (it.qty || 1));
             });
-            if (directItem) GS.directBuyItem = null;
-            else GS.cart = [];
-            GS.notifications.unshift({ id: Date.now(), icon: "sale", title: "Захиалга баталгаажлаа", desc: `"${w.title}" амжилттай захиалагдлаа.`, time: "Сая", read: false, to: "order-detail" });
-            GS.unreadNotif++;
             setLoading(false);
-            saveGS();
-            setDoneOrder(newOrder);
           } catch (e) {
             setLoading(false);
           }
         }
-      }}>{step === 2 ? `₮${total.toLocaleString()} Төлөх` : "Дараах"}</PBtn>
+      }}>{step === 2 ? `₮${total.toLocaleString()} Төлөх` : method === "qpay" && step === 1 ? "QR үүсгэх" : "Дараах"}</PBtn>
     </div>
   </div>;
 }
