@@ -125,7 +125,7 @@ export default function Explore({ nav, refresh, goBack }) {
             placeholder="Хайлт..."
             style={{background:"none",border:"none",outline:"none",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,color:T.textH,flex:1}}
           />
-          {q&&<button type="button" onClick={()=>{setQ("");setDebouncedQ("");setInputFocused(false);}} style={{background:"none",border:"none",color:T.textSub,cursor:"pointer",display:"flex"}}><IcX/></button>}
+          {q&&<button type="button" onClick={()=>{setQ("");setDebouncedQ("");setInputFocused(false);}} style={{background:"none",border:"none",color:T.textSub,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",width:44,height:44,margin:"-11px -14px -11px 0"}}><IcX/></button>}
         </div>
         {/* Recent searches dropdown — shown on focus when there are saved terms */}
         {inputFocused&&recentSearches.length>0&&(

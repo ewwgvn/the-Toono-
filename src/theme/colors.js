@@ -18,9 +18,13 @@ export const MONO = {
   textDim:     "#767676",
   green:       "#2E7D32",
   greenSub:    "rgba(46,125,50,0.08)",
+  greenBg:     "#F0FAF0",
   red:         "#D32F2F",
   redSub:      "rgba(211,47,47,0.08)",
   yellow:      "#F9A825",
+  yellowBg:    "#FFF8E1",
+  yellowText:  "#7B4F00",
+  canvas:      "#FDFCFA",
   nav:         "#FFFFFF",
   isDark:      false,
 };

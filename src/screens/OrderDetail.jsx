@@ -17,7 +17,8 @@ export default function OrderDetail({ nav, refresh, goBack }) {
   const statusIdx = { "pending": 0, "making": 1, "shipped": 2, "delivered": 3, "done": 4 }[order.status] || 0;
   const isEscrowHeld = (order.escrowStatus || "held") === "held" && !isCancelled;
   const sellerPayout = order.sellerPayout ?? Math.max(0, (order.price || 0) - (order.shipping || 0) - (order.platformFee || 0));
-  const platformFee = order.platformFee ?? Math.round(((order.price || 0) - (order.shipping || 0)) * 0.08);
+  // Checkout.jsx의 PLATFORM_FEE_RATE(10%, commissionBps 기본값과 동일)와 일치시킴.
+  const platformFee = order.platformFee ?? Math.round(((order.price || 0) - (order.shipping || 0)) * 0.10);
   const steps = [
     { label: "Захиалга баталгаажлаа", date: order.date || "—", done: statusIdx >= 0 },
     { label: "Үйлдвэрлэл эхэллээ", date: statusIdx >= 1 ? "Хийгдэж байна" : "", done: statusIdx >= 1 },

@@ -85,7 +85,7 @@ button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 button:not(.no-scale):active { transform: scale(0.97); transition: transform 120ms ease; }
 input:focus, textarea:focus { border-color: #2681DA !important; outline: none; }
 button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
-  outline: 2px solid #111111;
+  outline: 2px solid #2681DA;
   outline-offset: 2px;
 }
 
@@ -110,7 +110,7 @@ img:not([src]), img[src=""], img[src*="undefined"] { display: none; }
 /* ── Interactive states ── */
 .toono-btn { transition: transform 120ms ease, opacity 120ms ease, box-shadow 120ms ease, background-color 120ms ease; }
 .toono-btn:not(:disabled):active { transform: scale(0.97); }
-.toono-btn:focus-visible { outline: 2px solid #111111; outline-offset: 2px; }
+.toono-btn:focus-visible { outline: 2px solid #2681DA; outline-offset: 2px; }
 .toono-card { transition: border-color 150ms ease, box-shadow 150ms ease, transform 120ms ease; }
 
 /* ── Screen transition ── */

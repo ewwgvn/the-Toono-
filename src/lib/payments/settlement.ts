@@ -47,6 +47,10 @@ export async function getPayableBalance(creatorId: string): Promise<Prisma.Decim
 
 const MIN_PAYOUT = new Prisma.Decimal(10_000);
 
+// khanbank.ts의 MODE와 동일한 기준. MANUAL이면 이체를 시도하지 않고
+// PayPayout을 PENDING으로 큐잉해 관리자 승인(/api/admin/payouts/[id]/approve)을 기다린다.
+const PAYOUT_MODE = process.env.PAYOUT_MODE ?? "MANUAL";
+
 export async function runPayout(creatorId: string) {
   const creator = await prisma.payCreator.findUniqueOrThrow({ where: { id: creatorId } });
   if (!creator.bankCode || !creator.bankAccountNo) {
@@ -55,6 +59,33 @@ export async function runPayout(creatorId: string) {
 
   const balance = await getPayableBalance(creatorId);
   if (balance.lessThan(MIN_PAYOUT)) return null;
+
+  // MANUAL 모드: 이체 없이 PENDING으로 큐잉. 원장에는 DEBIT을 즉시 기록해
+  // 동일 잔액이 중복으로 큐잉되는 것을 방지한다. 관리자가 승인하면
+  // /api/admin/payouts/[id]/approve 가 이 payout을 COMPLETED로 전환한다.
+  if (PAYOUT_MODE === "MANUAL") {
+    return prisma.$transaction(async (tx) => {
+      const p = await tx.payPayout.create({
+        data: {
+          creatorId,
+          amount: balance,
+          bankCode: creator.bankCode!,
+          bankAccountNo: creator.bankAccountNo!,
+          status: "PENDING",
+        },
+      });
+      await tx.payLedgerEntry.create({
+        data: {
+          payoutId: p.id,
+          account: "CREATOR_PAYABLE",
+          direction: "DEBIT",
+          amount: balance,
+          memo: `정산 대기 (관리자 승인 필요) ${p.id}`,
+        },
+      });
+      return p;
+    });
+  }
 
   const payout = await prisma.$transaction(async (tx) => {
     const p = await tx.payPayout.create({
@@ -106,6 +137,76 @@ export async function runPayout(creatorId: string) {
     throw e;
   }
   return payout;
+}
+
+/**
+ * 관리자가 PENDING(MANUAL 큐) 정산을 "지급 완료"로 확정.
+ * 실제 이체는 관리자가 은행 앱/창구에서 수동으로 수행한 뒤 호출한다.
+ * 원장 DEBIT은 runPayout()에서 큐잉 시점에 이미 기록되어 있으므로 여기서는
+ * 상태와 bankRef/completedAt만 갱신한다.
+ */
+export async function approvePendingPayout(payoutId: string) {
+  const payout = await prisma.payPayout.findUniqueOrThrow({ where: { id: payoutId } });
+  if (payout.status !== "PENDING") {
+    throw new Error(`이미 처리된 정산 (status=${payout.status})`);
+  }
+  return prisma.payPayout.update({
+    where: { id: payoutId },
+    data: { status: "COMPLETED", bankRef: `MANUAL-${Date.now()}`, completedAt: new Date() },
+  });
+}
+
+/**
+ * FAILED 상태의 정산을 재시도. 성공 시 COMPLETED, 실패 시 FAILED 유지(원장은 그대로 — 이미 롤백됨).
+ * 잔액은 runPayout 시점의 amount/계좌 정보를 그대로 사용 (재계산하지 않음).
+ */
+export async function retryFailedPayout(payoutId: string) {
+  const payout = await prisma.payPayout.findUniqueOrThrow({ where: { id: payoutId }, include: { creator: true } });
+  if (payout.status !== "FAILED") {
+    throw new Error(`재시도 불가 (status=${payout.status})`);
+  }
+
+  // 재시도는 새 원장 DEBIT을 다시 잡아야 함 (실패 시 CREDIT으로 롤백되어 있었음)
+  await prisma.$transaction(async (tx) => {
+    await tx.payPayout.update({ where: { id: payoutId }, data: { status: "PROCESSING" } });
+    await tx.payLedgerEntry.create({
+      data: {
+        payoutId,
+        account: "CREATOR_PAYABLE",
+        direction: "DEBIT",
+        amount: payout.amount,
+        memo: `정산 재시도 ${payoutId}`,
+      },
+    });
+  });
+
+  try {
+    const ref = await transferToBank({
+      bankCode: payout.bankCode,
+      accountNo: payout.bankAccountNo,
+      accountName: payout.creator.bankAccountName ?? payout.creator.name,
+      amount: Number(payout.amount),
+      description: `Uliger World payout retry ${payoutId.slice(0, 8)}`,
+    });
+    return prisma.payPayout.update({
+      where: { id: payoutId },
+      data: { status: "COMPLETED", bankRef: ref, completedAt: new Date() },
+    });
+  } catch (e) {
+    await prisma.$transaction(async (tx) => {
+      await tx.payPayout.update({ where: { id: payoutId }, data: { status: "FAILED" } });
+      await tx.payLedgerEntry.create({
+        data: {
+          payoutId,
+          account: "CREATOR_PAYABLE",
+          direction: "CREDIT",
+          amount: payout.amount,
+          memo: `정산 재시도 실패 롤백 ${payoutId}`,
+        },
+      });
+    });
+    throw e;
+  }
 }
 
 export async function runAllPayouts() {

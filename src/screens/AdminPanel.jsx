@@ -25,10 +25,11 @@ const STATUS_COLOR = {
   pending: T.yellow, open: T.yellow,
   resolved: T.green, closed: T.green,
   rejected: T.red, refunded: T.red,
+  processing: T.yellow, completed: T.green, failed: T.red,
 };
 
 function StatusPill({ s }) {
-  const label = { pending: "대기", open: "오픈", resolved: "해결됨", closed: "종료", rejected: "거절", refunded: "환불" }[s] || s;
+  const label = { pending: "대기", open: "오픈", resolved: "해결됨", closed: "종료", rejected: "거절", refunded: "환불", processing: "처리 중", completed: "지급 완료", failed: "실패" }[s] || s;
   return (
     <span style={{ fontFamily: F, fontSize: 10, fontWeight: 700, color: STATUS_COLOR[s] || T.textSub, background: (STATUS_COLOR[s] || T.textSub) + "18", padding: "3px 9px", borderRadius: 6 }}>
       {label}
@@ -165,22 +166,56 @@ function ReportsTab() {
 }
 
 // ── Payouts tab ────────────────────────────────────────────────
+// 인증: /api/admin/payouts*는 NEXT_PUBLIC_ADMIN_SECRET(클라이언트에 노출되어
+// 무의미했던 값) 대신, 로그인한 관리자의 Supabase access token을 검사한다
+// (서버에서 profiles.role === 'admin' 확인). 토큰은 매 요청마다 세션에서 읽는다.
 function PayoutsTab() {
   const [payouts, setPayouts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(null);
 
-  useEffect(() => {
-    fetch("/api/admin/payouts", { headers: { authorization: `Bearer ${process.env.NEXT_PUBLIC_ADMIN_SECRET || ""}` } })
-      .then(r => r.json())
-      .then(j => { setPayouts(j.data || []); setLoading(false); })
-      .catch(() => setLoading(false));
-  }, []);
+  const authHeader = async () => {
+    const session = await DB.getSession();
+    return { authorization: `Bearer ${session?.access_token || ""}` };
+  };
 
-  const approve = async (id) => {
-    const res = await fetch(`/api/admin/payouts/${id}/approve`, { method: "POST" });
-    const json = await res.json();
-    if (res.ok) { setPayouts(prev => prev.map(p => p.id === id ? { ...p, status: "COMPLETED" } : p)); toast("지급 완료", "success"); }
-    else toast(json?.error || "실패", "error");
+  const load = async () => {
+    try {
+      const res = await fetch("/api/admin/payouts", { headers: await authHeader() });
+      const json = await res.json();
+      if (!res.ok) { toast(json?.error || "정산 목록 조회 실패", "error"); setPayouts([]); }
+      else setPayouts(json.data || []);
+    } catch {
+      toast("정산 목록 조회 실패", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { load(); }, []);
+
+  const act = async (id, kind) => {
+    setBusy(id);
+    try {
+      const res = await fetch(`/api/admin/payouts/${id}/approve`, { method: "POST", headers: await authHeader() });
+      const json = await res.json();
+      if (res.ok) {
+        const nextStatus = json?.data?.status || "COMPLETED";
+        if (nextStatus === "COMPLETED") {
+          setPayouts(prev => prev.filter(p => p.id !== id));
+          toast("지급 완료 처리됨", "success");
+        } else {
+          setPayouts(prev => prev.map(p => p.id === id ? { ...p, status: nextStatus } : p));
+          toast(kind === "retry" ? "재시도 실패 — 다시 FAILED" : "처리됨", nextStatus === "FAILED" ? "error" : "success");
+        }
+      } else {
+        toast(json?.error || "실패", "error");
+      }
+    } catch {
+      toast("요청 실패", "error");
+    } finally {
+      setBusy(null);
+    }
   };
 
   if (loading) return <div style={{ padding: 40, textAlign: "center", fontFamily: F, fontSize: 13, color: T.textSub }}>로딩 중...</div>;
@@ -190,15 +225,16 @@ function PayoutsTab() {
     <Crd key={p.id} style={{ padding: 16, marginBottom: 10 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
         <div>
-          <div style={{ fontFamily: F, fontSize: 13, fontWeight: 700, color: T.textH, marginBottom: 2 }}>창작자 {p.creator_id?.slice(0, 8)}</div>
-          <div style={{ fontFamily: F, fontSize: 11, color: T.textSub }}>{p.bank_code} · {p.bank_account_no}</div>
+          <div style={{ fontFamily: F, fontSize: 13, fontWeight: 700, color: T.textH, marginBottom: 2 }}>창작자 {p.creatorId?.slice(0, 8)}</div>
+          <div style={{ fontFamily: F, fontSize: 11, color: T.textSub }}>{p.bankCode} · {p.bankAccountNo}</div>
         </div>
         <div style={{ textAlign: "right" }}>
           <div style={{ fontFamily: F, fontSize: 16, fontWeight: 800, color: T.accent }}>₮{Number(p.amount || 0).toLocaleString()}</div>
           <StatusPill s={p.status?.toLowerCase() || "pending"} />
         </div>
       </div>
-      {p.status === "PENDING" && <PBtn full onClick={() => approve(p.id)}>지급 승인</PBtn>}
+      {p.status === "PENDING" && <PBtn full disabled={busy === p.id} onClick={() => act(p.id, "approve")}>{busy === p.id ? "처리 중..." : "지급 승인 (이체 완료)"}</PBtn>}
+      {p.status === "FAILED" && <PBtn full secondary disabled={busy === p.id} onClick={() => act(p.id, "retry")}>{busy === p.id ? "처리 중..." : "이체 재시도"}</PBtn>}
     </Crd>
   ));
 }

@@ -59,7 +59,7 @@ export function useOrderStatus(orderId: string | null) {
           .channel(`order-status-${orderId}`)
           .on(
             "postgres_changes",
-            { event: "UPDATE", schema: "public", table: "orders", filter: `id=eq.${orderId}` },
+            { event: "UPDATE", schema: "public", table: "pay_orders", filter: `id=eq.${orderId}` },
             (payload: any) => { if (payload.new?.status) setStatus(payload.new.status); }
           )
           .subscribe((state: string) => {

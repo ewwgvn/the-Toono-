@@ -8,6 +8,7 @@ import { IcSearch, IcX, IcMsg } from "@/components/icons";
 import PBtn from "@/components/atoms/PBtn";
 import Crd from "@/components/atoms/Crd";
 import Avt from "@/components/atoms/Avt";
+import Empty from "@/components/atoms/Empty";
 import { toast } from "@/components/layout/Toast";
 
 export default function ChatList({ nav, refresh, goBack }) {
@@ -97,12 +98,7 @@ export default function ChatList({ nav, refresh, goBack }) {
     </div>}
     <div style={{flex:1,overflowY:"auto",scrollbarWidth:"none"}}>
       {fl.length===0&&!showNewChat
-        ?<div style={{textAlign:"center",padding:"60px 20px"}}>
-          <div style={{width:72,height:72,borderRadius:22,background:T.accentSub,border:`1px solid ${T.accentGlow}`,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px"}}><IcMsg/></div>
-          <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:17,fontWeight:700,color:T.textH,marginBottom:8}}>Зурвас байхгүй</div>
-          <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,color:T.textSub,lineHeight:1.6,marginBottom:20}}>Бүтээлчтэй холбогдож харилцаа эхлээрэй</div>
-          <PBtn onClick={()=>setShowNewChat(true)}>Шинэ харилцаа</PBtn>
-        </div>
+        ?<Empty icon={<IcMsg/>} title="Зурвас байхгүй" sub="Бүтээлчтэй холбогдож харилцаа эхлээрэй" action="Шинэ харилцаа" onAction={()=>setShowNewChat(true)}/>
         :fl.map(c=>{
           const lastMsg = c.msgs[c.msgs.length-1];
           const lastText = lastMsg?.img?"📷 Зураг":lastMsg?.text||"";

@@ -19,7 +19,7 @@ export default function Settings({ nav, refresh }) {
         {items.map((item, i) => (
           <div key={item.label} style={{ padding: "13px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: i < items.length - 1 ? `1px solid ${T.borderLight}` : "none", cursor: item.action ? "pointer" : "default" }} onClick={item.action}>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <div style={{ width: 32, height: 32, borderRadius: 8, background: "#F7F7F7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color: item.danger ? "#D32F2F" : "#111111" }}>{item.icon}</div>
+              <div style={{ width: 32, height: 32, borderRadius: 8, background: T.s2, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color: item.danger ? "#D32F2F" : "#111111" }}>{item.icon}</div>
               <div>
                 <div style={{ fontFamily: F, fontSize: 14, fontWeight: 500, color: item.danger ? "#D32F2F" : "#111111" }}>{item.label}</div>
                 {item.sub && <div style={{ fontFamily: F, fontSize: 11, color: "#767676", marginTop: 1 }}>{item.sub}</div>}

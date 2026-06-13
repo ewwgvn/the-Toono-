@@ -30,7 +30,10 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
   const items = directItem ? [directItem] : GS.cart.length > 0 ? GS.cart : [];
   const subtotal = items.reduce((s, it) => s + ((it.price || 0) * (it.qty || 1)), 0);
   const shipping = items.some(i => !i.digital) ? 15000 : 0;
-  const platformFee = Math.round(subtotal * 0.08);
+  // ⚠ prisma/schema.prisma의 PayCreator.commissionBps 기본값(1000bps = 10%)과 동일해야 함.
+  // 실제 정산 수수료는 creator별 commissionBps로 계산되므로, 여기 표시값은 "예상치"임.
+  const PLATFORM_FEE_RATE = 0.10;
+  const platformFee = Math.round(subtotal * PLATFORM_FEE_RATE);
   const sellerPayout = Math.max(0, subtotal - platformFee);
   const total = subtotal + shipping;
   const w = items[0] || getAllWorks().find(x => x.id === workId) || { id: 0, title: "—", creator: "—", price: 0 };
@@ -139,7 +142,7 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
   if (doneOrder) return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#FFFFFF", padding: "32px 24px", textAlign: "center" }}>
       {/* Checkmark circle */}
-      <div style={{ width: 80, height: 80, borderRadius: "50%", background: "#F0FAF0", border: `2px solid ${T.green}40`, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 20 }}>
+      <div style={{ width: 80, height: 80, borderRadius: "50%", background: T.greenBg, border: `2px solid ${T.green}40`, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 20 }}>
         <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
           <path d="M8 18L15 25L28 11" stroke={T.green} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
@@ -168,7 +171,7 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
         </div>
       </div>
       {/* Escrow note */}
-      <div style={{ width: "100%", maxWidth: 360, background: "#F0FAF0", border: `1px solid ${T.green}20`, borderRadius: 12, padding: "12px 16px", marginBottom: 28, textAlign: "left", display: "flex", gap: 10, alignItems: "flex-start" }}>
+      <div style={{ width: "100%", maxWidth: 360, background: T.greenBg, border: `1px solid ${T.green}20`, borderRadius: 12, padding: "12px 16px", marginBottom: 28, textAlign: "left", display: "flex", gap: 10, alignItems: "flex-start" }}>
         <IcShield />
         <div style={{ fontFamily: F, fontSize: 12, color: T.green, lineHeight: 1.6 }}>Таны ₮{(doneOrder.price || 0).toLocaleString()} эскроуд хадгалагдлаа. Хүргэлтийг баталгаажуулсны дараа бүтээлчид шилжинэ.</div>
       </div>
@@ -202,13 +205,13 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
 
           {/* Offline banner */}
           {offline && (
-            <div style={{ width: "100%", maxWidth: 360, background: "#FFF8E1", border: "1px solid #F9A825", borderRadius: 10, padding: "10px 14px", marginBottom: 12, fontFamily: F, fontSize: 12, color: "#7B4F00", lineHeight: 1.5, textAlign: "center" }}>
+            <div style={{ width: "100%", maxWidth: 360, background: T.yellowBg, border: "1px solid #F9A825", borderRadius: 10, padding: "10px 14px", marginBottom: 12, fontFamily: F, fontSize: 12, color: T.yellowText, lineHeight: 1.5, textAlign: "center" }}>
               연결이 끊겼지만 결제는 계속 진행됩니다.<br/>연결되면 자동으로 확인돼요.
             </div>
           )}
 
           {/* Status pill */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20, padding: "8px 16px", borderRadius: 20, background: isPaid ? "#F0FAF0" : T.s2 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20, padding: "8px 16px", borderRadius: 20, background: isPaid ? T.greenBg : T.s2 }}>
             {isPaid ? (
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8L7 12L13 4" stroke={T.green} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
             ) : (

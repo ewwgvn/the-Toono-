@@ -32,7 +32,7 @@ src/
 │   ├── supabase.js        — DB layer (40+ methods), sync queue (SQ)
 │   └── utils.js           — getAllWorks, getCreators, fmtP, compressImage
 └── theme/
-    └── colors.js          — Mono clean color system (#FFF/#111/#666)
+    └── colors.js          — Blue+White color system (T.accent #2681DA, T.canvas #FDFCFA, tokens: greenBg/yellowBg/yellowText)
 ```
 
 ## Key Patterns
@@ -44,11 +44,11 @@ src/
 - `T.xxx` — Theme colors from `@/theme/colors`
 - `DB.method()` — Supabase API wrapper from `@/lib/supabase`
 
-## Design System: Mono Clean
-- Colors: #FFFFFF bg, #111111 accent/text, #666666 secondary, #999999 tertiary
-- Font: 'Helvetica Neue', Arial, sans-serif
-- Card: border-radius 8px, no shadows. Button: border-radius 20px
-- No gradients, no colorful accents (error #D32F2F, success #2E7D32 only)
+## Design System: Blue + White (Uliger World)
+- Colors: #FFFFFF/#FDFCFA bg, #2681DA accent, #F0F7FD/#E3F0FA light-blue surfaces,
+  #C8DFF2 borders, #111111 heading text, #666666/#767676 secondary text
+- Gradients allowed for hero/feature accents (accent → accentHover)
+- Error #D32F2F, success #2E7D32, warning #F9A825
 
 ## Categories (English, unified across all screens)
 Fashion Design, Interior Design, Jewelry Design, Industrial Design,

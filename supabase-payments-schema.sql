@@ -103,3 +103,20 @@ do $$ begin
     create trigger pay_payments_updated_at before update on pay_payments for each row execute function update_updated_at();
   end if;
 end $$;
+
+-- Realtime: 결제 상태(PENDING→PAID) 변경을 프론트(useOrderStatus)가 즉시 수신하도록
+-- pay_orders 테이블을 supabase_realtime publication에 추가.
+-- (DATABASE_URL이 이 Supabase 프로젝트의 Postgres를 가리키는 경우에만 유효)
+do $$ begin
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime' and tablename = 'pay_orders'
+  ) then
+    alter publication supabase_realtime add table pay_orders;
+  end if;
+end $$;
+
+-- 참고: pay_orders는 RLS가 비활성 상태(create table 시 미설정)이므로
+-- anon key로 구독해도 Realtime 이벤트가 전달됨. buyer_email/amount 등
+-- 행 전체가 payload.new에 포함되니, 더 강한 격리가 필요해지면
+-- RLS 활성화 + 적절한 SELECT 정책을 추가할 것.
