@@ -28,47 +28,64 @@ const CAT_ICONS = {
   "Photography": IcFieldPhoto,
 };
 
-// ── 스포트라이트 히어로 — 라이트 카드형, Blue+White 톤과 통일 ──────────────────
+// ── 마스트헤드 — 굵은 컴프레스드 워드마크 ──────────────────────────────────────
 const HERO_LABELS = [
   { label: "ШИНЭ ЦУГЛУУЛГА",  sub: "Шинэ бүтээлүүдийг нээж олоорой" },
   { label: "ОНЦЛОХ БҮТЭЭЛ",   sub: "Бүтээлчийн шилдэг ажлууд" },
   { label: "ТУСГАЙ ЗАХИАЛГА", sub: "Хувийн захиалга авдаг бүтээлчид" },
 ];
-function SpotlightHero({ works, nav }) {
-  const [idx, setIdx] = useState(0);
-  const w = works[idx] || works[0];
-  if (!w) return null;
-  const lbl = HERO_LABELS[idx % HERO_LABELS.length];
 
+function Masthead({ nav }) {
   return (
-    <div style={{ padding: "10px 16px 0" }}>
-      <div onClick={() => nav("work", { workId: w.id })} className="toono-card-tap"
-        style={{ cursor: "pointer", borderRadius: 12, overflow: "hidden", border: `1px solid ${T.borderLight}`, background: T.s1 }}>
-        <div style={{ width: "100%", aspectRatio: "21/9", background: T.s2, position: "relative", overflow: "hidden" }}>
-          <img src={w.images[0]} alt={w.title} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-          {works.length > 1 && (
-            <div style={{ position: "absolute", top: 8, right: 8, display: "flex", gap: 4 }} onClick={e => e.stopPropagation()}>
-              {works.map((_, i) => (
-                <button key={i} type="button" onClick={() => setIdx(i)} style={{ width: i === idx ? 14 : 5, height: 5, borderRadius: 3, background: i === idx ? "#fff" : "rgba(255,255,255,0.55)", border: "none", cursor: "pointer", padding: 0, transition: "all .2s", boxShadow: "0 1px 3px rgba(0,0,0,0.18)" }} />
-              ))}
-            </div>
-          )}
-        </div>
-        <div style={{ padding: "10px 12px 12px", background: T.s2 }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 5, fontFamily: F, fontSize: 9, fontWeight: 700, letterSpacing: "0.18em", color: T.accent, marginBottom: 4, textTransform: "uppercase" }}>
-            <span style={{ width: 4, height: 4, borderRadius: "50%", background: T.accent, display: "inline-block", flexShrink: 0 }} />
-            {lbl.label}
-          </div>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <div style={{ fontFamily: F, fontSize: 15, fontWeight: 800, color: T.textH, lineHeight: 1.2, letterSpacing: "-.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginRight: 10 }}>{w.title}</div>
-            <button type="button" onClick={(e) => { e.stopPropagation(); nav("work", { workId: w.id }); }} className="toono-pressable"
-              style={{ flexShrink: 0, fontFamily: F, fontSize: 11, fontWeight: 700, letterSpacing: "0.04em", color: "#FFFFFF", background: T.accent, border: "none", borderRadius: 20, padding: "6px 14px", cursor: "pointer" }}>
-              Үзэх →
-            </button>
-          </div>
-          <div style={{ fontFamily: F, fontSize: 11.5, color: T.textDim, marginTop: 2 }}>{w.creator}</div>
-        </div>
+    <div style={{ padding: "18px 16px 16px" }}>
+      <div style={{ fontFamily: F, fontSize: "clamp(52px,16vw,108px)", fontWeight: 900, color: T.textH, lineHeight: 0.9, letterSpacing: "-0.04em", textTransform: "uppercase", transform: "scaleX(0.94)", transformOrigin: "left" }}>
+        Тооно
       </div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: 12, gap: 12 }}>
+        <div style={{ fontFamily: F, fontSize: 12, color: T.textSub, lineHeight: 1.5, maxWidth: 230 }}>
+          Монгол бүтээлчдийн дижитал зах — урлаг, дизайн, гар урлалыг нэг дороос.
+        </div>
+        <button type="button" onClick={() => nav("explore")} className="toono-pressable"
+          style={{ flexShrink: 0, fontFamily: F, fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", color: "#FFFFFF", background: T.textH, border: "none", borderRadius: 20, padding: "9px 18px", cursor: "pointer", textTransform: "uppercase" }}>
+          Үзэх →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── 모자이크 월 — 작품 콜라주 그리드 ───────────────────────────────────────────
+const MOSAIC_PATTERN = [
+  { col: "span 4", row: "span 2" },
+  { col: "span 2", row: "span 1" },
+  { col: "span 2", row: "span 1" },
+  { col: "span 2", row: "span 2" },
+  { col: "span 2", row: "span 1" },
+  { col: "span 2", row: "span 1" },
+  { col: "span 4", row: "span 1" },
+];
+
+function MosaicWall({ works, nav }) {
+  if (!works.length) return null;
+  return (
+    <div className="toono-mosaic">
+      {works.slice(0, 7).map((w, i) => {
+        const p = MOSAIC_PATTERN[i % MOSAIC_PATTERN.length];
+        return (
+          <div key={w.id} onClick={() => nav("work", { workId: w.id })} className="toono-mosaic-item toono-card-tap"
+            style={{ gridColumn: p.col, gridRow: p.row, cursor: "pointer", overflow: "hidden", position: "relative", background: T.s2 }}>
+            {w.images?.[0]
+              ? <img src={w.images[0]} alt={w.title} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+              : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}><Toono size={28} color={T.borderMid} /></div>}
+            {i === 0 && (
+              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "24px 12px 10px", background: "linear-gradient(to top, rgba(0,0,0,0.65), transparent)" }}>
+                <div style={{ fontFamily: F, fontSize: 9, fontWeight: 700, letterSpacing: "0.18em", color: "#fff", textTransform: "uppercase", marginBottom: 3 }}>{HERO_LABELS[0].label}</div>
+                <div style={{ fontFamily: F, fontSize: 14, fontWeight: 800, color: "#fff", letterSpacing: "-.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</div>
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -114,10 +131,10 @@ const CreatorChip = memo(function CreatorChip({ c, nav }) {
 // ── 섹션 헤더 ─────────────────────────────────────────────────────────────────
 function SectionLabel({ label, title, action, onAction }) {
   return (
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 14 }}>
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 16, paddingBottom: 10, borderBottom: `2px solid ${T.textH}` }}>
       <div>
         {label && <div style={{ fontFamily: F, fontSize: 10, fontWeight: 700, letterSpacing: "0.22em", color: T.accent, marginBottom: 4, textTransform: "uppercase" }}>{label}</div>}
-        <div style={{ fontFamily: F, fontSize: 22, fontWeight: 800, color: T.textH, lineHeight: 1.1, letterSpacing: "-0.02em" }}>{title}</div>
+        <div style={{ fontFamily: F, fontSize: "clamp(26px,7vw,36px)", fontWeight: 900, color: T.textH, lineHeight: 1, letterSpacing: "-0.03em", textTransform: "uppercase", transform: "scaleX(0.96)", transformOrigin: "left" }}>{title}</div>
       </div>
       {action && <button type="button" onClick={onAction} style={{ background: "none", border: "none", fontFamily: F, fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", color: T.accent, cursor: "pointer", flexShrink: 0, marginBottom: 4 }}>{action}</button>}
     </div>
@@ -203,9 +220,10 @@ export default function Home({ nav, refresh }) {
       <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none" }}>
         {loading ? <Skeleton /> : <>
 
-          {/* ── 스포트라이트 히어로 ── */}
+          {/* ── 마스트헤드 + 모자이크 월 ── */}
+          {selCat === "all" && <Masthead nav={nav} />}
           {heroWorks.length > 0 && selCat === "all" && (
-            <SpotlightHero works={heroWorks} nav={nav} />
+            <MosaicWall works={heroWorks.length >= 3 ? sorted.filter(w => w.images?.[0]) : heroWorks} nav={nav} />
           )}
 
           {/* ── 카테고리 아이콘 ── */}
@@ -258,12 +276,8 @@ export default function Home({ nav, refresh }) {
           {/* ── 크리에이터 ── */}
           {topCreators.length > 0 && selCat === "all" && (
             <div style={{ padding: "28px 0 20px", marginTop: 12, borderTop: `1px solid ${T.s2}` }}>
-              <div style={{ padding: "0 16px", marginBottom: 14 }}>
-                <div style={{ fontFamily: F, fontSize: 10, fontWeight: 700, letterSpacing: "0.22em", color: T.accent, marginBottom: 4, textTransform: "uppercase" }}>CREATORS</div>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div style={{ fontFamily: F, fontSize: 22, fontWeight: 800, color: T.textH, letterSpacing: "-.02em" }}>Бүтээлчид</div>
-                  <button type="button" onClick={() => nav("explore")} style={{ background: "none", border: "none", fontFamily: F, fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", color: T.accent, cursor: "pointer" }}>Бүгд →</button>
-                </div>
+              <div style={{ padding: "0 16px" }}>
+                <SectionLabel label="CREATORS" title="Бүтээлчид" action="Бүгд →" onAction={() => nav("explore")} />
               </div>
               <div style={{ display: "flex", gap: 14, overflowX: "auto", scrollbarWidth: "none", padding: "0 16px" }}>
                 {topCreators.map(c => <CreatorChip key={c.id} c={c} nav={nav} />)}
@@ -290,6 +304,15 @@ export default function Home({ nav, refresh }) {
               </div>
             </div>
           )}
+
+          {/* ── 매니페스토 바 ── */}
+          <div onClick={() => nav("upload")} className="toono-pressable"
+            style={{ margin: "32px 16px 0", padding: "30px 20px", background: T.textH, borderRadius: 4, cursor: "pointer", textAlign: "center" }}>
+            <div style={{ fontFamily: F, fontSize: "clamp(22px,6.5vw,34px)", fontWeight: 900, color: "#FFFFFF", letterSpacing: "-0.03em", textTransform: "uppercase", lineHeight: 1.15, transform: "scaleX(0.96)" }}>
+              Чи ч бүтээлчээ —<br />бүтээлээ нийтлээрэй
+            </div>
+            <div style={{ fontFamily: F, fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.6)", letterSpacing: "0.18em", marginTop: 12, textTransform: "uppercase" }}>Эхлэх →</div>
+          </div>
 
           <div style={{ height: 100 }} />
         </>}

@@ -11,6 +11,8 @@ import PBtn from "@/components/atoms/PBtn";
 import Empty from "@/components/atoms/Empty";
 import { toast } from "@/components/layout/Toast";
 
+const F = "'Helvetica Neue', Arial, sans-serif";
+
 export default function Portfolio({ nav, goBack }) {
   const [view, setView] = useState("grid");
   const [filter, setFilter] = useState("all");
@@ -92,18 +94,12 @@ export default function Portfolio({ nav, goBack }) {
 
   return <div style={{ height: "100%", display: "flex", flexDirection: "column", background: T.bg }}>
     {/* Header */}
-    <div style={{ padding: "20px 20px 12px", flexShrink: 0 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <button type="button" onClick={() => goBack ? goBack() : nav("me")} style={{ background: "none", border: "none", color: T.textH, cursor: "pointer", display: "flex" }}><IcBack /></button>
-          <div>
-            <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 24, fontWeight: 600, color: T.textH, letterSpacing: "-.01em" }}>Архив</div>
-            <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, color: T.textSub, marginTop: 2 }}>Миний бүтээлийн архив</div>
-          </div>
-        </div>
+    <div style={{ padding: "16px 20px 0", flexShrink: 0 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+        <button type="button" onClick={() => goBack ? goBack() : nav("me")} style={{ background: "none", border: "none", color: T.textH, cursor: "pointer", display: "flex" }}><IcBack /></button>
         <div style={{ display: "flex", gap: 8 }}>
           {bulkMode
-            ? <><button type="button" onClick={() => { setBulkMode(false); setSelected(new Set()); }} style={{ background: T.s1, border: `1px solid ${T.border}`, borderRadius: 10, padding: "8px 14px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: 600, color: T.textSub, cursor: "pointer" }}>Цуцлах</button>
+            ? <><button type="button" onClick={() => { setBulkMode(false); setSelected(new Set()); }} style={{ background: T.s1, border: `1px solid ${T.border}`, borderRadius: 10, padding: "8px 14px", fontFamily: F, fontSize: 12, fontWeight: 600, color: T.textSub, cursor: "pointer" }}>Цуцлах</button>
               {selected.size > 0 && <PBtn small danger onClick={() => {
                 const count = selected.size;
                 GS.myWorks = GS.myWorks.map(w => selected.has(w.id) ? { ...w, status: "archived" } : w);
@@ -123,43 +119,58 @@ export default function Portfolio({ nav, goBack }) {
         </div>
       </div>
 
+      {/* Headline */}
+      <div style={{ paddingBottom: 14, marginBottom: 14, borderBottom: `2px solid ${T.textH}` }}>
+        <div style={{ fontFamily: F, fontSize: 10, fontWeight: 700, letterSpacing: "0.22em", color: T.accent, marginBottom: 6, textTransform: "uppercase" }}>00 / Миний бүтээлийн архив</div>
+        <div style={{ fontFamily: F, fontSize: "clamp(38px,12vw,60px)", fontWeight: 900, color: T.textH, lineHeight: 0.95, letterSpacing: "-0.03em", textTransform: "uppercase", transform: "scaleX(0.94)", transformOrigin: "left" }}>Архив</div>
+      </div>
+
+      {/* Ticker */}
+      <div style={{ overflow: "hidden", background: T.textH, marginLeft: -20, marginRight: -20, marginBottom: 14 }}>
+        <div className="archive-ticker-track" style={{ fontFamily: F, fontSize: 11, fontWeight: 700, color: "#FFFFFF", letterSpacing: "0.14em", textTransform: "uppercase", padding: "7px 0" }}>
+          {`Нийт ${stats.total} бүтээл — ${stats.published} нийтлэгдсэн — ${stats.sales} борлуулалт — ${stats.views.toLocaleString()} үзэлт　·　`.repeat(2)}
+        </div>
+      </div>
+
       {/* Stats summary */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8, marginBottom: 14 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", border: `1px solid ${T.border}`, marginBottom: 14 }}>
         {[
           { v: stats.total, l: "Нийт", color: T.textH },
           { v: stats.published, l: "Нийтлэгдсэн", color: T.green },
           { v: stats.sales + "ш", l: "Борлуулалт", color: T.accent },
           { v: stats.views >= 1000 ? (stats.views / 1000).toFixed(1) + "K" : String(stats.views), l: "Үзэлт", color: T.yellow },
-        ].map((s, i) => <div key={i} style={{ background: T.s1, border: `1px solid ${T.border}`, borderRadius: 12, padding: "10px 0", textAlign: "center" }}>
-          <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 17, fontWeight: 800, color: s.color }}>{s.v}</div>
-          <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 10, color: T.textSub, marginTop: 2 }}>{s.l}</div>
+        ].map((s, i) => <div key={i} style={{ padding: "10px 4px", textAlign: "center", borderRight: i < 3 ? `1px solid ${T.border}` : "none" }}>
+          <div style={{ fontFamily: F, fontSize: 17, fontWeight: 900, color: s.color }}>{s.v}</div>
+          <div style={{ fontFamily: F, fontSize: 9, color: T.textSub, marginTop: 2, textTransform: "uppercase", letterSpacing: "0.06em" }}>{s.l}</div>
         </div>)}
       </div>
 
       {/* Search */}
-      <div style={{ background: T.s1, border: `1px solid ${T.border}`, borderRadius: 13, padding: "10px 14px", display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+      <div style={{ background: T.s1, border: `1px solid ${T.border}`, padding: "10px 14px", display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
         <IcSearch />
-        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Бүтээл, таг хайх..." style={{ background: "none", border: "none", outline: "none", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 14, color: T.textH, flex: 1 }} />
+        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Бүтээл, таг хайх..." style={{ background: "none", border: "none", outline: "none", fontFamily: F, fontSize: 14, color: T.textH, flex: 1 }} />
         {search && <button type="button" onClick={() => setSearch("")} style={{ background: "none", border: "none", cursor: "pointer", color: T.textSub, display: "flex" }}><IcX /></button>}
       </div>
     </div>
 
     {/* Filter toolbar */}
     <div style={{ padding: "0 20px 10px", flexShrink: 0 }}>
-      <div style={{ display: "flex", gap: 6, overflowX: "auto", scrollbarWidth: "none", marginBottom: 10 }}>
+      <div style={{ display: "flex", gap: 0, overflowX: "auto", scrollbarWidth: "none", marginBottom: 12, border: `1px solid ${T.textH}` }}>
         {[
-          ["all", "Бүгд (" + allWorks.length + ")"],
+          ["all", "Бүгд", allWorks.length],
           ["published", "Нийтлэгдсэн"],
           ["draft", "Ноорог"],
           ["archived", "Архив"],
           ["digital", "Дижитал"],
-        ].map(f => <button type="button" key={f[0]} onClick={() => setFilter(f[0])} style={{ flexShrink: 0, padding: "6px 13px", borderRadius: 20, cursor: "pointer", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, fontWeight: 600, background: filter === f[0] ? T.accent : T.s1, border: `1px solid ${filter === f[0] ? T.accent : T.border}`, color: filter === f[0] ? "#fff" : T.textSub, transition: "all .15s" }}>{f[1]}</button>)}
+        ].map((f, i) => <button type="button" key={f[0]} onClick={() => setFilter(f[0])} style={{ flexShrink: 0, padding: "8px 13px", cursor: "pointer", fontFamily: F, fontSize: 11, fontWeight: 700, letterSpacing: "0.04em", textTransform: "uppercase", background: filter === f[0] ? T.textH : "transparent", border: "none", borderLeft: i > 0 ? `1px solid ${T.textH}` : "none", color: filter === f[0] ? "#fff" : T.textH, transition: "all .15s" }}>
+          <span style={{ opacity: 0.5, marginRight: 5 }}>{String(i + 1).padStart(2, "0")}</span>{f[1]}{f[2] !== undefined ? ` (${f[2]})` : ""}
+        </button>)}
       </div>
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.textSub }}>{filtered.length} бүтээл</div>
+        <div style={{ fontFamily: F, fontSize: 11, color: T.textSub, textTransform: "uppercase", letterSpacing: "0.08em" }}>{filtered.length} бүтээл</div>
         <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-          <select value={sort} onChange={e => setSort(e.target.value)} style={{ background: T.s1, border: `1px solid ${T.border}`, borderRadius: 8, padding: "5px 10px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.textSub, outline: "none", cursor: "pointer" }}>
+          <select value={sort} onChange={e => setSort(e.target.value)} style={{ background: "none", border: `1px solid ${T.border}`, borderRadius: 0, padding: "5px 10px", fontFamily: F, fontSize: 11, fontWeight: 600, color: T.textH, outline: "none", cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.04em" }}>
             <option value="newest">Шинэ</option>
             <option value="oldest">Хуучин</option>
             <option value="popular">Алдартай</option>
@@ -169,7 +180,7 @@ export default function Portfolio({ nav, goBack }) {
             ["grid", <svg key="g" width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.3" /><rect x="9" y="1" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.3" /><rect x="1" y="9" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.3" /><rect x="9" y="9" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.3" /></svg>],
             ["list", <svg key="l" width="14" height="14" viewBox="0 0 16 16" fill="none"><line x1="1" y1="4" x2="15" y2="4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /><line x1="1" y1="8" x2="15" y2="8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /><line x1="1" y1="12" x2="15" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>],
             ["timeline", <svg key="t" width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="3" cy="4" r="2" stroke="currentColor" strokeWidth="1.3" /><circle cx="3" cy="12" r="2" stroke="currentColor" strokeWidth="1.3" /><line x1="3" y1="6" x2="3" y2="10" stroke="currentColor" strokeWidth="1.3" /><line x1="6" y1="4" x2="15" y2="4" stroke="currentColor" strokeWidth="1.3" /><line x1="6" y1="12" x2="15" y2="12" stroke="currentColor" strokeWidth="1.3" /></svg>],
-          ].map(([v, icon]) => <button type="button" key={v} onClick={() => setView(v)} style={{ width: 44, height: 44, background: "none", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}><span style={{ width: 32, height: 32, borderRadius: 8, background: view === v ? T.accent : T.s1, border: `1px solid ${view === v ? T.accent : T.border}`, display: "flex", alignItems: "center", justifyContent: "center", color: view === v ? "#fff" : T.textSub }}>{icon}</span></button>)}
+          ].map(([v, icon]) => <button type="button" key={v} onClick={() => setView(v)} style={{ width: 38, height: 38, background: "none", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}><span style={{ width: 30, height: 30, background: view === v ? T.textH : "transparent", border: `1px solid ${view === v ? T.textH : T.border}`, display: "flex", alignItems: "center", justifyContent: "center", color: view === v ? "#fff" : T.textSub }}>{icon}</span></button>)}
         </div>
       </div>
     </div>
@@ -178,46 +189,40 @@ export default function Portfolio({ nav, goBack }) {
     <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", padding: "0 20px" }}>
       {filtered.length === 0 && <Empty icon={<IcFolderEmpty />} title="Бүтээл олдсонгүй" sub="Хайлтаа өөрчилж үзнэ үү" />}
 
-      {/* GRID VIEW — bento gallery */}
-      {view === "grid" && filtered.length > 0 && <div className="bento-grid portfolio-gallery">
+      {/* GRID VIEW — archive index grid */}
+      {view === "grid" && filtered.length > 0 && <div className="archive-grid" style={{ "--archive-border": T.border, marginLeft: -20, marginRight: -20, marginBottom: -1 }}>
         {filtered.map((w, i) => {
-          const isFeatured = i === 0 || !!w.badge;
           const isSel = selected.has(w.id);
           const sc = statusCfg[w.digital ? "digital" : w.status] || statusCfg.published;
           const showBadge = w.status !== "published" || w.digital;
+          const tags = [w.cat || w.medium, w.year].filter(Boolean);
           return <div key={w.id}
             onClick={() => bulkMode ? toggleSelect(w.id) : setActiveWork(w)}
-            className={`bento-card toono-card-tap${isFeatured ? " bento-featured" : ""}`}
-            style={{ cursor: "pointer", "--i": Math.min(i, 11) }}>
-            <div style={{ position: "relative", width: "100%", aspectRatio: isFeatured ? "1/1" : "4/5", borderRadius: 10, overflow: "hidden", background: T.s2, border: isSel ? `2px solid ${T.accent}` : `1px solid #ECECEC` }}>
+            className="archive-cell toono-card-tap"
+            style={{ cursor: "pointer", background: isSel ? T.accentSub : "transparent" }}>
+            <div className="archive-cell-img" style={{ position: "relative", width: "100%", aspectRatio: "1/1", overflow: "hidden", background: T.s2 }}>
               {w.images?.[0]
-                ? <img src={w.images[0]} alt={w.title} loading="lazy" className="bento-card-img" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "transform .45s cubic-bezier(.22,1,.36,1)" }} />
-                : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}><Toono size={44} color={T.borderMid} /></div>}
-              {/* Glass overlay */}
-              <div className="bento-card-overlay" style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(17,17,17,0.55) 0%, transparent 55%)", display: "flex", alignItems: "flex-end", padding: 10, opacity: 0, transition: "opacity .3s ease", pointerEvents: "none" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, backdropFilter: "blur(6px)", background: "rgba(255,255,255,0.15)", borderRadius: 20, padding: "4px 10px" }}>
-                  <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, fontWeight: 600, color: "#fff" }}>{w.title}</span>
-                </div>
-              </div>
-              {showBadge && <div style={{ position: "absolute", top: 8, left: 8, background: "rgba(255,255,255,0.92)", borderRadius: 6, padding: "3px 8px" }}>
-                <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 9, fontWeight: 700, color: sc.color }}>{sc.label}</span>
+                ? <img src={w.images[0]} alt={w.title} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}><Toono size={36} color={T.borderMid} /></div>}
+              <div style={{ position: "absolute", top: 0, left: 0, fontFamily: F, fontSize: 10, fontWeight: 700, color: "#fff", background: "rgba(17,17,17,0.6)", padding: "3px 7px", letterSpacing: "0.04em" }}>{String(i + 1).padStart(2, "0")}</div>
+              {showBadge && <div style={{ position: "absolute", top: 0, right: 0, background: "rgba(255,255,255,0.92)", padding: "3px 8px" }}>
+                <span style={{ fontFamily: F, fontSize: 9, fontWeight: 700, color: sc.color, textTransform: "uppercase", letterSpacing: "0.04em" }}>{sc.label}</span>
               </div>}
-              {bulkMode && <div style={{ position: "absolute", top: 8, right: 8, width: 20, height: 20, borderRadius: "50%", background: isSel ? T.accent : "rgba(255,255,255,0.9)", border: `2px solid ${isSel ? T.accent : T.textDim}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              {bulkMode && <div style={{ position: "absolute", bottom: 6, right: 6, width: 20, height: 20, borderRadius: "50%", background: isSel ? T.accent : "rgba(255,255,255,0.9)", border: `2px solid ${isSel ? T.accent : T.textDim}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
                 {isSel && <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#fff" }} />}
               </div>}
             </div>
-            <div style={{ marginTop: 10, paddingRight: 4 }}>
-              <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13.5, fontWeight: 600, color: T.textH, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</div>
-              <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11.5, color: T.textDim, marginTop: 3, display: "flex", gap: 6, alignItems: "center" }}>
-                <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.cat || w.medium || "—"}</span>
-                {w.year ? <><span>·</span><span>{w.year}</span></> : null}
-              </div>
+            <div style={{ padding: "10px 10px 12px" }}>
+              <div style={{ fontFamily: F, fontSize: 13, fontWeight: 700, color: T.textH, lineHeight: 1.3, letterSpacing: "-.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 6 }}>{w.title}</div>
+              {tags.length > 0 && <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
+                {tags.map((t, ti) => <span key={ti} style={{ fontFamily: F, fontSize: 9, fontWeight: 600, color: T.textSub, border: `1px solid ${T.border}`, padding: "2px 6px", textTransform: "uppercase", letterSpacing: "0.05em" }}>{t}</span>)}
+              </div>}
             </div>
           </div>;
         })}
-        <button type="button" onClick={() => nav("upload")} style={{ aspectRatio: "4/5", borderRadius: 10, background: T.s1, border: `2px dashed ${T.border}`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", gap: 8 }}>
-          <div style={{ width: 38, height: 38, borderRadius: 12, background: T.accentSub, display: "flex", alignItems: "center", justifyContent: "center", color: T.accent, fontSize: 22 }}>+</div>
-          <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, color: T.textSub }}>Бүтээл нэмэх</span>
+        <button type="button" onClick={() => nav("upload")} className="archive-cell" style={{ background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, minHeight: 160 }}>
+          <div style={{ width: 32, height: 32, border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center", color: T.accent, fontSize: 18 }}>+</div>
+          <span style={{ fontFamily: F, fontSize: 10, color: T.textSub, textTransform: "uppercase", letterSpacing: "0.06em" }}>Бүтээл нэмэх</span>
         </button>
       </div>}
 
@@ -232,7 +237,7 @@ export default function Portfolio({ nav, goBack }) {
             {bulkMode && <div style={{ width: 20, height: 20, borderRadius: "50%", background: isSel ? T.accent : T.s2, border: `2px solid ${isSel ? T.accent : T.border}`, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
               {isSel && <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#fff" }} />}
             </div>}
-            <div style={{ width: 52, height: 52, borderRadius: 12, background: T.s2, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
+            <div style={{ width: 52, height: 52, borderRadius: 0, background: T.s2, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
               {w.images?.[0] ? <img src={w.images[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <Toono size={28} color={w.accent || `${T.textDim}`} />}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
@@ -266,19 +271,19 @@ export default function Portfolio({ nav, goBack }) {
       {/* TIMELINE VIEW */}
       {view === "timeline" && <div style={{ paddingTop: 8 }}>
         {Object.keys(byYear).sort((a, b) => +b - +a).map(year => <div key={year} style={{ marginBottom: 24 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
-            <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 20, fontWeight: 600, color: T.accent }}>{year}</div>
-            <div style={{ flex: 1, height: 1, background: T.accentGlow }} />
-            <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, color: T.textSub }}>{byYear[+year].length}ш</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14, paddingBottom: 8, borderBottom: `2px solid ${T.textH}` }}>
+            <div style={{ fontFamily: F, fontSize: "clamp(24px,7vw,34px)", fontWeight: 900, color: T.textH, letterSpacing: "-0.02em", transform: "scaleX(0.96)", transformOrigin: "left" }}>{year}</div>
+            <div style={{ flex: 1 }} />
+            <div style={{ fontFamily: F, fontSize: 10, color: T.textSub, textTransform: "uppercase", letterSpacing: "0.08em" }}>{byYear[+year].length}ш</div>
           </div>
-          <div style={{ paddingLeft: 16, borderLeft: `2px solid ${T.accentGlow}` }}>
+          <div style={{ paddingLeft: 16, borderLeft: `2px solid ${T.border}` }}>
             {byYear[+year].map((w) => {
               const sc = statusCfg[w.digital ? "digital" : w.status] || statusCfg.published;
               return <div key={w.id} onClick={() => setActiveWork(w)} style={{ position: "relative", marginBottom: 16, cursor: "pointer" }}>
                 <div style={{ position: "absolute", left: -22, top: 16, width: 12, height: 12, borderRadius: "50%", background: w.accent || `${T.textH}`, border: `2px solid ${T.bg}` }} />
                 <Crd style={{ padding: "14px 16px" }}>
                   <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-                    <div style={{ width: 52, height: 52, borderRadius: 12, background: T.s2, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
+                    <div style={{ width: 52, height: 52, borderRadius: 0, background: T.s2, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
                       {w.images?.[0] ? <img src={w.images[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <Toono size={28} color={w.accent || `${T.textDim}`} />}
                     </div>
                     <div style={{ flex: 1 }}>
