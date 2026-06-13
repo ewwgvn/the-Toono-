@@ -169,15 +169,12 @@ const WorkCard = memo(function WorkCard({ work: w, onClick, onCreatorClick, onTo
 
   // ── Default grid card — bento/motion ──
   const likeNum = w.likes || 0;
-  const [hovered, setHovered] = useState(false);
   const isFeatured = !!featured;
   const cardIndex = index ?? 0;
 
   return (
     <div
       onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
       className={`bento-card${isFeatured ? " bento-featured" : ""}`}
       style={{ cursor: "pointer", "--i": Math.min(cardIndex, 11) }}
     >
@@ -191,22 +188,18 @@ const WorkCard = memo(function WorkCard({ work: w, onClick, onCreatorClick, onTo
             className="bento-card-img"
             style={{
               width: "100%", height: "100%", objectFit: "cover", display: "block",
-              transition: "transform .45s cubic-bezier(.22,1,.36,1)",
-              transform: hovered ? "scale(1.06)" : "scale(1)",
             }}
           />
         ) : (
           <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: T.textSub, fontSize: 12, fontFamily: F }}>Зураг байхгүй</div>
         )}
-        {/* Glass overlay — always visible on mobile, hover-triggered on desktop via CSS */}
+        {/* Glass overlay — always visible on mobile (opacity .85 via CSS), hover-triggered on desktop via CSS */}
         <div
           className="bento-card-overlay"
           style={{
             position: "absolute", inset: 0,
             background: "linear-gradient(to top, rgba(17,17,17,0.55) 0%, transparent 55%)",
             display: "flex", alignItems: "flex-end", padding: 10,
-            opacity: hovered ? 1 : 0,
-            transition: "opacity .3s ease",
             pointerEvents: "none",
           }}
         >

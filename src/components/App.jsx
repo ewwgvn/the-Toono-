@@ -83,6 +83,7 @@ export default function App() {
   const [selectedCreatorId, setSelectedCreatorId] = useState(null);
   const [loginMode, setLoginMode] = useState("login");
   const [history, setHistory] = useState([]);
+  const [navDir, setNavDir] = useState("fade");
 
   const refresh = useCallback(() => setTick(t => t + 1), []);
 
@@ -192,17 +193,21 @@ export default function App() {
     if (s === "login" && data?.mode) setLoginMode(data.mode);
 
     if (tabs[s]) {
+      setNavDir("fade");
       setTab(s);
       setScreen("main");
       setHistory([]);
     } else if (s === "feed") {
+      setNavDir("fade");
       setTab("feed");
       setScreen("main");
       setHistory([]);
     } else if (s === "upload") {
+      setNavDir("forward");
       setHistory(h => [...h, { screen, tab }]);
       setScreen("upload");
     } else {
+      setNavDir("forward");
       setHistory(h => [...h, { screen, tab }]);
       setScreen(s);
     }
@@ -226,6 +231,7 @@ export default function App() {
   }, [screen, tab]);
 
   const goBack = useCallback(() => {
+    setNavDir("back");
     if (history.length > 0) {
       const prev = history[history.length - 1];
       setHistory(h => h.slice(0, -1));
@@ -335,7 +341,7 @@ export default function App() {
 
       {/* ── MAIN CONTENT ── */}
       <div className="toono-content" style={{ flex: 1, overflow: "hidden", position: "relative", width: "100%" }}>
-        <div key={screen + tab} style={{ height: "100%", animation: "fadeIn .2s ease" }}>
+        <div key={screen + tab} className={`screen-${navDir}`} style={{ height: "100%" }}>
           <ErrorBoundary>
             <Suspense fallback={<div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: T.textDim, fontFamily: F, fontSize: 13 }}>Loading...</div>}>
               {renderScreen()}
@@ -359,7 +365,7 @@ export default function App() {
             {item.id === "upload"
               ? <div style={{ width: 46, height: 46, borderRadius: "50%", background: T.accent, display: "flex", alignItems: "center", justifyContent: "center", marginTop: -18, color: "#FFFFFF", boxShadow: "0 4px 20px rgba(38,129,218,0.35)" }}><IcPlus /></div>
               : <>
-                <div style={{ position: "relative", width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div key={active ? `${item.id}-active` : item.id} className={active ? "nav-icon-active" : undefined} style={{ position: "relative", width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <span style={{ color: active ? T.accent : T.textDim, transition: "color .15s" }}><item.Ic /></span>
                   {item.badge > 0 && <div style={{ position: "absolute", top: -3, right: -6, minWidth: 14, height: 14, borderRadius: 7, background: T.red, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 3px", border: "1.5px solid #fff" }}><span style={{ fontFamily: F, fontSize: 8, fontWeight: 700, color: "#fff" }}>{item.badge}</span></div>}
                 </div>

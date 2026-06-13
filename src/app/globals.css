@@ -253,8 +253,15 @@ input[type="checkbox"], input[type="radio"] { -webkit-appearance: auto !importan
 
 /* ── Bento card hover ── */
 .bento-card { overflow: hidden; }
-.bento-card:hover .bento-card-img { transform: scale(1.06); }
-.bento-card:hover .bento-card-overlay { opacity: 1; }
+.bento-card-img { transition: transform .45s cubic-bezier(.22,1,.36,1); }
+/* Mobile/touch: glass overlay shown at rest so creator+like info is always readable */
+.bento-card-overlay { opacity: 0.85; transition: opacity .3s ease; }
+/* Hover-capable devices: hide overlay until hover, and zoom image on hover */
+@media (hover: hover) {
+  .bento-card-overlay { opacity: 0; }
+  .bento-card:hover .bento-card-img { transform: scale(1.06); }
+  .bento-card:hover .bento-card-overlay { opacity: 1; }
+}
 
 /* ── Stagger entrance animation (first 12 items) ── */
 .bento-grid > *, .portfolio-gallery > * { animation: fadeUp .5s ease both; animation-delay: calc(var(--i, 0) * 60ms); }
@@ -272,4 +279,22 @@ input[type="checkbox"], input[type="radio"] { -webkit-appearance: auto !importan
 @media (min-width: 768px) {
   .feed-single { padding: 18px 0; }
   .feed-single .feed-post { border: 1px solid #ECECEC; border-radius: 14px; overflow: hidden; margin-bottom: 18px; }
+}
+
+/* ── Screen transitions (direction-aware, "toono opening") ── */
+@keyframes screenSlideInRight { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes screenSlideInLeft { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: translateX(0); } }
+.screen-fade { animation: fadeIn .2s ease; }
+.screen-forward { animation: screenSlideInRight .28s cubic-bezier(.22,1,.36,1); }
+.screen-back { animation: screenSlideInLeft .28s cubic-bezier(.22,1,.36,1); }
+
+/* ── Bottom nav micro-interactions ── */
+@keyframes navIconPop { 0% { transform: scale(1); } 45% { transform: scale(1.22); } 100% { transform: scale(1); } }
+@keyframes navPipIn { from { opacity: 0; transform: scale(0.4); } to { opacity: 1; transform: scale(1); } }
+.nav-icon-active { animation: navIconPop .32s cubic-bezier(.34,1.56,.64,1); }
+.toono-nav-pip { animation: navPipIn .22s cubic-bezier(.34,1.56,.64,1); }
+
+/* ── Reduced motion (screen/nav motion) ── */
+@media (prefers-reduced-motion: reduce) {
+  .screen-fade, .screen-forward, .screen-back, .nav-icon-active, .toono-nav-pip { animation: none !important; }
 }
