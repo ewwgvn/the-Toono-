@@ -1,11 +1,12 @@
 "use client";
 
 import { T } from "@/theme/colors";
+import { a11yClick } from "@/lib/utils";
 
 export default function Crd({ children, onClick, style }) {
   return (
     <div
-      onClick={onClick}
+      {...a11yClick(onClick)}
       className={onClick ? "toono-card toono-card-tap" : "toono-card"}
       style={{
         background: T.bg,

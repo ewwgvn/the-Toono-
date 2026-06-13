@@ -23,7 +23,7 @@ class ErrorBoundary extends Component {
 import { T } from "@/theme/colors";
 import { GS, saveGS, loadGS, resetGS, getUnreadChat, getUnreadNotif } from "@/lib/store";
 import { DB, isSupabaseReady, initSupabase, syncFromSupabase, fetchPublicData } from "@/lib/supabase";
-import { getAllWorks, getCreators } from "@/lib/utils";
+import { getAllWorks, getCreators, a11yClick } from "@/lib/utils";
 import { IcHome, IcSearch, IcPlus, IcMsg, IcProfile, IcBell, IcCart, IcFeed } from "@/components/icons";
 import Toono from "@/components/atoms/Toono";
 import Toast from "@/components/layout/Toast";
@@ -300,7 +300,7 @@ export default function App() {
       {isMain && <div className="toono-desktop-nav" style={{ background: "#FFFFFF", borderBottom: `1px solid ${T.border}`, padding: "0 32px", position: "sticky", top: 0, zIndex: 100, justifyContent: "center" }}>
         <div style={{ maxWidth: "100%", width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", height: 56 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
-            <div onClick={() => nav("home")} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+            <div {...a11yClick(() => nav("home"))} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
               <img src="/uliger-world-logo.png?v=2" alt="Uliger World" style={{ height: 52, width: "auto", display: "block" }} />
             </div>
             <div style={{ display: "flex", gap: 4 }}>
@@ -316,7 +316,7 @@ export default function App() {
             </div>
           </div>
           <div style={{ flex: 1, maxWidth: 360, margin: "0 24px" }}>
-            <div onClick={() => nav("explore")} style={{ background: T.s2, border: `1px solid ${T.border}`, borderRadius: 8, padding: "8px 14px", display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+            <div {...a11yClick(() => nav("explore"))} style={{ background: T.s2, border: `1px solid ${T.border}`, borderRadius: 8, padding: "8px 14px", display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
               <IcSearch /><span style={{ fontFamily: F, fontSize: 13, color: T.textSub }}>Хайлт...</span>
             </div>
           </div>

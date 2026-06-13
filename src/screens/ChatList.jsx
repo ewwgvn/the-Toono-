@@ -9,30 +9,37 @@ import PBtn from "@/components/atoms/PBtn";
 import Crd from "@/components/atoms/Crd";
 import Avt from "@/components/atoms/Avt";
 import Empty from "@/components/atoms/Empty";
-import { toast } from "@/components/layout/Toast";
+import { getCreators, a11yClick } from "@/lib/utils";
 
 export default function ChatList({ nav, refresh, goBack }) {
   const [q,setQ]=useState("");
   const convos = GS.conversations;
   const [showNewChat,setShowNewChat]=useState(false);
+  const [creatorQ,setCreatorQ]=useState("");
 
-  const startNewChat = (name, accent) => {
-    const newConvo = {
-      id: Date.now(),
-      name: name,
-      accent: accent || T.accent,
-      online: false,
-      unread: 0,
-      msgs: [],
-    };
-    GS.conversations.unshift(newConvo);
-    GS.activeChatId = newConvo.id;
+  // Start (or resume) a conversation with an existing creator, linking it to the DB
+  const startNewChat = async (c) => {
+    let convo = GS.conversations.find(cv => cv.creatorId === c.id);
+    if (!convo) {
+      convo = { id: Date.now(), creatorId: c.id, name: c.name, accent: c.accent || T.accent, photo: c.photo || null, online: false, unread: 0, msgs: [] };
+      GS.conversations.unshift(convo);
+    }
+    if (isSupabaseReady() && GS.user.id && c.id && GS.user.id !== c.id) {
+      const dbConvo = await DB.getOrCreateConversation(GS.user.id, c.id);
+      if (dbConvo) convo.dbId = dbConvo.id;
+    }
+    GS.activeChatId = convo.id;
     setShowNewChat(false);
+    setCreatorQ("");
+    saveGS();
     refresh();
     nav("chatroom");
   };
   const fl=q?convos.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())):convos;
   const total=convos.reduce((s,c)=>s+c.unread,0);
+  const creatorOptions = getCreators()
+    .filter(c=>c.id!==GS.user.id)
+    .filter(c=>!creatorQ||c.name.toLowerCase().includes(creatorQ.toLowerCase()));
 
   // Subscribe to conversation updates (new messages → increment unread badge)
   useEffect(() => {
@@ -89,10 +96,22 @@ export default function ChatList({ nav, refresh, goBack }) {
     {showNewChat&&<div style={{padding:"0 20px 14px"}}>
       <Crd style={{padding:"14px 16px"}}>
         <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,fontWeight:700,color:T.textH,marginBottom:10}}>Шинэ харилцаа эхлэх</div>
-        <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.textSub,marginBottom:12}}>Бүтээлчийн нэрийг бичнэ үү</div>
-        <div style={{display:"flex",gap:8}}>
-          <input id="newChatName" placeholder="Нэр..." style={{flex:1,background:T.s2,border:`1px solid ${T.border}`,borderRadius:10,padding:"10px 14px",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,color:T.textH,outline:"none"}}/>
-          <button type="button" onClick={()=>{const inp=document.getElementById("newChatName");if(inp?.value.trim())startNewChat(inp.value.trim());else toast("Нэр оруулна уу","error");}} style={{background:T.accent,border:"none",borderRadius:10,padding:"10px 18px",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,fontWeight:600,color:"#fff",cursor:"pointer"}}>Эхлэх</button>
+        <div style={{background:T.s2,border:`1px solid ${T.border}`,borderRadius:10,padding:"9px 12px",display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
+          <span style={{color:T.textSub,display:"flex"}}><IcSearch/></span>
+          <input value={creatorQ} onChange={e=>setCreatorQ(e.target.value)} placeholder="Бүтээлч хайх..." style={{background:"none",border:"none",outline:"none",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,color:T.textH,flex:1}}/>
+        </div>
+        <div style={{maxHeight:240,overflowY:"auto",display:"flex",flexDirection:"column",gap:2}}>
+          {creatorOptions.length===0
+            ? <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.textSub,padding:"10px 0",textAlign:"center"}}>Бүтээлч олдсонгүй</div>
+            : creatorOptions.map(c=>(
+              <button key={c.id} type="button" onClick={()=>startNewChat(c)} style={{display:"flex",alignItems:"center",gap:10,padding:"8px",borderRadius:10,background:"none",border:"none",cursor:"pointer",textAlign:"left",width:"100%"}}>
+                <Avt size={36} color={c.accent} photo={c.photo}/>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,fontWeight:600,color:T.textH,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.name}</div>
+                  <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:11,color:T.textSub}}>{c.field||"Бүтээлч"}</div>
+                </div>
+              </button>
+            ))}
         </div>
       </Crd>
     </div>}
@@ -103,7 +122,7 @@ export default function ChatList({ nav, refresh, goBack }) {
           const lastMsg = c.msgs[c.msgs.length-1];
           const lastText = lastMsg?.img?"📷 Зураг":lastMsg?.text||"";
           const lastTime = lastMsg?.time||"";
-          return <div key={c.id} onClick={()=>openChat(c)} className="toono-pressable" style={{padding:"13px 20px",display:"flex",alignItems:"center",gap:14,cursor:"pointer",borderBottom:`1px solid ${T.border}`,background:c.unread>0?"rgba(17,17,17,0.03)":"transparent"}}>
+          return <div key={c.id} {...a11yClick(()=>openChat(c))} className="toono-pressable" style={{padding:"13px 20px",display:"flex",alignItems:"center",gap:14,cursor:"pointer",borderBottom:`1px solid ${T.border}`,background:c.unread>0?T.accentSub:"transparent"}}>
           <div style={{position:"relative",flexShrink:0}}>
             <Avt size={52} color={c.accent} photo={c.photo}/>
             {c.online&&<div style={{position:"absolute",bottom:1,right:1,width:14,height:14,borderRadius:"50%",background:T.green,border:`2.5px solid ${T.bg}`}}/>}

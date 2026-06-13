@@ -10,6 +10,7 @@ import {
 import PBtn from "@/components/atoms/PBtn";
 import Empty from "@/components/atoms/Empty";
 import Simple from "@/components/layout/Simple";
+import { a11yClick } from "@/lib/utils";
 
 export default function Notifications({ nav, refresh }) {
   const iconMap = { sale: <IcMoney />, comm: <IcCommission />, follow: <IcProfile />, like: <IcHeart />, upload: <IcUpload />, money: <IcMoney /> };
@@ -71,7 +72,7 @@ export default function Notifications({ nav, refresh }) {
       {notis.length === 0
         ? <Empty icon={<IcBell />} title="Мэдэгдэл байхгүй" sub="Шинэ мэдэгдэл ирэхэд энд харагдана" />
         : <div style={{ paddingTop: 6 }}>{notis.map(n => (
-          <div key={n.id} onClick={() => markOne(n)} className="toono-pressable" style={{ padding: "13px 12px", marginBottom: 4, display: "flex", gap: 13, alignItems: "flex-start", borderRadius: 14, background: n.read ? "transparent" : "rgba(17,17,17,0.03)", cursor: "pointer" }}>
+          <div key={n.id} {...a11yClick(() => markOne(n))} className="toono-pressable" style={{ padding: "13px 12px", marginBottom: 4, display: "flex", gap: 13, alignItems: "flex-start", borderRadius: 14, background: n.read ? "transparent" : T.accentSub, cursor: "pointer" }}>
             <div style={{ width: 42, height: 42, borderRadius: 14, background: n.read ? T.s2 : T.textH, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color: n.read ? T.textDim : "#fff" }}>{iconMap[n.icon] || <IcBell />}</div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: "flex", justifyContent: "space-between", gap: 8, marginBottom: 3 }}>

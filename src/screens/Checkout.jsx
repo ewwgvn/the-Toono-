@@ -349,7 +349,7 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
       {step === 1 && method === "bank" && (
         <div style={{ border: `1px solid ${T.border}`, borderRadius: 12, padding: 20, marginTop: 12 }}>
           <div style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: T.textH, marginBottom: 12 }}>Банкны шилжүүлгийн мэдээлэл</div>
-          {[["Банк", "Хаан Банк"], ["Дансны дугаар", "5000XXXXXXXX"], ["Хүлээн авагч", "TOONO LLC"], ["Гүйлгээний утга", `ORDER-${Date.now().toString().slice(-6)}`]].map(([k, v]) => (
+          {[["Банк", "Хаан Банк"], ["Дансны дугаар", "5000XXXXXXXX"], ["Хүлээн авагч", "ULIGER WORLD LLC"], ["Гүйлгээний утга", `ORDER-${Date.now().toString().slice(-6)}`]].map(([k, v]) => (
             <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: `1px solid ${T.borderLight}` }}>
               <span style={{ fontFamily: F, fontSize: 12, color: T.textSub }}>{k}</span>
               <span style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: T.textH }}>{v}</span>
@@ -403,7 +403,7 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
         <div style={{ border: `1px solid ${T.border}`, borderRadius: 8, padding: 16, marginBottom: 16, background: T.s2 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
             <IcShield />
-            <span style={{ fontFamily: F, fontSize: 13, fontWeight: 700, color: T.textH }}>TOONO хамгаалалт</span>
+            <span style={{ fontFamily: F, fontSize: 13, fontWeight: 700, color: T.textH }}>Uliger хамгаалалт</span>
           </div>
           {[
             ["Эскроуд хадгалах дүн", "₮" + total.toLocaleString()],

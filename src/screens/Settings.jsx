@@ -8,25 +8,26 @@ import {
   IcOrder, IcInfo, IcShield, IcX, IcChevron, IcCommission, IcMoney, IcGift,
 } from "@/components/icons";
 import Simple from "@/components/layout/Simple";
+import { a11yClick } from "@/lib/utils";
 
 const F = "'Helvetica Neue', Arial, sans-serif";
 
 export default function Settings({ nav, refresh }) {
   const Sec = ({ title, items }) => (
     <div style={{ marginBottom: 22 }}>
-      <div style={{ fontFamily: F, fontSize: 11, fontWeight: 600, color: "#767676", letterSpacing: ".08em", textTransform: "uppercase", marginBottom: 8 }}>{title}</div>
+      <div style={{ fontFamily: F, fontSize: 11, fontWeight: 600, color: T.textDim, letterSpacing: ".08em", textTransform: "uppercase", marginBottom: 8 }}>{title}</div>
       <div style={{ border: `1px solid ${T.borderLight}`, borderRadius: 8, overflow: "hidden" }}>
         {items.map((item, i) => (
-          <div key={item.label} style={{ padding: "13px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: i < items.length - 1 ? `1px solid ${T.borderLight}` : "none", cursor: item.action ? "pointer" : "default" }} onClick={item.action}>
+          <div key={item.label} style={{ padding: "13px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: i < items.length - 1 ? `1px solid ${T.borderLight}` : "none", cursor: item.action ? "pointer" : "default" }} {...a11yClick(item.action)}>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <div style={{ width: 32, height: 32, borderRadius: 8, background: T.s2, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color: item.danger ? "#D32F2F" : "#111111" }}>{item.icon}</div>
+              <div style={{ width: 32, height: 32, borderRadius: 8, background: T.s2, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color: item.danger ? T.red : T.textH }}>{item.icon}</div>
               <div>
-                <div style={{ fontFamily: F, fontSize: 14, fontWeight: 500, color: item.danger ? "#D32F2F" : "#111111" }}>{item.label}</div>
-                {item.sub && <div style={{ fontFamily: F, fontSize: 11, color: "#767676", marginTop: 1 }}>{item.sub}</div>}
+                <div style={{ fontFamily: F, fontSize: 14, fontWeight: 500, color: item.danger ? T.red : T.textH }}>{item.label}</div>
+                {item.sub && <div style={{ fontFamily: F, fontSize: 11, color: T.textDim, marginTop: 1 }}>{item.sub}</div>}
               </div>
             </div>
-            {item.val ? <span style={{ fontFamily: F, fontSize: 13, color: "#767676" }}>{item.val}</span>
-              : !item.noArrow && <span style={{ color: "#767676" }}><IcChevron /></span>}
+            {item.val ? <span style={{ fontFamily: F, fontSize: 13, color: T.textDim }}>{item.val}</span>
+              : !item.noArrow && <span style={{ color: T.textDim }}><IcChevron /></span>}
           </div>
         ))}
       </div>

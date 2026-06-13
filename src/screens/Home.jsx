@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, memo } from "react";
 import { GS, saveGS } from "@/lib/store";
 import { T } from "@/theme/colors";
 import { DB, isSupabaseReady, fetchPublicData } from "@/lib/supabase";
-import { getAllWorks, getCreators, fmtP } from "@/lib/utils";
+import { getAllWorks, getCreators, fmtP, a11yClick } from "@/lib/utils";
 import Toono from "@/components/atoms/Toono";
 import {
   IcCart, IcBell, IcSearch, IcHeart,
@@ -114,7 +114,7 @@ function MosaicWall({ works, nav }) {
           const w = works[i];
           const radius = t.shape === "rect" ? 12 : "50%";
           return (
-            <div key={w.id} onClick={() => nav("work", { workId: w.id })} className="toono-card-tap"
+            <div key={w.id} {...a11yClick(() => nav("work", { workId: w.id }))} className="toono-card-tap"
               style={{
                 position: "absolute", left: t.x, top: t.y, width: t.w, height: t.h,
                 borderRadius: radius, overflow: "hidden", cursor: "pointer",
@@ -127,7 +127,7 @@ function MosaicWall({ works, nav }) {
           );
         })}
       </div>
-      <div onClick={() => nav("explore")} className="toono-pressable"
+      <div {...a11yClick(() => nav("explore"))} className="toono-pressable"
         style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 16, marginLeft: 12, cursor: "pointer" }}>
         <div style={{ width: 28, height: 28, borderRadius: "50%", background: T.s2, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 8H13M13 8L9 4M13 8L9 12" stroke={T.accent} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -165,7 +165,7 @@ function CategoryRow({ selCat, setSelCat }) {
 const CreatorChip = memo(function CreatorChip({ c, nav }) {
   const thumb = c.photo;
   return (
-    <div onClick={() => nav("profile", { creatorId: c.id })} className="toono-pressable" style={{ flexShrink: 0, cursor: "pointer", width: 68, textAlign: "center" }}>
+    <div {...a11yClick(() => nav("profile", { creatorId: c.id }))} className="toono-pressable" style={{ flexShrink: 0, cursor: "pointer", width: 68, textAlign: "center" }}>
       <div style={{ width: 56, height: 56, borderRadius: "50%", overflow: "hidden", background: T.s2, margin: "0 auto 6px", border: `1.5px solid ${T.border}` }}>
         {thumb
           ? <img src={thumb} alt={c.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -283,7 +283,7 @@ export default function Home({ nav, refresh }) {
               <SectionLabel label="TRENDING NOW" title="Алдартай бүтээл" action="Бүгд →" onAction={() => nav("explore")} />
               <div style={{ display: "flex", gap: 12, overflowX: "auto", scrollbarWidth: "none", marginLeft: -16, marginRight: -16, paddingLeft: 16, paddingRight: 16 }}>
                 {popular.map(w => (
-                  <div key={w.id} onClick={() => nav("work", { workId: w.id })} className="toono-card-tap" style={{ flexShrink: 0, width: 148, cursor: "pointer" }}>
+                  <div key={w.id} {...a11yClick(() => nav("work", { workId: w.id }))} className="toono-card-tap" style={{ flexShrink: 0, width: 148, cursor: "pointer" }}>
                     <div style={{ width: 148, background: T.s2, borderRadius: 10, overflow: "hidden", marginBottom: 9 }}>
                       {w.images?.[0]
                         ? <img src={w.images[0]} alt={w.title} loading="lazy" style={{ width: "100%", aspectRatio: "3/4", objectFit: "cover", display: "block" }} />
@@ -339,7 +339,7 @@ export default function Home({ nav, refresh }) {
               <SectionLabel label="RECENTLY VIEWED" title="Сүүлд үзсэн" />
               <div style={{ display: "flex", gap: 10, overflowX: "auto", scrollbarWidth: "none", marginLeft: -16, marginRight: -16, paddingLeft: 16, paddingRight: 16 }}>
                 {recentlyViewed.map(w => (
-                  <div key={w.id} onClick={() => nav("work", { workId: w.id })} className="toono-card-tap" style={{ flexShrink: 0, width: 100, cursor: "pointer" }}>
+                  <div key={w.id} {...a11yClick(() => nav("work", { workId: w.id }))} className="toono-card-tap" style={{ flexShrink: 0, width: 100, cursor: "pointer" }}>
                     <div style={{ width: 100, height: 100, borderRadius: 10, overflow: "hidden", background: T.s2, marginBottom: 6 }}>
                       {w.images?.[0]
                         ? <img src={w.images[0]} alt={w.title} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -354,7 +354,7 @@ export default function Home({ nav, refresh }) {
           )}
 
           {/* ── 매니페스토 바 ── */}
-          <div onClick={() => nav("upload")} className="toono-pressable"
+          <div {...a11yClick(() => nav("upload"))} className="toono-pressable"
             style={{ margin: "32px 16px 0", padding: "28px 22px", background: `linear-gradient(135deg, ${T.accent}, ${T.accentHover})`, borderRadius: 20, cursor: "pointer", textAlign: "center" }}>
             <div style={{ fontFamily: F, fontSize: "clamp(20px,5.5vw,28px)", fontWeight: 800, color: "#FFFFFF", letterSpacing: "-0.02em", lineHeight: 1.35 }}>
               Чи ч бүтээлчээ —<br />бүтээлээ нийтлээрэй

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { T } from "@/theme/colors";
 import { GS, saveGS } from "@/lib/store";
 import { DB, isSupabaseReady } from "@/lib/supabase";
-import { getAllWorks, getCreators, fmtP, creatorPhotoOf } from "@/lib/utils";
+import { getAllWorks, getCreators, fmtP, creatorPhotoOf, a11yClick } from "@/lib/utils";
 import {
   IcBack, IcHeart, IcBookmark, IcShare, IcReport, IcX,
   IcChevron, IcMsg, IcCart, IcBell, IcCommission,
@@ -118,7 +118,7 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
       <div className="wd-img-col">
       {/* Hero image / gallery */}
       {w.images?.length>0
-        ?<div style={{margin:"0 20px",borderRadius:20,overflow:"hidden",position:"relative",cursor:"zoom-in",background:T.s2}} onClick={()=>setZoomOpen(true)}
+        ?<div style={{margin:"0 20px",borderRadius:20,overflow:"hidden",position:"relative",cursor:"zoom-in",background:T.s2}} {...a11yClick(()=>setZoomOpen(true))}
           onTouchStart={e=>setTouchStart(e.touches[0].clientX)}
           onTouchEnd={e=>{if(!touchStart)return;const diff=e.changedTouches[0].clientX-touchStart;if(Math.abs(diff)>50){e.stopPropagation();if(diff<0&&imgIdx<w.images.length-1)setImgIdx(imgIdx+1);if(diff>0&&imgIdx>0)setImgIdx(imgIdx-1);setZoomOpen(false);}setTouchStart(null);}}>
           <img
@@ -212,7 +212,7 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
           return <div style={{marginTop:4}}>
             <div style={{fontFamily:F,fontSize:30,fontWeight:700,color:T.textH,marginBottom:12,lineHeight:1}}>Бүтээлчийн бусад бүтээл</div>
             <div style={{display:"flex",gap:12,overflowX:"auto",scrollbarWidth:"none"}}>
-              {more.map(ww=><div key={ww.id} onClick={()=>nav("work",{workId:ww.id})} className="toono-card-tap" style={{flexShrink:0,width:130,cursor:"pointer"}}>
+              {more.map(ww=><div key={ww.id} {...a11yClick(()=>nav("work",{workId:ww.id}))} className="toono-card-tap" style={{flexShrink:0,width:130,cursor:"pointer"}}>
                 <div style={{width:130,height:160,borderRadius:14,background:T.s2,display:"flex",alignItems:"center",justifyContent:"center",marginBottom:7,overflow:"hidden"}}>
                   {ww.images?.[0] ? <img src={ww.images[0]} alt={ww.title} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover"}}/> : <Toono size={40} color={T.border}/>}
                 </div>

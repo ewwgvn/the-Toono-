@@ -19,6 +19,7 @@ export default function Upload({ nav, goBack }) {
   const [cat, setCat] = useState(editingWork?.cat || "");
   const [saleType, setSaleType] = useState(editingWork?.saleType || "sale");
   const [loading, setLoading] = useState(false);
+  const [draftLoading, setDraftLoading] = useState(false);
   // Each item: { type, url, name, uploading?, _tid? }
   // url is a Storage https:// URL after upload, or base64 fallback when Supabase is offline
   const [mediaFiles, setMediaFiles] = useState(editingWork?.images?.map(img => ({ type: "image", url: img, name: "existing" })) || []);
@@ -100,6 +101,133 @@ export default function Upload({ nav, goBack }) {
 
   const removeMedia = (idx) => setMediaFiles(prev => prev.filter((_, i) => i !== idx));
 
+  // Build the work record and persist (to GS + Supabase) as either a draft or a published work
+  const doSave = async (targetStatus) => {
+    if (targetStatus === "published") {
+      if (!title || !desc || !cat) { toast("Нэр, тайлбар, ангилал бөглөнө үү", "error"); return; }
+      if (mediaFiles.length === 0) { toast("Дор хаяж 1 зураг оруулна уу", "error"); return; }
+      if (saleType === "sale" && !price) { toast("Үнэ оруулна уу", "error"); return; }
+    } else if (!title && mediaFiles.length === 0) {
+      toast("Гарчиг эсвэл зураг нэмж ноорог хадгална уу", "error");
+      return;
+    }
+    if (mediaFiles.some(f => f.uploading)) { toast("Зургуудыг байршуулж байна, хүлээнэ үү...", "error"); return; }
+
+    const setBusy = targetStatus === "draft" ? setDraftLoading : setLoading;
+    setBusy(true);
+    try {
+      let imageUrls = mediaFiles.map(f => f.url);
+      let videoUrl = videoFile ? videoFile.url : null;
+      if (isSupabaseReady() && GS.user.id) {
+        const prefix = `${GS.user.id}/${Date.now()}`;
+        // Only upload new (base64) images, keep existing HTTP URLs as-is
+        const uploaded = await Promise.all(
+          mediaFiles.map((f, i) => {
+            if (!f.url.startsWith("data:")) return Promise.resolve(f.url);
+            return DB.uploadFile('works', `${prefix}_${i}.jpg`, f.url);
+          })
+        );
+        const storageOk = uploaded.some(u => u !== null);
+        if (!storageOk && uploaded.length > 0) {
+          if (process.env.NODE_ENV === "development") console.warn('[Upload] Storage failed — using compressed base64 fallback.');
+        }
+        imageUrls = uploaded.map((url, i) => url || mediaFiles[i].url);
+        if (videoFile && videoFile.url.startsWith("data:")) {
+          const vUrl = await DB.uploadFile('works', `${prefix}_video.mp4`, videoFile.url);
+          if (vUrl) videoUrl = vUrl;
+        }
+      }
+      const accentPalette = ["#3A6FD8", `${T.textSub}`, "#3A9A60", "#D45A30", "#1A7AB0", "#C05090"];
+      const accent = accentPalette[(title || "").split("").reduce((s, c) => s + c.charCodeAt(0), 0) % accentPalette.length];
+      const tagList = tags ? tags.split(",").map(t => t.trim()).filter(Boolean) : [];
+      const newWork = {
+        id: Date.now(),
+        title: title || "Гарчиггүй ноорог", cat,
+        year: new Date().getFullYear(),
+        status: targetStatus,
+        price: saleType === "sale" ? Number(price) || 0 : 0,
+        sales: 0, views: 0, likes: 0,
+        digital: saleType === "sale" && !stock,
+        medium: material || "",
+        material: material || "",
+        dims: "",
+        tags: tagList,
+        accent,
+        desc,
+        badge: saleType === "sample" ? "Захиалга" : null,
+        sizes: [], colors: [],
+        stock: Number(stock) || 1,
+        duration: duration || "",
+        creator: GS.user.name,
+        creator_id: GS.user.id,
+        cid: GS.user.id,
+        images: imageUrls,
+        video: videoUrl,
+      };
+      if (GS.user.id) {
+        const workPayload = {
+          creator_id: GS.user.id,
+          title: newWork.title,
+          description: newWork.desc || "",
+          category: newWork.cat || "",
+          price: newWork.price || 0,
+          material: newWork.material || "",
+          medium: newWork.medium || "",
+          dimensions: newWork.duration || "",
+          tags: newWork.tags || [],
+          sizes: [], colors: [],
+          images: newWork.images || [],
+          video: newWork.video || null,
+          digital: newWork.digital || false,
+          stock: newWork.stock || 1,
+          badge: newWork.badge || null,
+          status: targetStatus,
+          accent: newWork.accent || `${T.textH}`,
+        };
+        if (isSupabaseReady()) {
+          const { data, error } = await supabase.from('works').insert(workPayload).select().single();
+          if (data) {
+            newWork.id = data.id;
+          } else {
+            const sqId = SQ.push('createWork', workPayload);
+            newWork._sqId = sqId;
+            if (error && process.env.NODE_ENV === "development") console.error('[Upload] createWork:', error.code);
+          }
+        } else {
+          const sqId = SQ.push('createWork', workPayload);
+          newWork._sqId = sqId;
+        }
+      }
+      if (editingWork) {
+        // Update existing work
+        GS.myWorks = GS.myWorks.map(w => w.id === editingWork.id ? { ...w, ...newWork, id: editingWork.id } : w);
+        if (targetStatus === "published") {
+          GS.notifications.unshift({ id: Date.now(), icon: "upload", title: "Бүтээл шинэчлэгдлээ", desc: `"${newWork.title}" амжилттай шинэчлэгдлээ.`, time: "Сая", read: true, to: "portfolio" });
+        }
+      } else {
+        GS.myWorks.unshift(newWork);
+        if (typeof WORKS !== "undefined") WORKS.unshift(newWork);
+        if (targetStatus === "published") {
+          GS.notifications.unshift({ id: Date.now(), icon: "upload", title: "Бүтээл байршлаа", desc: `"${newWork.title}" амжилттай нийтлэгдлээ.`, time: "Сая", read: true, to: "portfolio" });
+        }
+      }
+      GS.user.works = GS.myWorks.length;
+      GS.editingWorkId = null;
+      saveGS();
+      if (targetStatus === "draft") {
+        toast(editingWork ? "Ноорог шинэчлэгдлээ" : "Ноорог хадгалагдлаа", "success");
+        nav("portfolio");
+      } else {
+        nav("me");
+      }
+    } catch (e) {
+      if (process.env.NODE_ENV === "development") console.error(e);
+      toast("Хадгалах үед алдаа гарлаа", "error");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return <div style={{ height: "100%", display: "flex", flexDirection: "column", background: T.bg }}>
     {cropWorkSrc && <ImageCropper src={cropWorkSrc} aspect="square" allowRatioChange={true} onDone={(cropped) => {
       if (cropWorkIdx >= 0) setMediaFiles(prev => prev.map((f, i) => i === cropWorkIdx ? { ...f, url: cropped } : f));
@@ -114,7 +242,7 @@ export default function Upload({ nav, goBack }) {
         } else { GS.editingWorkId = null; goBack ? goBack() : nav("me"); }
       }} style={{ background: "none", border: "none", color: T.textH, cursor: "pointer", display: "flex" }}><IcBack /></button>
       <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 18, fontWeight: 700, color: T.textH }}>{editingWork ? "Бүтээл засах" : "Бүтээл байршуулах"}</div>
-      <PBtn small secondary onClick={() => { /* toast placeholder */ }}>Түр хадгалах</PBtn>
+      <PBtn small secondary loading={draftLoading} onClick={() => doSave("draft")}>Түр хадгалах</PBtn>
     </div>
 
     {/* Step indicator */}
@@ -251,113 +379,7 @@ export default function Upload({ nav, goBack }) {
           </div>
         </div>
 
-        <PBtn full loading={loading} onClick={async () => {
-          if (saleType === "sale" && !price) { toast("Үнэ оруулна уу", "error"); return; }
-          if (mediaFiles.some(f => f.uploading)) { toast("Зургуудыг байршуулж байна, хүлээнэ үү...", "error"); return; }
-          setLoading(true);
-          try {
-            let imageUrls = mediaFiles.map(f => f.url);
-            let videoUrl = videoFile ? videoFile.url : null;
-            if (isSupabaseReady() && GS.user.id) {
-              const prefix = `${GS.user.id}/${Date.now()}`;
-              // Only upload new (base64) images, keep existing HTTP URLs as-is
-              const uploaded = await Promise.all(
-                mediaFiles.map((f, i) => {
-                  if (!f.url.startsWith("data:")) return Promise.resolve(f.url);
-                  return DB.uploadFile('works', `${prefix}_${i}.jpg`, f.url);
-                })
-              );
-              const storageOk = uploaded.some(u => u !== null);
-              if (!storageOk && uploaded.length > 0) {
-                if (process.env.NODE_ENV === "development") console.warn('[Upload] Storage failed — using compressed base64 fallback.');
-              }
-              imageUrls = uploaded.map((url, i) => url || mediaFiles[i].url);
-              if (videoFile && videoFile.url.startsWith("data:")) {
-                const vUrl = await DB.uploadFile('works', `${prefix}_video.mp4`, videoFile.url);
-                if (vUrl) videoUrl = vUrl;
-              }
-            }
-            const accentPalette = ["#3A6FD8", `${T.textSub}`, "#3A9A60", "#D45A30", "#1A7AB0", "#C05090"];
-            const accent = accentPalette[(title || "").split("").reduce((s, c) => s + c.charCodeAt(0), 0) % accentPalette.length];
-            const tagList = tags ? tags.split(",").map(t => t.trim()).filter(Boolean) : [];
-            const newWork = {
-              id: Date.now(),
-              title, cat,
-              year: new Date().getFullYear(),
-              status: "published",
-              price: saleType === "sale" ? Number(price) : 0,
-              sales: 0, views: 0, likes: 0,
-              digital: saleType === "sale" && !stock,
-              medium: material || "",
-              material: material || "",
-              dims: "",
-              tags: tagList,
-              accent,
-              desc,
-              badge: saleType === "sample" ? "Захиалга" : null,
-              sizes: [], colors: [],
-              stock: Number(stock) || 1,
-              duration: duration || "",
-              creator: GS.user.name,
-              creator_id: GS.user.id,
-              cid: GS.user.id,
-              images: imageUrls,
-              video: videoUrl,
-            };
-            if (GS.user.id) {
-              const workPayload = {
-                creator_id: GS.user.id,
-                title: newWork.title,
-                description: newWork.desc || "",
-                category: newWork.cat || "",
-                price: newWork.price || 0,
-                material: newWork.material || "",
-                medium: newWork.medium || "",
-                dimensions: newWork.duration || "",
-                tags: newWork.tags || [],
-                sizes: [], colors: [],
-                images: newWork.images || [],
-                video: newWork.video || null,
-                digital: newWork.digital || false,
-                stock: newWork.stock || 1,
-                badge: newWork.badge || null,
-                status: "published",
-                accent: newWork.accent || `${T.textH}`,
-              };
-              if (isSupabaseReady()) {
-                const { data, error } = await supabase.from('works').insert(workPayload).select().single();
-                if (data) {
-                  newWork.id = data.id;
-                } else {
-                  const sqId = SQ.push('createWork', workPayload);
-                  newWork._sqId = sqId;
-                  if (error && process.env.NODE_ENV === "development") console.error('[Upload] createWork:', error.code);
-                }
-              } else {
-                const sqId = SQ.push('createWork', workPayload);
-                newWork._sqId = sqId;
-              }
-            }
-            if (editingWork) {
-              // Update existing work
-              GS.myWorks = GS.myWorks.map(w => w.id === editingWork.id ? { ...w, ...newWork, id: editingWork.id } : w);
-              GS.notifications.unshift({ id: Date.now(), icon: "upload", title: "Бүтээл шинэчлэгдлээ", desc: `"${title}" амжилттай шинэчлэгдлээ.`, time: "Сая", read: true, to: "portfolio" });
-            } else {
-              GS.myWorks.unshift(newWork);
-              if (typeof WORKS !== "undefined") WORKS.unshift(newWork);
-              GS.notifications.unshift({ id: Date.now(), icon: "upload", title: "Бүтээл байршлаа", desc: `"${title}" амжилттай нийтлэгдлээ.`, time: "Сая", read: true, to: "portfolio" });
-            }
-            GS.user.works = GS.myWorks.length;
-            GS.editingWorkId = null;
-            saveGS();
-            nav("me");
-          } catch (e) {
-            if (process.env.NODE_ENV === "development") console.error(e);
-            toast("Хадгалах үед алдаа гарлаа", "error");
-          } finally {
-            setLoading(false);
-          }
-        }}>Бүтээл байршуулах</PBtn>
+        <PBtn full loading={loading} onClick={() => doSave("published")}>Бүтээл байршуулах</PBtn>
       </>}
 
       <div style={{ height: 30 }} />

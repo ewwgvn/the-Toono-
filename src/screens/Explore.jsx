@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { T } from "@/theme/colors";
 import { GS, saveGS } from "@/lib/store";
 import { DB, isSupabaseReady } from "@/lib/supabase";
-import { getAllWorks, getCreators, fmtP } from "@/lib/utils";
+import { getAllWorks, getCreators, fmtP, a11yClick } from "@/lib/utils";
 import {
   IcSearch, IcFilter, IcX, IcSearchEmpty, IcCheck,
 } from "@/components/icons";
@@ -135,7 +135,7 @@ export default function Explore({ nav, refresh, goBack }) {
               <button type="button" onClick={clearRecent} style={{background:"none",border:"none",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:11,fontWeight:600,color:T.accent,cursor:"pointer"}}>Бүгдийг устгах</button>
             </div>
             {recentSearches.map(term=>(
-              <div key={term} style={{display:"flex",alignItems:"center",padding:"9px 14px",cursor:"pointer"}} onClick={()=>applySearch(term)}>
+              <div key={term} style={{display:"flex",alignItems:"center",padding:"9px 14px",cursor:"pointer"}} {...a11yClick(()=>applySearch(term))}>
                 <span style={{color:T.textSub,display:"flex",marginRight:10,flexShrink:0}}>
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M6.5 1C3.46 1 1 3.46 1 6.5S3.46 12 6.5 12 12 9.54 12 6.5 9.54 1 6.5 1z" stroke="currentColor" strokeWidth="1.3"/><path d="M13 13l-2-2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
                 </span>
@@ -171,7 +171,7 @@ export default function Explore({ nav, refresh, goBack }) {
           </div>
           <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
             {recentSearches.map(term=>(
-              <div key={term} style={{display:"inline-flex",alignItems:"center",gap:6,background:T.s2,border:`1px solid ${T.border}`,borderRadius:20,padding:"6px 12px",cursor:"pointer"}} onClick={()=>applySearch(term)}>
+              <div key={term} style={{display:"inline-flex",alignItems:"center",gap:6,background:T.s2,border:`1px solid ${T.border}`,borderRadius:20,padding:"6px 12px",cursor:"pointer"}} {...a11yClick(()=>applySearch(term))}>
                 <span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,color:T.textH}}>{term}</span>
                 <button type="button" onClick={e=>{e.stopPropagation();removeRecent(term);}} style={{background:"none",border:"none",color:T.textSub,cursor:"pointer",display:"flex",padding:0,lineHeight:1}}><IcX/></button>
               </div>
@@ -221,7 +221,7 @@ export default function Explore({ nav, refresh, goBack }) {
                 <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:14,fontWeight:600,color:T.textH,marginBottom:4}}>"{debouncedQ}" — хэрэглэгч олдсонгүй</div>
                 <div style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:12,color:T.textSub}}>Нэрийг зөв бичсэн эсэхийг шалгаарай</div>
               </div>
-              :userResults.map(u=><div key={u.id} onClick={()=>nav("profile",{creatorId:u.id})} style={{display:"flex",alignItems:"center",gap:14,padding:"12px 0",borderBottom:`1px solid ${T.border}`,cursor:"pointer"}}>
+              :userResults.map(u=><div key={u.id} {...a11yClick(()=>nav("profile",{creatorId:u.id}))} style={{display:"flex",alignItems:"center",gap:14,padding:"12px 0",borderBottom:`1px solid ${T.border}`,cursor:"pointer"}}>
                 <div style={{width:48,height:48,borderRadius:16,background:T.accentSub,border:`1px solid ${T.accentGlow}`,overflow:"hidden",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}}>
                   {u.photo
                     ? <img src={u.photo} alt={u.name} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover"}}/>

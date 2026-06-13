@@ -1,6 +1,7 @@
 "use client";
 
 import { T } from "@/theme/colors";
+import { a11yClick } from "@/lib/utils";
 import Toono from "@/components/atoms/Toono";
 
 // Avatar — plain <img> (handles both storage URLs and base64 data URLs).
@@ -9,7 +10,7 @@ import Toono from "@/components/atoms/Toono";
 export default function Avt({ size = 44, color = T.accent, photo, children, onClick }) {
   return (
     <div
-      onClick={onClick}
+      {...a11yClick(onClick)}
       style={{
         width: size,
         height: size,

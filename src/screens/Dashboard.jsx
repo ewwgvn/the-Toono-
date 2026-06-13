@@ -46,7 +46,7 @@ export default function Dashboard({ nav, goBack, refresh }) {
         ))}
       </div>
       {/* Revenue summary */}
-      <div style={{ border: `1px solid ${T.borderLight}`, borderRadius: 16, padding: "18px 16px", marginBottom: 20, background: "#FAFAFA" }}>
+      <div style={{ border: `1px solid ${T.borderLight}`, borderRadius: 16, padding: "18px 16px", marginBottom: 20, background: T.canvas }}>
         <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 600, color: T.textSub, marginBottom: 6 }}>Нийт орлого</div>
         <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 28, fontWeight: 800, color: T.textH, lineHeight: 1 }}>₮{(totalRevenue || 0).toLocaleString()}</div>
         <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.textSub, marginTop: 8 }}>{totalSales} борлуулалт · {GS.myWorks.length} бүтээл · {GS.receivedCommissions?.length || 0} захиалга</div>

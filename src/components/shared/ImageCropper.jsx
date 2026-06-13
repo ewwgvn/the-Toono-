@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import { T } from "@/theme/colors";
 import PBtn from "@/components/atoms/PBtn";
 
+const F = "'Helvetica Neue', Arial, sans-serif";
+
 export default function ImageCropper({ src, onDone, onCancel, aspect = "square", allowRatioChange = false }) {
   const containerRef = useRef(null);
   const loadedImg = useRef(null);
@@ -135,14 +137,14 @@ export default function ImageCropper({ src, onDone, onCancel, aspect = "square",
     : [];
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 10000, background: "rgba(0,0,0,0.96)", display: "flex", flexDirection: "column", touchAction: "none" }}>
+    <div style={{ position: "fixed", inset: 0, zIndex: 10000, background: "rgba(11,30,58,0.96)", display: "flex", flexDirection: "column", touchAction: "none" }}>
       {/* Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", flexShrink: 0 }}>
-        <button type="button" onClick={onCancel} style={{ background: "none", border: "none", fontFamily: "system-ui", fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.7)", cursor: "pointer", padding: "8px" }}>
+        <button type="button" onClick={onCancel} style={{ background: "none", border: "none", fontFamily: F, fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.7)", cursor: "pointer", padding: "8px" }}>
           Цуцлах
         </button>
-        <div style={{ fontFamily: "system-ui", fontSize: 16, fontWeight: 700, color: "#fff" }}>Зураг тайрах</div>
-        <button type="button" onClick={doCrop} style={{ background: T.accent, border: "none", borderRadius: 10, padding: "8px 20px", fontFamily: "system-ui", fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer" }}>
+        <div style={{ fontFamily: F, fontSize: 16, fontWeight: 700, color: "#fff" }}>Зураг тайрах</div>
+        <button type="button" onClick={doCrop} style={{ background: T.accent, border: "none", borderRadius: 10, padding: "8px 20px", fontFamily: F, fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer" }}>
           Хадгалах
         </button>
       </div>
@@ -160,7 +162,7 @@ export default function ImageCropper({ src, onDone, onCancel, aspect = "square",
             border: "2px solid rgba(255,255,255,0.25)",
             cursor: dragRef.current.active ? "grabbing" : "grab",
             userSelect: "none",
-            background: "#111",
+            background: "#0B1E3A",
           }}
           onMouseDown={onDown}
           onMouseMove={onMove}
@@ -196,7 +198,7 @@ export default function ImageCropper({ src, onDone, onCancel, aspect = "square",
             <div style={{ position: "absolute", top: "66.66%", left: 0, right: 0, height: 1, background: "rgba(255,255,255,0.12)" }} />
           </div>
           {/* Size label */}
-          <div style={{ position: "absolute", bottom: 8, right: 10, fontFamily: "system-ui", fontSize: 10, color: "rgba(255,255,255,0.35)", pointerEvents: "none" }}>
+          <div style={{ position: "absolute", bottom: 8, right: 10, fontFamily: F, fontSize: 10, color: "rgba(255,255,255,0.35)", pointerEvents: "none" }}>
             {cW}&times;{cH}
           </div>
         </div>
@@ -218,7 +220,7 @@ export default function ImageCropper({ src, onDone, onCancel, aspect = "square",
                   gap: 3,
                   padding: "8px 14px",
                   borderRadius: 12,
-                  fontFamily: "system-ui",
+                  fontFamily: F,
                   fontSize: 11,
                   fontWeight: ratio === k ? 700 : 500,
                   background: ratio === k ? "rgba(91,143,232,0.2)" : "rgba(255,255,255,0.05)",
@@ -252,14 +254,14 @@ export default function ImageCropper({ src, onDone, onCancel, aspect = "square",
                 border: "1px solid rgba(255,255,255,0.15)",
                 borderRadius: 10,
                 padding: "8px 4px",
-                fontFamily: "system-ui",
+                fontFamily: F,
                 fontSize: 16,
                 fontWeight: 700,
                 color: "#fff",
                 outline: "none",
               }}
             />
-            <span style={{ fontFamily: "system-ui", fontSize: 18, fontWeight: 700, color: "rgba(255,255,255,0.3)" }}>:</span>
+            <span style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: "rgba(255,255,255,0.3)" }}>:</span>
             <input
               type="number"
               min="1"
@@ -273,14 +275,14 @@ export default function ImageCropper({ src, onDone, onCancel, aspect = "square",
                 border: "1px solid rgba(255,255,255,0.15)",
                 borderRadius: 10,
                 padding: "8px 4px",
-                fontFamily: "system-ui",
+                fontFamily: F,
                 fontSize: 16,
                 fontWeight: 700,
                 color: "#fff",
                 outline: "none",
               }}
             />
-            <span style={{ fontFamily: "system-ui", fontSize: 11, color: "rgba(255,255,255,0.3)", marginLeft: 4 }}>
+            <span style={{ fontFamily: F, fontSize: 11, color: "rgba(255,255,255,0.3)", marginLeft: 4 }}>
               {customW}:{customH}
             </span>
           </div>
@@ -337,7 +339,7 @@ export default function ImageCropper({ src, onDone, onCancel, aspect = "square",
             +
           </button>
         </div>
-        <div style={{ textAlign: "center", fontFamily: "system-ui", fontSize: 11, color: "rgba(255,255,255,0.25)", marginTop: 6 }}>
+        <div style={{ textAlign: "center", fontFamily: F, fontSize: 11, color: "rgba(255,255,255,0.25)", marginTop: 6 }}>
           {Math.round(scale * 100)}%
         </div>
       </div>

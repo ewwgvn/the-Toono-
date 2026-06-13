@@ -11,7 +11,7 @@ import PBtn from "@/components/atoms/PBtn";
 import Toono from "@/components/atoms/Toono";
 
 export default function Referral({ nav, goBack }) {
-  const myCode = "TOONO-" + (GS.user.id ? GS.user.id.slice(0, 8).toUpperCase() : (GS.user.name || "USER").toUpperCase().replace(/\s/g, "").slice(0, 6));
+  const myCode = "ULIGER-" + (GS.user.id ? GS.user.id.slice(0, 8).toUpperCase() : (GS.user.name || "USER").toUpperCase().replace(/\s/g, "").slice(0, 6));
   const [copied, setCopied] = useState(false);
   const history = [];
   const earned = history.reduce((s, h) => s + h.reward, 0);

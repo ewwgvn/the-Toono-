@@ -69,6 +69,24 @@ export function creatorPhotoOf(creatorId, ...fallbacks) {
 
 export const fmtP = (w) => w.price > 0 ? "₮" + w.price.toLocaleString() : "Захиалга";
 
+// Spread onto a clickable <div> to make it keyboard-accessible (role="button",
+// tabIndex, Enter/Space activation) without changing its visual layout to a
+// real <button>. Returns {} when no handler is given so the div stays inert.
+export function a11yClick(handler) {
+  if (!handler) return {};
+  return {
+    role: "button",
+    tabIndex: 0,
+    onClick: handler,
+    onKeyDown: (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        handler(e);
+      }
+    },
+  };
+}
+
 export async function compressImage(dataUrl, maxPx = 1200, quality = 0.82) {
   return new Promise(resolve => {
     try {

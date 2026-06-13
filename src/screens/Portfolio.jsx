@@ -4,6 +4,7 @@ import { T } from "@/theme/colors";
 import { GS, saveGS } from "@/lib/store";
 import { DB, isSupabaseReady } from "@/lib/supabase";
 import { IcBack, IcSearch, IcX, IcDots, IcEye, IcHeart, IcStats, IcMoney, IcEdit, IcChevron, IcFolderEmpty } from "@/components/icons";
+import { a11yClick } from "@/lib/utils";
 import Toono from "@/components/atoms/Toono";
 import Crd from "@/components/atoms/Crd";
 import Pill from "@/components/atoms/Pill";
@@ -197,7 +198,7 @@ export default function Portfolio({ nav, goBack }) {
           const showBadge = w.status !== "published" || w.digital;
           const tags = [w.cat || w.medium, w.year].filter(Boolean);
           return <div key={w.id}
-            onClick={() => bulkMode ? toggleSelect(w.id) : setActiveWork(w)}
+            {...a11yClick(() => bulkMode ? toggleSelect(w.id) : setActiveWork(w))}
             className="archive-cell toono-card-tap"
             style={{ cursor: "pointer", background: isSel ? T.accentSub : "transparent" }}>
             <div className="archive-cell-img" style={{ position: "relative", width: "100%", aspectRatio: "1/1", overflow: "hidden", background: T.s2 }}>
@@ -232,7 +233,7 @@ export default function Portfolio({ nav, goBack }) {
           const isSel = selected.has(w.id);
           const sc = statusCfg[w.digital ? "digital" : w.status] || statusCfg.published;
           return <div key={w.id}
-            onClick={() => bulkMode ? toggleSelect(w.id) : setActiveWork(w)}
+            {...a11yClick(() => bulkMode ? toggleSelect(w.id) : setActiveWork(w))}
             style={{ display: "flex", gap: 12, alignItems: "center", padding: "12px 0", borderBottom: `1px solid ${T.border}`, cursor: "pointer", background: isSel ? T.accentSub : "transparent" }}>
             {bulkMode && <div style={{ width: 20, height: 20, borderRadius: "50%", background: isSel ? T.accent : T.s2, border: `2px solid ${isSel ? T.accent : T.border}`, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
               {isSel && <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#fff" }} />}
@@ -279,7 +280,7 @@ export default function Portfolio({ nav, goBack }) {
           <div style={{ paddingLeft: 16, borderLeft: `2px solid ${T.border}` }}>
             {byYear[+year].map((w) => {
               const sc = statusCfg[w.digital ? "digital" : w.status] || statusCfg.published;
-              return <div key={w.id} onClick={() => setActiveWork(w)} style={{ position: "relative", marginBottom: 16, cursor: "pointer" }}>
+              return <div key={w.id} {...a11yClick(() => setActiveWork(w))} style={{ position: "relative", marginBottom: 16, cursor: "pointer" }}>
                 <div style={{ position: "absolute", left: -22, top: 16, width: 12, height: 12, borderRadius: "50%", background: w.accent || `${T.textH}`, border: `2px solid ${T.bg}` }} />
                 <Crd style={{ padding: "14px 16px" }}>
                   <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>

@@ -1,13 +1,14 @@
 "use client";
 
 import { T } from "@/theme/colors";
+import { a11yClick } from "@/lib/utils";
 import Avt from "@/components/atoms/Avt";
 
 const F = "'Helvetica Neue', Arial, sans-serif";
 
 export default function CreatorRow({ creator: c, onClick, onFollow, showFollow, following }) {
   return (
-    <div onClick={onClick} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 0", borderBottom: `1px solid ${T.borderLight}`, cursor: "pointer" }}>
+    <div {...a11yClick(onClick)} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 0", borderBottom: `1px solid ${T.borderLight}`, cursor: "pointer" }}>
       <Avt size={44} photo={c.photo} />
       <div style={{ flex: 1 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>

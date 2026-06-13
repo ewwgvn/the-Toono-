@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { T } from "@/theme/colors";
 import { GS, saveGS } from "@/lib/store";
 import { DB, isSupabaseReady } from "@/lib/supabase";
-import { getCreators } from "@/lib/utils";
+import { getCreators, a11yClick } from "@/lib/utils";
 import { toast } from "@/components/layout/Toast";
 import { IcBack, IcShare, IcDots, IcMsg, IcBell } from "@/components/icons";
 import PBtn from "@/components/atoms/PBtn";
@@ -189,7 +189,7 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
           [String(followerCount), "ДАГАГЧ", () => { GS.viewingFollowsUserId = creatorId; GS.viewingFollowsTab = "followers"; nav("follows"); }],
           [String(followingCount), "ДАГАЖ БУЙ", () => { GS.viewingFollowsUserId = creatorId; GS.viewingFollowsTab = "following"; nav("follows"); }],
         ].map((s, i) => (
-          <div key={s[1]} onClick={s[2] || undefined} style={{ flex: 1, textAlign: "center", borderLeft: i > 0 ? `1px solid ${T.border}` : "none", cursor: s[2] ? "pointer" : "default" }}>
+          <div key={s[1]} {...a11yClick(s[2] || undefined)} style={{ flex: 1, textAlign: "center", borderLeft: i > 0 ? `1px solid ${T.border}` : "none", cursor: s[2] ? "pointer" : "default" }}>
             <div style={{ fontFamily: SCRIPT, fontSize: 32, fontWeight: 700, color: T.accent, lineHeight: 1 }}>{s[0]}</div>
             <div style={{ fontFamily: HELV, fontSize: 9.5, fontWeight: 600, letterSpacing: "0.14em", color: T.textDim, marginTop: 5 }}>{s[1]}</div>
           </div>
@@ -238,7 +238,7 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
               <div style={{ fontFamily: HELV, fontSize: 12.5, color: T.textDim, marginTop: 6 }}>{featured.cat || ""}</div>
             </div>
             {/* center image — enlarged */}
-            <div onClick={() => nav("work", { workId: featured.id })} className="toono-card-tap" style={{ width: "min(280px, 46vw)", flexShrink: 0, cursor: "pointer" }}>
+            <div {...a11yClick(() => nav("work", { workId: featured.id }))} className="toono-card-tap" style={{ width: "min(280px, 46vw)", flexShrink: 0, cursor: "pointer" }}>
               <div style={{ width: "100%", aspectRatio: "3/4" }}><WorkImg w={featured} /></div>
             </div>
             {/* right buy */}
@@ -269,7 +269,7 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
                   <span style={{ fontFamily: HELV, fontSize: 9.5, fontWeight: 500, letterSpacing: "0.12em", color: "rgba(255,255,255,0.7)", marginTop: 6, textTransform: "uppercase" }}>{works.length} бүтээл</span>
                 </div>
                 {works.map((w, i) => (
-                  <div key={w.id || i} onClick={() => nav("work", { workId: w.id })} className="toono-card-tap" style={{ cursor: "pointer" }}>
+                  <div key={w.id || i} {...a11yClick(() => nav("work", { workId: w.id }))} className="toono-card-tap" style={{ cursor: "pointer" }}>
                     <div style={{ aspectRatio: "1" }}><WorkImg w={w} /></div>
                     <div style={{ fontFamily: HELV, fontSize: 12, fontWeight: 600, color: T.textH, marginTop: 7, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</div>
                     <div style={{ fontFamily: HELV, fontSize: 11, color: T.textDim, marginTop: 1 }}>{w.price > 0 ? `₮${Number(w.price).toLocaleString()}` : "Захиалга"}</div>
@@ -287,7 +287,7 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
       {c.comm && !isOwn && (
         <div style={{ padding: "36px 20px 8px" }}>
           <CenterLabel>Commission</CenterLabel>
-          <div onClick={() => nav("commission", { creatorId: c.id })} style={{ background: T.accentSub, border: `1px solid ${T.border}`, borderRadius: 4, padding: "24px 20px", cursor: "pointer", textAlign: "center" }}>
+          <div {...a11yClick(() => nav("commission", { creatorId: c.id }))} style={{ background: T.accentSub, border: `1px solid ${T.border}`, borderRadius: 4, padding: "24px 20px", cursor: "pointer", textAlign: "center" }}>
             <div style={{ fontFamily: SCRIPT, fontSize: 34, fontWeight: 700, color: T.accent, lineHeight: 1 }}>Захиалга нээлттэй</div>
             <div style={{ fontFamily: HELV, fontSize: 12.5, color: T.textSub, lineHeight: 1.7, margin: "12px auto 16px", maxWidth: 280 }}>Бүтээлчтэй шууд холбогдож захиалгын нөхцлийг тохироорой.</div>
             <span style={{ fontFamily: HELV, fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", color: T.accent }}>ЗАХИАЛГА ИЛГЭЭХ →</span>
@@ -317,7 +317,7 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
       </div>
 
       {/* ════ DARK FOOTER ════ */}
-      <div className="profile-darkfooter" style={{ marginTop: 36, background: "#111111", padding: "44px 28px calc(44px + env(safe-area-inset-bottom,0px))", display: "flex", flexDirection: "column", alignItems: "center" }}>
+      <div className="profile-darkfooter" style={{ marginTop: 36, background: "#0B1E3A", padding: "44px 28px calc(44px + env(safe-area-inset-bottom,0px))", display: "flex", flexDirection: "column", alignItems: "center" }}>
         <div style={{ fontFamily: HELV, fontSize: 10, fontWeight: 600, letterSpacing: "0.24em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)" }}>{isOwn ? "Таны дэлгүүр" : "Бүтээлчтэй холбогдох"}</div>
         <div style={{ fontFamily: SCRIPT, fontSize: 54, fontWeight: 700, color: "#fff", lineHeight: 1, marginTop: 8, textAlign: "center", wordBreak: "break-word" }}>{c.name || "Uliger"}</div>
         <div style={{ display: "flex", gap: 10, marginTop: 24, width: "100%", maxWidth: 300 }}>
@@ -325,7 +325,7 @@ export default function CreatorProfile({ nav, refresh, goBack, creatorId }) {
             ? <PBtn full onClick={() => nav("edit-profile")}>Профайл засах</PBtn>
             : <>
                 <button type="button" onClick={startChat} style={{ width: 46, height: 46, borderRadius: 23, background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#fff", flexShrink: 0 }}><IcMsg /></button>
-                <button type="button" onClick={tFollow} style={{ flex: 1, height: 46, borderRadius: 23, background: isFollowing ? "transparent" : "#fff", border: isFollowing ? "1px solid rgba(255,255,255,0.3)" : "none", color: isFollowing ? "#fff" : "#111", fontFamily: HELV, fontSize: 13, fontWeight: 700, cursor: "pointer", letterSpacing: "0.02em" }}>{isFollowing ? "Дагаж байна" : "Дагах"}</button>
+                <button type="button" onClick={tFollow} style={{ flex: 1, height: 46, borderRadius: 23, background: isFollowing ? "transparent" : "#fff", border: isFollowing ? "1px solid rgba(255,255,255,0.3)" : "none", color: isFollowing ? "#fff" : T.accent, fontFamily: HELV, fontSize: 13, fontWeight: 700, cursor: "pointer", letterSpacing: "0.02em" }}>{isFollowing ? "Дагаж байна" : "Дагах"}</button>
               </>}
         </div>
         <SocialRow creator={c} dark />

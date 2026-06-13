@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, memo } from "react";
 import { T } from "@/theme/colors";
-import { fmtP, creatorPhotoOf } from "@/lib/utils";
+import { fmtP, creatorPhotoOf, a11yClick } from "@/lib/utils";
 import { IcHeart, IcBookmark, IcShare } from "@/components/icons";
 import Avt from "@/components/atoms/Avt";
 
@@ -62,7 +62,7 @@ const WorkCard = memo(function WorkCard({ work: w, onClick, onCreatorClick, onTo
     return (
       <div style={{ marginBottom: 0, background: "#FFFFFF", borderBottom: `1px solid ${T.borderLight}` }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 16px" }}>
-          <div onClick={onCreatorClick} style={{ cursor: onCreatorClick ? "pointer" : "default", display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
+          <div {...a11yClick(onCreatorClick)} style={{ cursor: onCreatorClick ? "pointer" : "default", display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
             <Avt size={32} photo={creatorPhotoOf(w.creator_id || w.cid, w.creatorPhoto, w.profiles?.photo)} />
             <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
               <span style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: T.textH }}>{w.creator}</span>
@@ -133,7 +133,7 @@ const WorkCard = memo(function WorkCard({ work: w, onClick, onCreatorClick, onTo
           <span style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: T.textH }}>{w.creator}</span>
           <span style={{ fontFamily: F, fontSize: 13, color: T.textB, marginLeft: 6 }}>{w.title}</span>
         </div>
-        {commentCount > 0 && <div onClick={onClick} style={{ padding: "4px 16px 0", fontFamily: F, fontSize: 13, color: T.textSub, cursor: "pointer" }}>{commentCount} сэтгэгдэл бүгдийг харах</div>}
+        {commentCount > 0 && <div {...a11yClick(onClick)} style={{ padding: "4px 16px 0", fontFamily: F, fontSize: 13, color: T.textSub, cursor: "pointer" }}>{commentCount} сэтгэгдэл бүгдийг харах</div>}
         <div style={{ padding: "4px 16px 0", fontFamily: F, fontSize: 14, fontWeight: 600, color: T.textH }}>{fmtP(w)}</div>
         <div style={{ padding: "8px 16px 12px", display: "flex", alignItems: "center", gap: 10 }}>
           {userPhoto !== undefined && <Avt size={24} photo={userPhoto} />}
@@ -154,7 +154,7 @@ const WorkCard = memo(function WorkCard({ work: w, onClick, onCreatorClick, onTo
   // ── Horizontal mode ──
   if (horizontal) {
     return (
-      <div onClick={onClick} style={{ display: "flex", gap: 12, padding: "12px 0", borderBottom: `1px solid ${T.borderLight}`, cursor: "pointer" }}>
+      <div {...a11yClick(onClick)} style={{ display: "flex", gap: 12, padding: "12px 0", borderBottom: `1px solid ${T.borderLight}`, cursor: "pointer" }}>
         <div style={{ width: 80, height: 80, background: T.s2, borderRadius: 8, flexShrink: 0, overflow: "hidden", position: "relative" }}>
           {thumb ? <img src={thumb} alt={w.title} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : null}
         </div>
@@ -174,7 +174,7 @@ const WorkCard = memo(function WorkCard({ work: w, onClick, onCreatorClick, onTo
 
   return (
     <div
-      onClick={onClick}
+      {...a11yClick(onClick)}
       className={`bento-card${isFeatured ? " bento-featured" : ""}`}
       style={{ cursor: "pointer", "--i": Math.min(cardIndex, 11) }}
     >

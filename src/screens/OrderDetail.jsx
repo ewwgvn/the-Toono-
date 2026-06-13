@@ -142,7 +142,7 @@ export default function OrderDetail({ nav, refresh, goBack }) {
             if(isSupabaseReady() && o.id) DB.updateOrder(o.id, { status: "done", escrow_status: "released", payout_status: "scheduled" }).catch(() => {});
           }
         }}>Хүлээн авснаа баталгаажуулах</PBtn>}
-        {isCancelled && <div style={{ padding: "12px 16px", background: "#FFF3F3", border: "1px solid #D32F2F30", borderRadius: 12, fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 600, color: "#D32F2F", textAlign: "center" }}>Захиалга цуцлагдсан</div>}
+        {isCancelled && <div style={{ padding: "12px 16px", background: T.redSub, border: `1px solid ${T.red}30`, borderRadius: 12, fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 600, color: T.red, textAlign: "center" }}>Захиалга цуцлагдсан</div>}
       </div>
       {/* Review button — shown after order completed */}
       {order.status === "done" && order.canReview && (
@@ -153,7 +153,7 @@ export default function OrderDetail({ nav, refresh, goBack }) {
       {/* Digital download — shown when order paid and work is digital */}
       {order.paymentStatus === "paid" && order.isDigital && (
         <div style={{ marginTop: 12 }}>
-          <Crd style={{ padding: "14px 16px", background: "#F0F4FF", border: "1px solid #BBC8E830" }}>
+          <Crd style={{ padding: "14px 16px", background: T.accentSub, border: `1px solid ${T.border}` }}>
             <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, fontWeight: 700, color: T.textH, marginBottom: 8 }}>📥 Дижитал файл татах</div>
             <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 12, color: T.textSub, marginBottom: 12 }}>
               Хамгийн ихдээ 5 удаа, 30 хоногийн хугацаатай татаж болно.
