@@ -186,7 +186,7 @@ export default function Portfolio({ nav, goBack }) {
     </div>
 
     {/* Content */}
-    <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", padding: "0 20px" }}>
+    <div style={{ flex: 1, minHeight: 0, overflowY: "auto", scrollbarWidth: "none", padding: "0 20px" }}>
       {filtered.length === 0 && <Empty icon={<IcFolderEmpty />} title="Бүтээл олдсонгүй" sub="Хайлтаа өөрчилж үзнэ үү" />}
 
       {/* GRID VIEW — archive index grid */}

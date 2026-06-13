@@ -340,8 +340,8 @@ export default function App() {
       </div>}
 
       {/* ── MAIN CONTENT ── */}
-      <div className="toono-content" style={{ flex: 1, overflow: "hidden", position: "relative", width: "100%" }}>
-        <div key={screen + tab} className={`screen-${navDir}`} style={{ height: "100%" }}>
+      <div className="toono-content" style={{ flex: 1, minHeight: 0, overflow: "hidden", position: "relative", width: "100%" }}>
+        <div key={screen + tab} className={`screen-${navDir}`} style={{ height: "100%", minHeight: 0 }}>
           <ErrorBoundary>
             <Suspense fallback={<div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: T.textDim, fontFamily: F, fontSize: 13 }}>Loading...</div>}>
               {renderScreen()}
