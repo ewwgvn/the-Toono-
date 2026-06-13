@@ -6,7 +6,7 @@ import { DB, isSupabaseReady, fetchPublicData } from "@/lib/supabase";
 import { getAllWorks, getCreators, fmtP } from "@/lib/utils";
 import Toono from "@/components/atoms/Toono";
 import {
-  IcCart, IcBell, IcSearch, IcHeart,
+  IcCart, IcBell, IcSearch, IcEye,
   IcFieldFashion, IcFieldHome, IcFieldJewelry, IcFieldDirection,
   IcFieldGraphic, IcFieldTextile, IcFieldArt, IcField3D, IcFieldPhoto,
 } from "@/components/icons";
@@ -27,6 +27,23 @@ const CAT_ICONS = {
   "3D Design": IcField3D,
   "Photography": IcFieldPhoto,
 };
+
+// ── "What's on" 서브 탭 ──
+const WHATS_ON_TABS = [
+  { key: "new", label: "Шинэ" },
+  { key: "popular", label: "Алдартай" },
+  { key: "all", label: "Бүгд" },
+];
+
+function relTime(dateStr) {
+  if (!dateStr) return null;
+  const days = Math.floor((Date.now() - new Date(dateStr).getTime()) / 86400000);
+  if (days <= 0) return "Өнөөдөр нэмэгдсэн";
+  if (days === 1) return "Өчигдөр нэмэгдсэн";
+  if (days < 7) return `${days} хоногийн өмнө`;
+  if (days < 30) return `${Math.floor(days / 7)} долоо хоногийн өмнө`;
+  return `${Math.floor(days / 30)} сарын өмнө`;
+}
 
 // ── 마스트헤드 — 굵은 컴프레스드 워드마크 ──────────────────────────────────────
 const HERO_LABELS = [
@@ -95,12 +112,21 @@ function MosaicWall({ works, nav }) {
           );
         })}
       </div>
-      <div onClick={() => nav("explore")} className="toono-pressable"
-        style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 14, cursor: "pointer" }}>
-        <div style={{ width: 28, height: 28, borderRadius: "50%", background: T.s2, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 8H13M13 8L9 4M13 8L9 12" stroke={T.accent} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginTop: 16, gap: 16 }}>
+        <div onClick={() => nav("explore")} className="toono-pressable"
+          style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
+          <div style={{ width: 34, height: 34, borderRadius: "50%", background: T.accentSub, color: T.accent, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <IcEye />
+          </div>
+          <div>
+            <div style={{ fontFamily: F, fontSize: 13, fontWeight: 700, color: T.textH, letterSpacing: "-0.01em" }}>Илүү ойртож харах</div>
+            <div style={{ fontFamily: F, fontSize: 11, color: T.accent, fontWeight: 600, marginTop: 2 }}>Бүх бүтээлийг үзэх →</div>
+          </div>
         </div>
-        <span style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: T.textSub }}>Бүх бүтээлийг үзэх</span>
+        <div style={{ textAlign: "right", flexShrink: 0 }}>
+          <div style={{ fontFamily: F, fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", color: T.accent, textTransform: "uppercase", marginBottom: 4 }}>Шинэ оруулалт</div>
+          <div style={{ fontFamily: F, fontSize: 12, color: T.textSub, lineHeight: 1.55 }}>Өдөр бүр шинэ<br />бүтээл нэмэгддэг</div>
+        </div>
       </div>
     </div>
   );
@@ -180,6 +206,7 @@ function Skeleton() {
 export default function Home({ nav, refresh }) {
   const [loading, setLoading] = useState(GS.publicWorks.length === 0);
   const [selCat, setSelCat] = useState("all");
+  const [whatsOnTab, setWhatsOnTab] = useState("new");
   const [tick, setTick] = useState(0);
   const fetched = useRef(false);
 
@@ -211,6 +238,10 @@ export default function Home({ nav, refresh }) {
   const recentlyViewed = (GS.recentlyViewed || []).map(id => allW.find(w => w.id === id)).filter(Boolean).slice(0, 6);
   // 히어로 배너용 — 최신 작품 중 이미지 있는 것 3개
   const heroWorks = sorted.filter(w => w.images?.[0]).slice(0, 3);
+
+  // ── "What's on" 카드 행 — 탭별 데이터셋 ──
+  const whatsOnSource = whatsOnTab === "new" ? sorted : whatsOnTab === "popular" ? popular : allW;
+  const whatsOnList = whatsOnSource.filter(w => w.images?.[0]).slice(0, 8);
 
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", background: T.bg }}>
@@ -245,26 +276,45 @@ export default function Home({ nav, refresh }) {
           {/* ── 카테고리 아이콘 ── */}
           <CategoryRow selCat={selCat} setSelCat={setSelCat} />
 
-          {/* ── 인기 상품 ── */}
-          {popular.length > 0 && selCat === "all" && (
+          {/* ── What's on — 신작/인기/전체 카드 행 ── */}
+          {whatsOnList.length > 0 && selCat === "all" && (
             <div style={{ padding: "24px 16px 0", borderBottom: `1px solid ${T.s2}`, paddingBottom: 24 }}>
-              <SectionLabel label="TRENDING NOW" title="Алдартай бүтээл" action="Бүгд →" onAction={() => nav("explore")} />
-              <div style={{ display: "flex", gap: 12, overflowX: "auto", scrollbarWidth: "none", marginLeft: -16, marginRight: -16, paddingLeft: 16, paddingRight: 16 }}>
-                {popular.map(w => (
-                  <div key={w.id} onClick={() => nav("work", { workId: w.id })} className="toono-card-tap" style={{ flexShrink: 0, width: 148, cursor: "pointer" }}>
-                    <div style={{ width: 148, background: T.s2, borderRadius: 10, overflow: "hidden", marginBottom: 9 }}>
-                      {w.images?.[0]
-                        ? <img src={w.images[0]} alt={w.title} loading="lazy" style={{ width: "100%", aspectRatio: "3/4", objectFit: "cover", display: "block" }} />
-                        : <div style={{ width: "100%", aspectRatio: "3/4", display: "flex", alignItems: "center", justifyContent: "center" }}><Toono size={32} color={T.borderMid} /></div>}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 14, paddingBottom: 10, borderBottom: `1px solid ${T.s2}`, gap: 12 }}>
+                <div>
+                  <div style={{ fontFamily: F, fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", color: T.accent, marginBottom: 4, textTransform: "uppercase" }}>What&apos;s on</div>
+                  <div style={{ fontFamily: F, fontSize: "clamp(20px,5.5vw,26px)", fontWeight: 800, color: T.textH, lineHeight: 1.2, letterSpacing: "-0.02em" }}>Шинэ бүтээлүүд</div>
+                </div>
+                <div style={{ display: "flex", gap: 14, flexShrink: 0, paddingBottom: 4 }}>
+                  {WHATS_ON_TABS.map(t => (
+                    <button key={t.key} type="button" onClick={() => setWhatsOnTab(t.key)}
+                      style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: F, fontSize: 12, fontWeight: 700, letterSpacing: "0.01em", color: whatsOnTab === t.key ? T.accent : T.textDim }}>
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 14, overflowX: "auto", scrollbarWidth: "none", marginLeft: -16, marginRight: -16, paddingLeft: 16, paddingRight: 16 }}>
+                {whatsOnList.map(w => {
+                  const tags = [w.cat, ...(w.tags || [])].filter(Boolean).slice(0, 2);
+                  const featured = (w.likes_count || w.likes || 0) >= 10;
+                  return (
+                    <div key={w.id} onClick={() => nav("work", { workId: w.id })} className="toono-card-tap" style={{ flexShrink: 0, width: 168, cursor: "pointer" }}>
+                      <div style={{ width: 168, background: T.s2, borderRadius: 14, overflow: "hidden", marginBottom: 10 }}>
+                        {w.images?.[0]
+                          ? <img src={w.images[0]} alt={w.title} loading="lazy" style={{ width: "100%", aspectRatio: "3/4", objectFit: "cover", display: "block" }} />
+                          : <div style={{ width: "100%", aspectRatio: "3/4", display: "flex", alignItems: "center", justifyContent: "center" }}><Toono size={32} color={T.borderMid} /></div>}
+                      </div>
+                      <div style={{ fontFamily: F, fontSize: 13, fontWeight: 700, color: T.textH, marginBottom: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</div>
+                      <div style={{ fontFamily: F, fontSize: 11, color: T.textSub, marginBottom: 8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {relTime(w.createdAt) || w.creator} · <span style={{ fontWeight: 700, color: T.textH }}>{(w.price || 0) > 0 ? fmtP(w) : "Үнэгүй"}</span>
+                      </div>
+                      <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
+                        {featured && <span style={{ fontFamily: F, fontSize: 9, fontWeight: 700, letterSpacing: "0.06em", color: T.accent, border: `1px solid ${T.accent}`, borderRadius: 6, padding: "2px 7px", textTransform: "uppercase" }}>Онцлох</span>}
+                        {tags.map(t => <span key={t} style={{ fontFamily: F, fontSize: 9, fontWeight: 600, letterSpacing: "0.04em", color: T.textSub, border: `1px solid ${T.border}`, borderRadius: 6, padding: "2px 7px", textTransform: "uppercase" }}>{t}</span>)}
+                      </div>
                     </div>
-                    <div style={{ fontFamily: F, fontSize: 10, color: T.textDim, marginBottom: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.creator}</div>
-                    <div style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: T.textH, marginBottom: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</div>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <div style={{ fontFamily: F, fontSize: 13, fontWeight: 700, color: T.textH }}>{fmtP(w)}</div>
-                      {(w.likes_count || w.likes || 0) > 0 && <div style={{ display: "flex", alignItems: "center", gap: 2 }}><IcHeart /><span style={{ fontFamily: F, fontSize: 10, color: T.textDim }}>{w.likes_count || w.likes}</span></div>}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
