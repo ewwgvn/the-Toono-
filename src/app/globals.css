@@ -226,10 +226,45 @@ input[type="checkbox"], input[type="radio"] { -webkit-appearance: auto !importan
   .wd-grid .wd-info { padding-left: 0 !important; padding-right: 0 !important; padding-top: 0 !important; }
 }
 
-/* ── Portfolio gallery (exhibition) ── */
-.portfolio-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding-top: 4px; }
-@media (min-width: 768px) { .portfolio-gallery { grid-template-columns: repeat(3, 1fr); gap: 24px; } }
-@media (min-width: 1280px) { .portfolio-gallery { grid-template-columns: repeat(4, 1fr); gap: 28px; } }
+/* ── Portfolio gallery — alias for bento-grid ── */
+.portfolio-gallery { display: grid; grid-template-columns: repeat(2, 1fr); grid-auto-rows: auto; gap: 12px; padding-top: 4px; }
+@media (min-width: 768px) { .portfolio-gallery { grid-template-columns: repeat(3, 1fr); gap: 16px; } }
+@media (min-width: 1024px) { .portfolio-gallery { grid-template-columns: repeat(4, 1fr); gap: 20px; } }
+@media (min-width: 1400px) { .portfolio-gallery { grid-template-columns: repeat(5, 1fr); } }
+
+/* ── Bento grid ── */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-auto-rows: auto;
+  gap: 12px;
+}
+.bento-grid .bento-featured { grid-column: span 2; grid-row: span 2; }
+@media (min-width: 768px) {
+  .bento-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .portfolio-gallery .bento-featured { grid-column: span 2; grid-row: span 2; }
+}
+@media (min-width: 1024px) {
+  .bento-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; }
+}
+@media (min-width: 1400px) {
+  .bento-grid { grid-template-columns: repeat(5, 1fr); }
+}
+
+/* ── Bento card hover ── */
+.bento-card { overflow: hidden; }
+.bento-card:hover .bento-card-img { transform: scale(1.06); }
+.bento-card:hover .bento-card-overlay { opacity: 1; }
+
+/* ── Stagger entrance animation (first 12 items) ── */
+.bento-grid > *, .portfolio-gallery > * { animation: fadeUp .5s ease both; animation-delay: calc(var(--i, 0) * 60ms); }
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .bento-grid > *, .portfolio-gallery > * { animation: none !important; }
+  .bento-card-img { transition: none !important; }
+  .bento-card-overlay { transition: none !important; }
+}
 
 /* single view: one centered column on all sizes */
 .feed-single { display: flex; flex-direction: column; max-width: 600px; margin: 0 auto; }

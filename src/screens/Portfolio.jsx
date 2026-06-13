@@ -178,20 +178,27 @@ export default function Portfolio({ nav, goBack }) {
     <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", padding: "0 20px" }}>
       {filtered.length === 0 && <Empty icon={<IcFolderEmpty />} title="Бүтээл олдсонгүй" sub="Хайлтаа өөрчилж үзнэ үү" />}
 
-      {/* GRID VIEW — exhibition gallery */}
-      {view === "grid" && filtered.length > 0 && <div className="portfolio-gallery">
-        {filtered.map(w => {
+      {/* GRID VIEW — bento gallery */}
+      {view === "grid" && filtered.length > 0 && <div className="bento-grid portfolio-gallery">
+        {filtered.map((w, i) => {
+          const isFeatured = i === 0 || !!w.badge;
           const isSel = selected.has(w.id);
           const sc = statusCfg[w.digital ? "digital" : w.status] || statusCfg.published;
           const showBadge = w.status !== "published" || w.digital;
           return <div key={w.id}
             onClick={() => bulkMode ? toggleSelect(w.id) : setActiveWork(w)}
-            className="toono-card-tap"
-            style={{ cursor: "pointer" }}>
-            <div style={{ position: "relative", width: "100%", aspectRatio: "4/5", borderRadius: 10, overflow: "hidden", background: T.s2, border: isSel ? `2px solid ${T.accent}` : `1px solid #ECECEC` }}>
+            className={`bento-card toono-card-tap${isFeatured ? " bento-featured" : ""}`}
+            style={{ cursor: "pointer", "--i": Math.min(i, 11) }}>
+            <div style={{ position: "relative", width: "100%", aspectRatio: isFeatured ? "1/1" : "4/5", borderRadius: 10, overflow: "hidden", background: T.s2, border: isSel ? `2px solid ${T.accent}` : `1px solid #ECECEC` }}>
               {w.images?.[0]
-                ? <img src={w.images[0]} alt={w.title} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                ? <img src={w.images[0]} alt={w.title} loading="lazy" className="bento-card-img" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "transform .45s cubic-bezier(.22,1,.36,1)" }} />
                 : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}><Toono size={44} color={T.borderMid} /></div>}
+              {/* Glass overlay */}
+              <div className="bento-card-overlay" style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(17,17,17,0.55) 0%, transparent 55%)", display: "flex", alignItems: "flex-end", padding: 10, opacity: 0, transition: "opacity .3s ease", pointerEvents: "none" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, backdropFilter: "blur(6px)", background: "rgba(255,255,255,0.15)", borderRadius: 20, padding: "4px 10px" }}>
+                  <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, fontWeight: 600, color: "#fff" }}>{w.title}</span>
+                </div>
+              </div>
               {showBadge && <div style={{ position: "absolute", top: 8, left: 8, background: "rgba(255,255,255,0.92)", borderRadius: 6, padding: "3px 8px" }}>
                 <span style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 9, fontWeight: 700, color: sc.color }}>{sc.label}</span>
               </div>}

@@ -202,8 +202,8 @@ export default function Explore({ nav, refresh, goBack }) {
             </div>
           </div>
           :<div>
-            <div className="toono-grid-2" style={{paddingTop:8,paddingBottom:8,display:"grid",gridTemplateColumns:"1fr 1fr",gap:"26px 16px"}}>
-              {fw.slice(0,visibleCount).map(w=><WorkCard key={w.id} work={w} onClick={()=>nav("work",{workId:w.id})} onToggleLike={tLike} onToggleSave={tSave}/>)}
+            <div className="bento-grid" style={{paddingTop:8,paddingBottom:8}}>
+              {fw.slice(0,visibleCount).map((w,i)=><WorkCard key={w.id} work={w} onClick={()=>nav("work",{workId:w.id})} onToggleLike={tLike} onToggleSave={tSave} featured={i % 7 === 3} index={i}/>)}
             </div>
             {fw.length>visibleCount&&<div style={{textAlign:"center",padding:"16px 0"}}>
               <button type="button" onClick={()=>setVisibleCount(v=>v+12)} style={{background:T.s1,border:`1px solid ${T.border}`,borderRadius:12,padding:"12px 32px",fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:13,fontWeight:600,color:T.accent,cursor:"pointer"}}>Дараагийнхыг харах ({fw.length-visibleCount} үлдсэн)</button>

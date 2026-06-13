@@ -24,7 +24,7 @@ function timeAgo(dateStr) {
 
 const F = "'Helvetica Neue', Arial, sans-serif";
 
-const WorkCard = memo(function WorkCard({ work: w, onClick, onCreatorClick, onToggleLike, onToggleSave, onComment, horizontal, feed, liked, saved, commentCount, userPhoto }) {
+const WorkCard = memo(function WorkCard({ work: w, onClick, onCreatorClick, onToggleLike, onToggleSave, onComment, horizontal, feed, liked, saved, commentCount, userPhoto, featured, index }) {
   const thumb = w.images?.[0] || null;
   const [imgIdx, setImgIdx] = useState(0);
   const imgs = w.images?.length ? w.images : [];
@@ -167,24 +167,65 @@ const WorkCard = memo(function WorkCard({ work: w, onClick, onCreatorClick, onTo
     );
   }
 
-  // ── Default grid card (FruitsFamily style) ──
+  // ── Default grid card — bento/motion ──
   const likeNum = w.likes || 0;
+  const [hovered, setHovered] = useState(false);
+  const isFeatured = !!featured;
+  const cardIndex = index ?? 0;
+
   return (
-    <div onClick={onClick} style={{ cursor: "pointer" }}>
-      <div style={{ aspectRatio: "3/4", background: T.s2, overflow: "hidden", marginBottom: 8, position: "relative" }}>
+    <div
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className={`bento-card${isFeatured ? " bento-featured" : ""}`}
+      style={{ cursor: "pointer", "--i": Math.min(cardIndex, 11) }}
+    >
+      {/* Image wrapper */}
+      <div style={{ aspectRatio: isFeatured ? "1/1" : "3/4", background: T.s2, borderRadius: 8, overflow: "hidden", marginBottom: 8, position: "relative" }}>
         {thumb ? (
-          <img src={thumb} alt={w.title} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          <img
+            src={thumb}
+            alt={w.title}
+            loading="lazy"
+            className="bento-card-img"
+            style={{
+              width: "100%", height: "100%", objectFit: "cover", display: "block",
+              transition: "transform .45s cubic-bezier(.22,1,.36,1)",
+              transform: hovered ? "scale(1.06)" : "scale(1)",
+            }}
+          />
         ) : (
           <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: T.textSub, fontSize: 12, fontFamily: F }}>Зураг байхгүй</div>
         )}
+        {/* Glass overlay — always visible on mobile, hover-triggered on desktop via CSS */}
+        <div
+          className="bento-card-overlay"
+          style={{
+            position: "absolute", inset: 0,
+            background: "linear-gradient(to top, rgba(17,17,17,0.55) 0%, transparent 55%)",
+            display: "flex", alignItems: "flex-end", padding: 10,
+            opacity: hovered ? 1 : 0,
+            transition: "opacity .3s ease",
+            pointerEvents: "none",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 6, backdropFilter: "blur(6px)", background: "rgba(255,255,255,0.15)", borderRadius: 20, padding: "4px 10px" }}>
+            <span style={{ fontFamily: F, fontSize: 11, fontWeight: 600, color: "#fff" }}>{w.creator}</span>
+            {likeNum > 0 && <span style={{ fontFamily: F, fontSize: 11, color: "#fff", opacity: 0.85 }}>♥ {likeNum}</span>}
+          </div>
+        </div>
+        {/* Badge */}
+        {w.badge && (
+          <span style={{ position: "absolute", top: 8, left: 8, fontFamily: F, fontSize: 11, fontWeight: 700, color: "#fff", background: T.accent, padding: "3px 9px", borderRadius: 10 }}>{w.badge}</span>
+        )}
       </div>
+      {/* Text info */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 1 }}>
         <div style={{ fontFamily: F, fontSize: 13, fontWeight: 700, color: T.textH, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{w.creator}</div>
         {w.cat && <div style={{ fontFamily: F, fontSize: 11, color: T.textSub, flexShrink: 0, marginLeft: 4 }}>{w.cat.split(" ")[0]}</div>}
       </div>
-      <div style={{ fontFamily: F, fontSize: 12, color: T.textSub, lineHeight: 1.4, marginBottom: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-        {w.title}
-      </div>
+      <div style={{ fontFamily: F, fontSize: 12, color: T.textSub, lineHeight: 1.4, marginBottom: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</div>
       <div style={{ fontFamily: F, fontSize: 14, fontWeight: 700, color: T.textH, marginBottom: 4 }}>{fmtP(w)}</div>
       {likeNum > 0 && (
         <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
