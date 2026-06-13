@@ -37,8 +37,8 @@ const HERO_LABELS = [
 
 function Masthead({ nav }) {
   return (
-    <div style={{ padding: "22px 16px 16px" }}>
-      <div style={{ fontFamily: F, fontSize: "clamp(34px,10vw,56px)", fontWeight: 800, color: T.textH, lineHeight: 1.05, letterSpacing: "-0.02em" }}>
+    <div style={{ padding: "18px 12px 16px", borderBottom: `1px solid ${T.s2}` }}>
+      <div style={{ fontFamily: F, fontSize: "clamp(42px,13vw,80px)", fontWeight: 800, color: T.textH, lineHeight: 0.98, letterSpacing: "-0.03em" }}>
         Монгол бүтээлчдийн<br />дижитал зах
       </div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: 12, gap: 12 }}>
@@ -56,23 +56,28 @@ function Masthead({ nav }) {
 
 // ── 모자이크 월 — 작품 콜라주 그리드 ───────────────────────────────────────────
 const MOSAIC_PATTERN = [
-  { col: "span 4", row: "span 2" },
-  { col: "span 2", row: "span 1" },
-  { col: "span 2", row: "span 1" },
   { col: "span 2", row: "span 2" },
+  { col: "span 1", row: "span 1" },
+  { col: "span 1", row: "span 1" },
   { col: "span 2", row: "span 1" },
+  { col: "span 1", row: "span 1" },
+  { col: "span 1", row: "span 1" },
+  { col: "span 1", row: "span 2" },
+  { col: "span 1", row: "span 1" },
   { col: "span 2", row: "span 1" },
+  { col: "span 1", row: "span 1" },
+  { col: "span 1", row: "span 1" },
+  { col: "span 2", row: "span 2" },
+  { col: "span 1", row: "span 1" },
   { col: "span 2", row: "span 1" },
-  { col: "span 2", row: "span 1" },
-  { col: "span 4", row: "span 1" },
 ];
 
 function MosaicWall({ works, nav }) {
   if (!works.length) return null;
   return (
-    <div style={{ padding: "0 16px 28px" }}>
+    <div style={{ padding: "16px 12px 28px" }}>
       <div className="toono-mosaic">
-        {works.slice(0, 9).map((w, i) => {
+        {works.slice(0, 14).map((w, i) => {
           const p = MOSAIC_PATTERN[i % MOSAIC_PATTERN.length];
           return (
             <div key={w.id} onClick={() => nav("work", { workId: w.id })} className="toono-mosaic-item toono-card-tap"
