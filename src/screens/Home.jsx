@@ -37,11 +37,11 @@ const HERO_LABELS = [
 
 function Masthead({ nav }) {
   return (
-    <div style={{ padding: "20px 16px 18px" }}>
-      <div style={{ fontFamily: F, fontSize: "clamp(26px,7vw,38px)", fontWeight: 800, color: T.textH, lineHeight: 1.2, letterSpacing: "-0.02em" }}>
+    <div style={{ padding: "22px 16px 16px" }}>
+      <div style={{ fontFamily: F, fontSize: "clamp(34px,10vw,56px)", fontWeight: 800, color: T.textH, lineHeight: 1.05, letterSpacing: "-0.02em" }}>
         Монгол бүтээлчдийн<br />дижитал зах
       </div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: 10, gap: 12 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: 12, gap: 12 }}>
         <div style={{ fontFamily: F, fontSize: 13, color: T.textSub, lineHeight: 1.5, maxWidth: 230 }}>
           Урлаг, дизайн, гар урлалын шинэ бүтээлүүдийг нэг дороос үзээрэй.
         </div>
@@ -59,31 +59,44 @@ const MOSAIC_PATTERN = [
   { col: "span 4", row: "span 2" },
   { col: "span 2", row: "span 1" },
   { col: "span 2", row: "span 1" },
+  { col: "span 2", row: "span 2" },
   { col: "span 2", row: "span 1" },
   { col: "span 2", row: "span 1" },
+  { col: "span 2", row: "span 1" },
+  { col: "span 2", row: "span 1" },
+  { col: "span 4", row: "span 1" },
 ];
 
 function MosaicWall({ works, nav }) {
   if (!works.length) return null;
   return (
-    <div className="toono-mosaic">
-      {works.slice(0, 5).map((w, i) => {
-        const p = MOSAIC_PATTERN[i % MOSAIC_PATTERN.length];
-        return (
-          <div key={w.id} onClick={() => nav("work", { workId: w.id })} className="toono-mosaic-item toono-card-tap"
-            style={{ gridColumn: p.col, gridRow: p.row, cursor: "pointer", overflow: "hidden", position: "relative", background: T.s2, borderRadius: 12 }}>
-            {w.images?.[0]
-              ? <img src={w.images[0]} alt={w.title} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-              : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}><Toono size={28} color={T.borderMid} /></div>}
-            {i === 0 && (
-              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "24px 12px 10px", background: "linear-gradient(to top, rgba(17,17,17,0.55), transparent)" }}>
-                <div style={{ fontFamily: F, fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", color: "#fff", textTransform: "uppercase", marginBottom: 3, opacity: 0.85 }}>{HERO_LABELS[0].label}</div>
-                <div style={{ fontFamily: F, fontSize: 14, fontWeight: 700, color: "#fff", letterSpacing: "-.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</div>
-              </div>
-            )}
-          </div>
-        );
-      })}
+    <div style={{ padding: "0 16px 28px" }}>
+      <div className="toono-mosaic">
+        {works.slice(0, 9).map((w, i) => {
+          const p = MOSAIC_PATTERN[i % MOSAIC_PATTERN.length];
+          return (
+            <div key={w.id} onClick={() => nav("work", { workId: w.id })} className="toono-mosaic-item toono-card-tap"
+              style={{ gridColumn: p.col, gridRow: p.row, cursor: "pointer", overflow: "hidden", position: "relative", background: T.s2, borderRadius: 12 }}>
+              {w.images?.[0]
+                ? <img src={w.images[0]} alt={w.title} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}><Toono size={28} color={T.borderMid} /></div>}
+              {i === 0 && (
+                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "24px 12px 10px", background: "linear-gradient(to top, rgba(38,129,218,0.55), transparent)" }}>
+                  <div style={{ fontFamily: F, fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", color: "#fff", textTransform: "uppercase", marginBottom: 3, opacity: 0.9 }}>{HERO_LABELS[0].label}</div>
+                  <div style={{ fontFamily: F, fontSize: 14, fontWeight: 700, color: "#fff", letterSpacing: "-.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <div onClick={() => nav("explore")} className="toono-pressable"
+        style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 14, cursor: "pointer" }}>
+        <div style={{ width: 28, height: 28, borderRadius: "50%", background: T.s2, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 8H13M13 8L9 4M13 8L9 12" stroke={T.accent} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        </div>
+        <span style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: T.textSub }}>Бүх бүтээлийг үзэх</span>
+      </div>
     </div>
   );
 }
