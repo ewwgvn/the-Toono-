@@ -28,69 +28,46 @@ const CAT_ICONS = {
   "Photography": IcFieldPhoto,
 };
 
-// ── 토오노 살대 모티프 — 게르 천창에서 빛이 들어오는 원형 구조 ─────────────────────
-function ToonoRing() {
-  const r1 = 78, r2 = 56, cx = 100, cy = 100;
-  const spokes = Array.from({ length: 8 }, (_, i) => {
-    const a = (i * Math.PI * 2) / 8;
-    return {
-      x1: cx + Math.cos(a) * r2, y1: cy + Math.sin(a) * r2,
-      x2: cx + Math.cos(a) * r1, y2: cy + Math.sin(a) * r1,
-    };
-  });
-  return (
-    <svg className="toono-hero-ring" viewBox="0 0 200 200" aria-hidden="true"
-      style={{ position: "absolute", top: -88, left: "50%", transform: "translateX(-50%)", width: 230, height: 230, pointerEvents: "none" }}>
-      <circle cx={cx} cy={cy} r={r1} stroke="rgba(255,255,255,0.22)" strokeWidth="1.5" fill="none" />
-      <circle cx={cx} cy={cy} r={r2} stroke="rgba(255,255,255,0.16)" strokeWidth="1" fill="none" />
-      {spokes.map((s, i) => <line key={i} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2} stroke="rgba(255,255,255,0.18)" strokeWidth="1" />)}
-    </svg>
-  );
-}
-
-// ── 히어로 배너 — "тооно нээгдэх мөч" (토오노가 열리는 순간) ────────────────────
+// ── 스포트라이트 히어로 — 라이트 카드형, Blue+White 톤과 통일 ──────────────────
 const HERO_LABELS = [
   { label: "ШИНЭ ЦУГЛУУЛГА",  sub: "Шинэ бүтээлүүдийг нээж олоорой" },
   { label: "ОНЦЛОХ БҮТЭЭЛ",   sub: "Бүтээлчийн шилдэг ажлууд" },
   { label: "ТУСГАЙ ЗАХИАЛГА", sub: "Хувийн захиалга авдаг бүтээлчид" },
 ];
-function HeroBanner({ works, nav }) {
+function SpotlightHero({ works, nav }) {
   const [idx, setIdx] = useState(0);
   const w = works[idx] || works[0];
   if (!w) return null;
   const lbl = HERO_LABELS[idx % HERO_LABELS.length];
 
   return (
-    <div style={{ position: "relative", width: "100%", overflow: "hidden", cursor: "pointer" }} onClick={() => nav("work", { workId: w.id })}>
-      <div style={{ width: "100%", aspectRatio: "4/5", maxHeight: 560, background: "#0B1320", position: "relative", overflow: "hidden" }}>
-        <img src={w.images[0]} alt={w.title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-        {/* 천창에서 쏟아지는 빛 — 라디얼 글로우 */}
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(circle at 50% 0%, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0) 48%)" }} />
-        {/* 토오노 살대 모티프 */}
-        <ToonoRing />
-        {/* 하단 그라데이션 — 텍스트 가독성 */}
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(8,16,28,0.85) 0%, rgba(8,16,28,0.18) 45%, rgba(8,16,28,0) 70%)" }} />
-        {/* 텍스트 */}
-        <div style={{ position: "absolute", left: 20, right: 20, bottom: 22 }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: F, fontSize: 10, fontWeight: 700, letterSpacing: "0.22em", color: "#fff", marginBottom: 12, textTransform: "uppercase", background: "rgba(255,255,255,0.14)", backdropFilter: "blur(6px)", padding: "5px 11px", borderRadius: 20 }}>
+    <div style={{ padding: "14px 16px 0" }}>
+      <div onClick={() => nav("work", { workId: w.id })} className="toono-card-tap"
+        style={{ cursor: "pointer", borderRadius: 16, overflow: "hidden", border: `1px solid ${T.borderLight}`, background: T.s1 }}>
+        <div style={{ width: "100%", aspectRatio: "4/3", background: T.s2, position: "relative", overflow: "hidden" }}>
+          <img src={w.images[0]} alt={w.title} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+          {/* 슬라이더 도트 */}
+          {works.length > 1 && (
+            <div style={{ position: "absolute", top: 12, right: 12, display: "flex", gap: 5 }} onClick={e => e.stopPropagation()}>
+              {works.map((_, i) => (
+                <button key={i} type="button" onClick={() => setIdx(i)} style={{ width: i === idx ? 18 : 6, height: 6, borderRadius: 3, background: i === idx ? "#fff" : "rgba(255,255,255,0.55)", border: "none", cursor: "pointer", padding: 0, transition: "all .2s", boxShadow: "0 1px 3px rgba(0,0,0,0.18)" }} />
+              ))}
+            </div>
+          )}
+        </div>
+        <div style={{ padding: "16px 18px 18px", background: T.s2 }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: F, fontSize: 10, fontWeight: 700, letterSpacing: "0.22em", color: T.accent, marginBottom: 8, textTransform: "uppercase" }}>
             <span style={{ width: 5, height: 5, borderRadius: "50%", background: T.accent, display: "inline-block", flexShrink: 0 }} />
             {lbl.label}
           </div>
-          <div style={{ fontFamily: F, fontSize: 28, fontWeight: 800, color: "#FFFFFF", lineHeight: 1.18, marginBottom: 6, letterSpacing: "-.01em" }}>{w.title}</div>
-          <div style={{ fontFamily: F, fontSize: 13, color: "rgba(255,255,255,0.7)", marginBottom: 18 }}>{lbl.sub}</div>
+          <div style={{ fontFamily: F, fontSize: 21, fontWeight: 800, color: T.textH, lineHeight: 1.22, marginBottom: 4, letterSpacing: "-.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</div>
+          <div style={{ fontFamily: F, fontSize: 12.5, color: T.textSub, marginBottom: 14 }}>{lbl.sub}</div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span style={{ fontFamily: F, fontSize: 13, color: T.textDim, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginRight: 10 }}>{w.creator}</span>
             <button type="button" onClick={(e) => { e.stopPropagation(); nav("work", { workId: w.id }); }} className="toono-pressable"
-              style={{ fontFamily: F, fontSize: 12, fontWeight: 700, letterSpacing: "0.04em", color: "#111", background: "#FFFFFF", border: "none", borderRadius: 22, padding: "10px 20px", cursor: "pointer" }}>
+              style={{ flexShrink: 0, fontFamily: F, fontSize: 12, fontWeight: 700, letterSpacing: "0.04em", color: "#FFFFFF", background: T.accent, border: "none", borderRadius: 22, padding: "9px 18px", cursor: "pointer" }}>
               Бүтээл үзэх →
             </button>
-            {/* 슬라이더 도트 */}
-            {works.length > 1 && (
-              <div style={{ display: "flex", gap: 5 }} onClick={e => e.stopPropagation()}>
-                {works.map((_, i) => (
-                  <button key={i} type="button" onClick={() => setIdx(i)} style={{ width: i === idx ? 20 : 6, height: 6, borderRadius: 3, background: i === idx ? "#fff" : "rgba(255,255,255,0.4)", border: "none", cursor: "pointer", padding: 0, transition: "all .2s" }} />
-                ))}
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -228,34 +205,18 @@ export default function Home({ nav, refresh }) {
       <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none" }}>
         {loading ? <Skeleton /> : <>
 
-          {/* ── 히어로 배너 ── */}
+          {/* ── 스포트라이트 히어로 ── */}
           {heroWorks.length > 0 && selCat === "all" && (
-            <HeroBanner works={heroWorks} nav={nav} />
+            <SpotlightHero works={heroWorks} nav={nav} />
           )}
 
           {/* ── 카테고리 아이콘 ── */}
           <CategoryRow selCat={selCat} setSelCat={setSelCat} />
 
-          {/* ── 크리에이터 ── */}
-          {topCreators.length > 0 && selCat === "all" && (
-            <div style={{ padding: "24px 0 20px", borderBottom: `1px solid ${T.s2}` }}>
-              <div style={{ padding: "0 16px", marginBottom: 14 }}>
-                <div style={{ fontFamily: F, fontSize: 10, fontWeight: 700, letterSpacing: "0.22em", color: T.accent, marginBottom: 4, textTransform: "uppercase" }}>CREATORS</div>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div style={{ fontFamily: F, fontSize: 22, fontWeight: 800, color: T.textH, letterSpacing: "-.02em" }}>Бүтээлчид</div>
-                  <button type="button" onClick={() => nav("explore")} style={{ background: "none", border: "none", fontFamily: F, fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", color: T.accent, cursor: "pointer" }}>Бүгд →</button>
-                </div>
-              </div>
-              <div style={{ display: "flex", gap: 14, overflowX: "auto", scrollbarWidth: "none", padding: "0 16px" }}>
-                {topCreators.map(c => <CreatorChip key={c.id} c={c} nav={nav} />)}
-              </div>
-            </div>
-          )}
-
           {/* ── 인기 상품 ── */}
           {popular.length > 0 && selCat === "all" && (
-            <div style={{ padding: "28px 16px 0", borderBottom: `1px solid ${T.s2}`, paddingBottom: 24 }}>
-              <SectionLabel label="POPULAR LISTINGS" title="Алдартай бүтээл" action="Бүгд →" onAction={() => nav("explore")} />
+            <div style={{ padding: "24px 16px 0", borderBottom: `1px solid ${T.s2}`, paddingBottom: 24 }}>
+              <SectionLabel label="TRENDING NOW" title="Алдартай бүтээл" action="Бүгд →" onAction={() => nav("explore")} />
               <div style={{ display: "flex", gap: 12, overflowX: "auto", scrollbarWidth: "none", marginLeft: -16, marginRight: -16, paddingLeft: 16, paddingRight: 16 }}>
                 {popular.map(w => (
                   <div key={w.id} onClick={() => nav("work", { workId: w.id })} className="toono-card-tap" style={{ flexShrink: 0, width: 148, cursor: "pointer" }}>
@@ -295,6 +256,22 @@ export default function Home({ nav, refresh }) {
               </div>
             )}
           </div>
+
+          {/* ── 크리에이터 ── */}
+          {topCreators.length > 0 && selCat === "all" && (
+            <div style={{ padding: "28px 0 20px", marginTop: 12, borderTop: `1px solid ${T.s2}` }}>
+              <div style={{ padding: "0 16px", marginBottom: 14 }}>
+                <div style={{ fontFamily: F, fontSize: 10, fontWeight: 700, letterSpacing: "0.22em", color: T.accent, marginBottom: 4, textTransform: "uppercase" }}>CREATORS</div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div style={{ fontFamily: F, fontSize: 22, fontWeight: 800, color: T.textH, letterSpacing: "-.02em" }}>Бүтээлчид</div>
+                  <button type="button" onClick={() => nav("explore")} style={{ background: "none", border: "none", fontFamily: F, fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", color: T.accent, cursor: "pointer" }}>Бүгд →</button>
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 14, overflowX: "auto", scrollbarWidth: "none", padding: "0 16px" }}>
+                {topCreators.map(c => <CreatorChip key={c.id} c={c} nav={nav} />)}
+              </div>
+            </div>
+          )}
 
           {/* ── 최근 본 (하단) ── */}
           {recentlyViewed.length > 0 && selCat === "all" && (
