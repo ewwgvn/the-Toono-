@@ -102,7 +102,7 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
           workId: items[0]?.id ?? null,
           buyerEmail,
           buyerName: addr.name,
-          itemTitle: items.length === 1 ? items[0].title : `${items.length}개 상품`,
+          itemTitle: items.length === 1 ? items[0].title : `${items.length} бараа`,
           amount: total,
           ebarimtRegisterNo: ebarimt && ebarimtReg.length >= 7 ? ebarimtReg : undefined,
         }),
@@ -206,7 +206,7 @@ export default function Checkout({ nav, workId, refresh, goBack }) {
           {/* Offline banner */}
           {offline && (
             <div style={{ width: "100%", maxWidth: 360, background: T.yellowBg, border: "1px solid #F9A825", borderRadius: 10, padding: "10px 14px", marginBottom: 12, fontFamily: F, fontSize: 12, color: T.yellowText, lineHeight: 1.5, textAlign: "center" }}>
-              연결이 끊겼지만 결제는 계속 진행됩니다.<br/>연결되면 자동으로 확인돼요.
+              Холболт тасалдсан ч төлбөр үргэлжлэн боловсруулагдана.<br/>Холболт сэргэхэд автоматаар шалгана.
             </div>
           )}
 

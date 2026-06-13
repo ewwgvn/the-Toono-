@@ -95,6 +95,7 @@ export default function WorkDetail({ nav, refresh, goBack, workId }) {
           {fn:tLike,  Icon:()=><IcHeart filled={liked}/>,  color:liked?T.red:T.textSub},
           {fn:tSave,  Icon:()=><IcBookmark filled={saved}/>,color:saved?T.textH:T.textSub},
           {fn:()=>{navigator.clipboard?.writeText(`${location.origin}?work=${w.id}`).catch(()=>{});toast("Холбоос хуулагдлаа","success");}, Icon:()=><IcShare/>, color:T.textSub},
+          {fn:()=>nav("report",{targetType:"work",targetId:w.id}), Icon:()=><IcReport/>, color:T.textSub},
         ].map(({fn,Icon,color},i)=>(
           <button key={i} type="button" onClick={fn} className="toono-pressable" style={{width:36,height:36,borderRadius:10,background:T.s2,border:"none",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color}}><Icon/></button>
         ))}

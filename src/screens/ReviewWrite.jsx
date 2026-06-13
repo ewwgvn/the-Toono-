@@ -17,15 +17,18 @@ export default function ReviewWrite({ nav, goBack }) {
     if (!GS.user.id) { toast("Нэвтэрч орно уу", "error"); return; }
     setLoading(true);
     try {
-      // Get the order/commission to review
+      // Get the order/commission to review — prefer an explicit reviewTarget
+      // (set by e.g. CommStatus when reviewing a commission, not an order)
       const order = GS.orders.find(o => o.id === GS.selectedOrderId);
-      const sellerId = order?.seller_id || order?.creatorId || null;
+      const sellerId = GS.reviewTarget?.sellerId || order?.seller_id || order?.creatorId || null;
+      // order_id has a FK to public.orders — only set it when we have a real order row
+      const orderId = order?.id ?? null;
 
       if (isSupabaseReady() && sellerId) {
         await supabase.from("reviews").insert({
           reviewer_id: GS.user.id,
           seller_id: sellerId,
-          order_id: order?.id || null,
+          order_id: orderId,
           rating,
           text: text.trim() || null,
         }).then(({ error }) => {
@@ -39,6 +42,7 @@ export default function ReviewWrite({ nav, goBack }) {
         id: Date.now(), icon: "review", title: "Сэтгэгдэл бичигдлээ",
         desc: `${rating} одоор үнэллээ`, time: "Сая", read: true, to: "me",
       });
+      GS.reviewTarget = null;
       saveGS();
       toast("Сэтгэгдэл амжилттай илгээгдлээ", "success");
       goBack ? goBack() : nav("home");

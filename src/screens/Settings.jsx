@@ -5,7 +5,7 @@ import { DB, isSupabaseReady } from "@/lib/supabase";
 import { toast } from "@/components/layout/Toast";
 import {
   IcEdit, IcPortfolio, IcDashboard, IcDispute,
-  IcOrder, IcInfo, IcShield, IcX, IcChevron, IcCommission, IcMoney,
+  IcOrder, IcInfo, IcShield, IcX, IcChevron, IcCommission, IcMoney, IcGift,
 } from "@/components/icons";
 import Simple from "@/components/layout/Simple";
 
@@ -39,15 +39,16 @@ export default function Settings({ nav, refresh }) {
         { icon: <IcEdit />, label: "Профайл засах", action: () => nav("edit-profile") },
         { icon: <IcPortfolio />, label: "Портфолио", action: () => nav("portfolio") },
         { icon: <IcDashboard />, label: "Хянах самбар", action: () => nav("dashboard") },
+        { icon: <IcGift />, label: "Найзаа урих", action: () => nav("referral") },
       ]} />
       {GS.currentRole === "creator" && <Sec title="Бүтээлч" items={[
         { icon: <IcCommission />, label: "Захиалга удирдах", action: () => nav("comm-manage") },
         { icon: <IcOrder />, label: "Захиалгууд", action: () => nav("order-list") },
         { icon: <IcDispute />, label: "Маргаан", action: () => nav("dispute") },
-        { icon: <IcMoney />, label: "정산 · 계좌 관리", action: () => nav("creator-payout") },
+        { icon: <IcMoney />, label: "Тооцоо · Дансны мэдээлэл", action: () => nav("creator-payout") },
       ]} />}
       {GS.user.role === "admin" && <Sec title="Admin" items={[
-        { icon: <IcShield />, label: "Admin 패널", action: () => nav("admin") },
+        { icon: <IcShield />, label: "Админ самбар", action: () => nav("admin") },
       ]} />}
       <Sec title="Эрх" items={[
         {

@@ -4,8 +4,8 @@ import { T } from "@/theme/colors";
 
 export default function PBtn({ children, onClick, full, loading, disabled, small, secondary, danger, type = "button", style }) {
   const isOff = disabled || loading;
-  const bg = disabled ? "#EEEBE5" : danger ? T.red : secondary ? "transparent" : T.accent;
-  const col = disabled ? "#B0A898" : danger ? "#FFFFFF" : secondary ? T.accent : "#FFFFFF";
+  const bg = disabled ? T.border : danger ? T.red : secondary ? "transparent" : T.accent;
+  const col = disabled ? T.textDim : danger ? "#FFFFFF" : secondary ? T.accent : "#FFFFFF";
   const border = secondary ? `1px solid ${T.border}` : danger ? "none" : "none";
   return (
     <button

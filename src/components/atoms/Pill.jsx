@@ -2,7 +2,7 @@
 
 import { T } from "@/theme/colors";
 
-export default function Pill({ children, color = "#444444", bg }) {
+export default function Pill({ children, color = T.textB, bg }) {
   return (
     <span
       style={{
@@ -10,7 +10,7 @@ export default function Pill({ children, color = "#444444", bg }) {
         fontSize: 11,
         fontWeight: 600,
         color,
-        background: bg || "#F2F2F2",
+        background: bg || T.s2,
         padding: "4px 11px",
         borderRadius: 20,
         display: "inline-flex",

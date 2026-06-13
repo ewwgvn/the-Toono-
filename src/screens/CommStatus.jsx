@@ -127,7 +127,7 @@ export default function CommStatus({ nav, goBack, refresh }) {
                   ))}
                 </div>
                 <div style={{ fontFamily: F, fontSize: 11, color: T.accent, fontWeight: 600 }}>
-                  {STEPS[stepIdx - 1] || "시작 대기 중"}
+                  {STEPS[stepIdx - 1] || "Эхлэхийг хүлээж байна"}
                 </div>
               </div>
             )}
@@ -149,7 +149,7 @@ export default function CommStatus({ nav, goBack, refresh }) {
                 </div>
               )}
               {(c.status === "delivered" || c.status === "done") && (
-                <PBtn small full onClick={() => nav("review-write")}>Сэтгэгдэл бичих</PBtn>
+                <PBtn small full onClick={() => { GS.reviewTarget = { sellerId: c.seller_id, commissionId: c.id }; nav("review-write"); }}>Сэтгэгдэл бичих</PBtn>
               )}
               {c.status === "rejected" && (
                 <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 6 }}>

@@ -221,8 +221,8 @@ export default function CommManage({ nav, goBack, refresh }) {
             });
             const json = await res.json();
             if (json?.data?.qrImage) setMilestoneQR({ stage, ...json.data });
-            else toast("QPay 연결 실패", "error");
-          } catch { toast("오류 발생", "error"); }
+            else toast("QPay холболт амжилтгүй", "error");
+          } catch { toast("Алдаа гарлаа", "error"); }
           finally { setMilestoneLoading(false); }
         };
         return <Crd key={r.id} style={{ padding: "16px", marginBottom: 12 }}>
@@ -241,12 +241,12 @@ export default function CommManage({ nav, goBack, refresh }) {
           {/* Milestone status */}
           <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
             <div style={{ flex: 1, padding: "8px 10px", borderRadius: 8, background: r.deposit_paid ? "#F0FAF0" : T.s2, border: `1px solid ${r.deposit_paid ? T.green + "40" : T.border}`, textAlign: "center" }}>
-              <div style={{ fontFamily: F, fontSize: 10, color: T.textSub }}>계약금 50%</div>
-              <div style={{ fontFamily: F, fontSize: 11, fontWeight: 700, color: r.deposit_paid ? T.green : T.textSub }}>{r.deposit_paid ? "납부됨" : "미납"}</div>
+              <div style={{ fontFamily: F, fontSize: 10, color: T.textSub }}>Урьдчилгаа 50%</div>
+              <div style={{ fontFamily: F, fontSize: 11, fontWeight: 700, color: r.deposit_paid ? T.green : T.textSub }}>{r.deposit_paid ? "Төлсөн" : "Төлөгдөөгүй"}</div>
             </div>
             <div style={{ flex: 1, padding: "8px 10px", borderRadius: 8, background: r.final_paid ? "#F0FAF0" : T.s2, border: `1px solid ${r.final_paid ? T.green + "40" : T.border}`, textAlign: "center" }}>
-              <div style={{ fontFamily: F, fontSize: 10, color: T.textSub }}>잔금 50%</div>
-              <div style={{ fontFamily: F, fontSize: 11, fontWeight: 700, color: r.final_paid ? T.green : T.textSub }}>{r.final_paid ? "납부됨" : "미납"}</div>
+              <div style={{ fontFamily: F, fontSize: 10, color: T.textSub }}>Үлдэгдэл 50%</div>
+              <div style={{ fontFamily: F, fontSize: 11, fontWeight: 700, color: r.final_paid ? T.green : T.textSub }}>{r.final_paid ? "Төлсөн" : "Төлөгдөөгүй"}</div>
             </div>
           </div>
 
@@ -254,17 +254,17 @@ export default function CommManage({ nav, goBack, refresh }) {
           {milestoneQR && (
             <div style={{ background: T.s2, borderRadius: 12, padding: 16, marginBottom: 12, textAlign: "center" }}>
               <div style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: T.textH, marginBottom: 10 }}>
-                {milestoneQR.stage === "deposit" ? "계약금 50% QPay" : "잔금 50% QPay"}
+                {milestoneQR.stage === "deposit" ? "Урьдчилгаа 50% QPay" : "Үлдэгдэл 50% QPay"}
               </div>
               <img src={`data:image/png;base64,${milestoneQR.qrImage}`} alt="QPay QR" style={{ width: 160, height: 160, display: "block", margin: "0 auto 10px" }} />
-              <button onClick={() => setMilestoneQR(null)} style={{ fontFamily: F, fontSize: 12, color: T.textSub, background: "none", border: "none", cursor: "pointer" }}>닫기</button>
+              <button onClick={() => setMilestoneQR(null)} style={{ fontFamily: F, fontSize: 12, color: T.textSub, background: "none", border: "none", cursor: "pointer" }}>Хаах</button>
             </div>
           )}
 
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
             <PBtn full secondary onClick={() => { openChatWith(r); }}>Харилцаа</PBtn>
-            {!r.deposit_paid && !milestoneQR && <PBtn full secondary loading={milestoneLoading} onClick={() => requestMilestoneInvoice("deposit")}>계약금 QR</PBtn>}
-            {r.deposit_paid && !r.final_paid && r.step >= 3 && !milestoneQR && <PBtn full secondary loading={milestoneLoading} onClick={() => requestMilestoneInvoice("final")}>잔금 QR</PBtn>}
+            {!r.deposit_paid && !milestoneQR && <PBtn full secondary loading={milestoneLoading} onClick={() => requestMilestoneInvoice("deposit")}>Урьдчилгаа QR</PBtn>}
+            {r.deposit_paid && !r.final_paid && r.step >= 3 && !milestoneQR && <PBtn full secondary loading={milestoneLoading} onClick={() => requestMilestoneInvoice("final")}>Үлдэгдэл QR</PBtn>}
             {r.step < 4 && r.deposit_paid && <PBtn full onClick={() => advanceStep(r)}>Дараах шат</PBtn>}
           </div>
         </Crd>;

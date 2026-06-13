@@ -52,6 +52,8 @@ export const GS = {
   directBuyItem: null,
   // Selected order for detail view
   selectedOrderId: null,
+  // Override target for ReviewWrite when reviewing a commission (not an order)
+  reviewTarget: null,
   // Trust metrics (for Star Seller calculation)
   trustMetrics: { responseRate: 100, onTimeRate: 100, avgRating: 0, totalOrders: 0, memberSince: "" },
   // Pending Supabase writes — retried on next sync
@@ -283,5 +285,6 @@ export function resetGS() {
   GS.viewingFollowsUserId = null;
   GS.viewingFollowsTab = null;
   GS.selectedOrderId = null;
+  GS.reviewTarget = null;
   _doSaveGS();
 }

@@ -21,7 +21,7 @@ const KHAN_BANKS = [
   { code: "380000", name: "Капитал Банк" },
 ];
 
-const STATUS_LABEL = { PENDING: "대기", PROCESSING: "처리 중", COMPLETED: "완료", FAILED: "실패" };
+const STATUS_LABEL = { PENDING: "Хүлээгдэж байна", PROCESSING: "Боловсруулж байна", COMPLETED: "Дууссан", FAILED: "Амжилтгүй" };
 const STATUS_COLOR = { PENDING: T.yellow, PROCESSING: T.accent, COMPLETED: T.green, FAILED: T.red };
 
 export default function CreatorPayout({ nav, goBack }) {
@@ -44,9 +44,9 @@ export default function CreatorPayout({ nav, goBack }) {
   }, []);
 
   const saveBank = async () => {
-    if (!bank.code) { toast("은행을 선택하세요", "error"); return; }
-    if (bank.accountNo.length < 10) { toast("계좌번호를 입력하세요 (10자리 이상)", "error"); return; }
-    if (!bank.accountName.trim()) { toast("예금주명을 입력하세요", "error"); return; }
+    if (!bank.code) { toast("Банкаа сонгоно уу", "error"); return; }
+    if (bank.accountNo.length < 10) { toast("Дансны дугаараа оруулна уу (10 оронтой буюу түүнээс дээш)", "error"); return; }
+    if (!bank.accountName.trim()) { toast("Дансны эзэмшигчийн нэрийг оруулна уу", "error"); return; }
     setSaving(true);
     try {
       await DB.updateBankAccount(GS.user.id, bank.code, bank.accountNo, bank.accountName);
@@ -54,8 +54,8 @@ export default function CreatorPayout({ nav, goBack }) {
       GS.user.bankAccountNo = bank.accountNo;
       GS.user.bankAccountName = bank.accountName;
       saveGS();
-      toast("계좌가 저장되었습니다", "success");
-    } catch { toast("저장 실패", "error"); }
+      toast("Данс хадгалагдлаа", "success");
+    } catch { toast("Хадгалахад алдаа гарлаа", "error"); }
     finally { setSaving(false); }
   };
 
@@ -63,12 +63,12 @@ export default function CreatorPayout({ nav, goBack }) {
     <div style={{ height: "100%", display: "flex", flexDirection: "column", background: T.bg }}>
       <div style={{ padding: "20px 20px 0", display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
         <button type="button" onClick={() => goBack ? goBack() : nav("dashboard")} style={{ background: "none", border: "none", color: T.textH, cursor: "pointer", display: "flex" }}><IcBack /></button>
-        <div style={{ fontFamily: F, fontSize: 20, fontWeight: 800, color: T.textH }}>정산</div>
+        <div style={{ fontFamily: F, fontSize: 20, fontWeight: 800, color: T.textH }}>Тооцоо</div>
       </div>
 
       {/* Tabs */}
       <div style={{ display: "flex", borderBottom: `1px solid ${T.border}`, marginTop: 12, flexShrink: 0 }}>
-        {[["balance", "잔액·내역"], ["bank", "계좌 설정"]].map(([id, label]) => (
+        {[["balance", "Үлдэгдэл · Түүх"], ["bank", "Дансны тохиргоо"]].map(([id, label]) => (
           <button key={id} onClick={() => setTab(id)} style={{ flex: 1, padding: "12px 0", background: "none", border: "none", fontFamily: F, fontSize: 13, fontWeight: tab === id ? 700 : 500, color: tab === id ? T.accent : T.textSub, borderBottom: `2px solid ${tab === id ? T.accent : "transparent"}`, cursor: "pointer" }}>
             {label}
           </button>
@@ -80,26 +80,26 @@ export default function CreatorPayout({ nav, goBack }) {
         {/* ── Balance & history ── */}
         {tab === "balance" && (
           loading
-            ? <div style={{ padding: 40, textAlign: "center", fontFamily: F, fontSize: 13, color: T.textSub }}>로딩 중...</div>
+            ? <div style={{ padding: 40, textAlign: "center", fontFamily: F, fontSize: 13, color: T.textSub }}>Уншиж байна...</div>
             : <>
               {/* Balance card */}
               <Crd style={{ padding: "24px 20px", marginBottom: 16, background: T.accent, border: "none" }}>
-                <div style={{ fontFamily: F, fontSize: 11, fontWeight: 700, letterSpacing: ".08em", color: "rgba(255,255,255,0.7)", marginBottom: 8 }}>미지급 잔액</div>
+                <div style={{ fontFamily: F, fontSize: 11, fontWeight: 700, letterSpacing: ".08em", color: "rgba(255,255,255,0.7)", marginBottom: 8 }}>Төлөгдөөгүй үлдэгдэл</div>
                 <div style={{ fontFamily: F, fontSize: 32, fontWeight: 800, color: "#fff", marginBottom: 4 }}>
                   ₮{Number(data?.balance || 0).toLocaleString()}
                 </div>
                 <div style={{ fontFamily: F, fontSize: 12, color: "rgba(255,255,255,0.65)" }}>
-                  {GS.user.bankAccountNo ? `${KHAN_BANKS.find(b => b.code === GS.user.bankCode)?.name || "은행"} · ${GS.user.bankAccountNo}` : "계좌 등록 필요 → '계좌 설정' 탭"}
+                  {GS.user.bankAccountNo ? `${KHAN_BANKS.find(b => b.code === GS.user.bankCode)?.name || "Банк"} · ${GS.user.bankAccountNo}` : "Данс бүртгэх шаардлагатай → 'Дансны тохиргоо' таб"}
                 </div>
               </Crd>
 
               {/* Fee breakdown */}
               <Crd style={{ padding: "14px 16px", marginBottom: 16 }}>
-                <div style={{ fontFamily: F, fontSize: 12, fontWeight: 700, color: T.textSub, marginBottom: 12, letterSpacing: ".04em" }}>수수료 구조</div>
+                <div style={{ fontFamily: F, fontSize: 12, fontWeight: 700, color: T.textSub, marginBottom: 12, letterSpacing: ".04em" }}>Шимтгэлийн бүтэц</div>
                 {[
-                  ["거래액", "100%"],
-                  ["플랫폼 수수료", "10% (1,000 bps)"],
-                  ["창작자 지급", "90%"],
+                  ["Гүйлгээний дүн", "100%"],
+                  ["Платформын шимтгэл", "10% (1,000 bps)"],
+                  ["Бүтээлчид төлөх", "90%"],
                 ].map(([k, v]) => (
                   <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "5px 0", borderBottom: `1px solid ${T.borderLight}` }}>
                     <span style={{ fontFamily: F, fontSize: 12, color: T.textSub }}>{k}</span>
@@ -107,14 +107,14 @@ export default function CreatorPayout({ nav, goBack }) {
                   </div>
                 ))}
                 <div style={{ fontFamily: F, fontSize: 11, color: T.textSub, marginTop: 8, lineHeight: 1.6 }}>
-                  구매자 확정 후 에스크로 해제 → 매주 월요일 10:00 UTC 일괄 지급
+                  Худалдан авагч баталгаажуулсны дараа эскро суллагдана → Долоо хоног бүрийн Даваа гарагт 10:00 UTC цагт нэгтгэн төлбөр хийнэ
                 </div>
               </Crd>
 
               {/* Recent paid orders */}
               {data?.recentOrders?.length > 0 && (
                 <div style={{ marginBottom: 16 }}>
-                  <div style={{ fontFamily: F, fontSize: 13, fontWeight: 700, color: T.textH, marginBottom: 10 }}>최근 판매</div>
+                  <div style={{ fontFamily: F, fontSize: 13, fontWeight: 700, color: T.textH, marginBottom: 10 }}>Сүүлийн борлуулалт</div>
                   {data.recentOrders.map((o, i) => (
                     <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: `1px solid ${T.borderLight}` }}>
                       <div>
@@ -123,7 +123,7 @@ export default function CreatorPayout({ nav, goBack }) {
                       </div>
                       <div style={{ textAlign: "right" }}>
                         <div style={{ fontFamily: F, fontSize: 13, fontWeight: 700, color: T.green }}>+₮{Math.round(Number(o.amount) * 0.9).toLocaleString()}</div>
-                        <div style={{ fontFamily: F, fontSize: 10, color: T.textSub }}>수수료 후</div>
+                        <div style={{ fontFamily: F, fontSize: 10, color: T.textSub }}>Шимтгэлийн дараа</div>
                       </div>
                     </div>
                   ))}
@@ -133,7 +133,7 @@ export default function CreatorPayout({ nav, goBack }) {
               {/* Payout history */}
               {data?.payouts?.length > 0 && (
                 <div>
-                  <div style={{ fontFamily: F, fontSize: 13, fontWeight: 700, color: T.textH, marginBottom: 10 }}>정산 내역</div>
+                  <div style={{ fontFamily: F, fontSize: 13, fontWeight: 700, color: T.textH, marginBottom: 10 }}>Тооцооны түүх</div>
                   {data.payouts.map((p, i) => (
                     <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: `1px solid ${T.borderLight}` }}>
                       <div>
@@ -149,7 +149,7 @@ export default function CreatorPayout({ nav, goBack }) {
               )}
 
               {!data?.recentOrders?.length && !data?.payouts?.length && (
-                <div style={{ padding: "40px 0", textAlign: "center", fontFamily: F, fontSize: 13, color: T.textSub }}>아직 판매 내역이 없어요</div>
+                <div style={{ padding: "40px 0", textAlign: "center", fontFamily: F, fontSize: 13, color: T.textSub }}>Одоогоор борлуулалтын түүх байхгүй байна</div>
               )}
             </>
         )}
@@ -157,20 +157,20 @@ export default function CreatorPayout({ nav, goBack }) {
         {/* ── Bank account settings ── */}
         {tab === "bank" && (
           <div>
-            <div style={{ fontFamily: F, fontSize: 14, fontWeight: 600, color: T.textH, marginBottom: 16 }}>은행 계좌 등록</div>
+            <div style={{ fontFamily: F, fontSize: 14, fontWeight: 600, color: T.textH, marginBottom: 16 }}>Банкны данс бүртгэх</div>
 
             {/* Bank selector */}
             <div style={{ marginBottom: 12 }}>
-              <label style={{ display: "block", fontFamily: F, fontSize: 12, color: T.textSub, marginBottom: 5 }}>은행</label>
+              <label style={{ display: "block", fontFamily: F, fontSize: 12, color: T.textSub, marginBottom: 5 }}>Банк</label>
               <select value={bank.code} onChange={e => setBank(b => ({ ...b, code: e.target.value }))} style={{ width: "100%", background: T.s1, border: `1px solid ${T.border}`, borderRadius: 10, padding: "12px 14px", fontFamily: F, fontSize: 14, color: T.textH, outline: "none", appearance: "none", cursor: "pointer", boxSizing: "border-box" }}>
-                <option value="">은행 선택...</option>
+                <option value="">Банк сонгох...</option>
                 {KHAN_BANKS.map(b => <option key={b.code} value={b.code}>{b.name}</option>)}
               </select>
             </div>
 
             {/* Account number */}
             <div style={{ marginBottom: 12 }}>
-              <label style={{ display: "block", fontFamily: F, fontSize: 12, color: T.textSub, marginBottom: 5 }}>계좌번호</label>
+              <label style={{ display: "block", fontFamily: F, fontSize: 12, color: T.textSub, marginBottom: 5 }}>Дансны дугаар</label>
               <input
                 value={bank.accountNo}
                 onChange={e => setBank(b => ({ ...b, accountNo: e.target.value.replace(/\D/g, "") }))}
@@ -182,23 +182,23 @@ export default function CreatorPayout({ nav, goBack }) {
 
             {/* Account holder name */}
             <div style={{ marginBottom: 20 }}>
-              <label style={{ display: "block", fontFamily: F, fontSize: 12, color: T.textSub, marginBottom: 5 }}>예금주명</label>
+              <label style={{ display: "block", fontFamily: F, fontSize: 12, color: T.textSub, marginBottom: 5 }}>Дансны эзэмшигчийн нэр</label>
               <input
                 value={bank.accountName}
                 onChange={e => setBank(b => ({ ...b, accountName: e.target.value }))}
-                placeholder="이름을 입력하세요"
+                placeholder="Нэрээ оруулна уу"
                 style={{ width: "100%", background: T.s1, border: `1px solid ${T.border}`, borderRadius: 10, padding: "12px 14px", fontFamily: F, fontSize: 14, color: T.textH, outline: "none", boxSizing: "border-box" }}
               />
             </div>
 
             <Crd style={{ padding: "12px 16px", marginBottom: 20, background: T.s2, border: "none" }}>
               <div style={{ fontFamily: F, fontSize: 12, color: T.textSub, lineHeight: 1.7 }}>
-                등록된 계좌로 매주 월요일 미지급 잔액이 자동 이체됩니다.<br />
-                계좌 오류 시 정산이 지연될 수 있으며, 변경은 즉시 적용됩니다.
+                Бүртгэгдсэн дансанд долоо хоног бүрийн Даваа гарагт төлөгдөөгүй үлдэгдэл автоматаар шилжинэ.<br />
+                Дансны мэдээлэл буруу бол тооцоо хойшлогдох магадлалтай бөгөөд өөрчлөлт шууд хэрэгжинэ.
               </div>
             </Crd>
 
-            <PBtn full loading={saving} onClick={saveBank}>계좌 저장</PBtn>
+            <PBtn full loading={saving} onClick={saveBank}>Данс хадгалах</PBtn>
           </div>
         )}
 
