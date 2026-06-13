@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { T } from "@/theme/colors";
 import { GS, saveGS } from "@/lib/store";
+import { DB, isSupabaseReady } from "@/lib/supabase";
 import { IcBack, IcDispute, IcCheck, IcWarning, IcOrder, IcEdit, IcMoney } from "@/components/icons";
 import Crd from "@/components/atoms/Crd";
 import PBtn from "@/components/atoms/PBtn";
@@ -49,6 +50,21 @@ export default function DisputeCenter({ nav, goBack, refresh }) {
       time: "Сая", read: false, to: "dispute",
     });
     saveGS();
+
+    // Persist to Supabase so admin DisputesTab can see it.
+    // Local GS copy is kept regardless (offline / Supabase-not-configured fallback).
+    // order_id FK: if order.id is a local-only (non-Supabase) id, the insert will
+    // silently return null (createDispute swallows FK errors) and local copy survives.
+    if (isSupabaseReady()) {
+      DB.createDispute({
+        orderId:   order?.id ?? null,
+        type,
+        typeLabel: dispute.typeLabel,
+        details,
+        amount:    dispute.amount,
+      }).catch(() => {});
+    }
+
     setStep(0); setType(""); setDetails(""); setSelectedOrderId(null);
     refresh && refresh();
     toast("Маргаан илгээгдлээ", "success");

@@ -527,6 +527,27 @@ export const DB = {
     return data || [];
   },
 
+  // ── Disputes ───────────────────────────────────────────────────
+  async createDispute({ orderId, type, typeLabel, details, amount }) {
+    if (!isSupabaseReady()) return null;
+    const user = await this.getCurrentUser();
+    if (!user) return null;
+    const { data, error } = await supabase
+      .from("disputes")
+      .insert({
+        order_id:    orderId ?? null,
+        reporter_id: user.id,
+        type,
+        type_label:  typeLabel,
+        details,
+        amount:      amount ?? 0,
+      })
+      .select()
+      .single();
+    if (error) { console.error("createDispute error:", error); return null; }
+    return data;
+  },
+
   // ── Admin ──────────────────────────────────────────────────────
   async adminGetDisputes() {
     if (!isSupabaseReady()) return [];
