@@ -97,7 +97,7 @@ export default function Portfolio({ nav, goBack }) {
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <button type="button" onClick={() => goBack ? goBack() : nav("me")} style={{ background: "none", border: "none", color: T.textH, cursor: "pointer", display: "flex" }}><IcBack /></button>
           <div>
-            <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 26, fontWeight: 600, color: T.textH, letterSpacing: "-.01em" }}>Архив</div>
+            <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 24, fontWeight: 600, color: T.textH, letterSpacing: "-.01em" }}>Архив</div>
             <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 13, color: T.textSub, marginTop: 2 }}>Миний бүтээлийн архив</div>
           </div>
         </div>

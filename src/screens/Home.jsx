@@ -41,34 +41,32 @@ function SpotlightHero({ works, nav }) {
   const lbl = HERO_LABELS[idx % HERO_LABELS.length];
 
   return (
-    <div style={{ padding: "14px 16px 0" }}>
+    <div style={{ padding: "10px 16px 0" }}>
       <div onClick={() => nav("work", { workId: w.id })} className="toono-card-tap"
-        style={{ cursor: "pointer", borderRadius: 16, overflow: "hidden", border: `1px solid ${T.borderLight}`, background: T.s1 }}>
-        <div style={{ width: "100%", aspectRatio: "16/8", background: T.s2, position: "relative", overflow: "hidden" }}>
+        style={{ cursor: "pointer", borderRadius: 12, overflow: "hidden", border: `1px solid ${T.borderLight}`, background: T.s1 }}>
+        <div style={{ width: "100%", aspectRatio: "21/9", background: T.s2, position: "relative", overflow: "hidden" }}>
           <img src={w.images[0]} alt={w.title} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-          {/* 슬라이더 도트 */}
           {works.length > 1 && (
-            <div style={{ position: "absolute", top: 10, right: 10, display: "flex", gap: 5 }} onClick={e => e.stopPropagation()}>
+            <div style={{ position: "absolute", top: 8, right: 8, display: "flex", gap: 4 }} onClick={e => e.stopPropagation()}>
               {works.map((_, i) => (
-                <button key={i} type="button" onClick={() => setIdx(i)} style={{ width: i === idx ? 18 : 6, height: 6, borderRadius: 3, background: i === idx ? "#fff" : "rgba(255,255,255,0.55)", border: "none", cursor: "pointer", padding: 0, transition: "all .2s", boxShadow: "0 1px 3px rgba(0,0,0,0.18)" }} />
+                <button key={i} type="button" onClick={() => setIdx(i)} style={{ width: i === idx ? 14 : 5, height: 5, borderRadius: 3, background: i === idx ? "#fff" : "rgba(255,255,255,0.55)", border: "none", cursor: "pointer", padding: 0, transition: "all .2s", boxShadow: "0 1px 3px rgba(0,0,0,0.18)" }} />
               ))}
             </div>
           )}
         </div>
-        <div style={{ padding: "12px 14px 14px", background: T.s2 }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: F, fontSize: 9.5, fontWeight: 700, letterSpacing: "0.2em", color: T.accent, marginBottom: 6, textTransform: "uppercase" }}>
-            <span style={{ width: 5, height: 5, borderRadius: "50%", background: T.accent, display: "inline-block", flexShrink: 0 }} />
+        <div style={{ padding: "10px 12px 12px", background: T.s2 }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 5, fontFamily: F, fontSize: 9, fontWeight: 700, letterSpacing: "0.18em", color: T.accent, marginBottom: 4, textTransform: "uppercase" }}>
+            <span style={{ width: 4, height: 4, borderRadius: "50%", background: T.accent, display: "inline-block", flexShrink: 0 }} />
             {lbl.label}
           </div>
-          <div style={{ fontFamily: F, fontSize: 17, fontWeight: 800, color: T.textH, lineHeight: 1.2, marginBottom: 3, letterSpacing: "-.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</div>
-          <div style={{ fontFamily: F, fontSize: 12, color: T.textSub, marginBottom: 10, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{lbl.sub}</div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <span style={{ fontFamily: F, fontSize: 12.5, color: T.textDim, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginRight: 10 }}>{w.creator}</span>
+            <div style={{ fontFamily: F, fontSize: 15, fontWeight: 800, color: T.textH, lineHeight: 1.2, letterSpacing: "-.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginRight: 10 }}>{w.title}</div>
             <button type="button" onClick={(e) => { e.stopPropagation(); nav("work", { workId: w.id }); }} className="toono-pressable"
-              style={{ flexShrink: 0, fontFamily: F, fontSize: 11.5, fontWeight: 700, letterSpacing: "0.04em", color: "#FFFFFF", background: T.accent, border: "none", borderRadius: 20, padding: "8px 16px", cursor: "pointer" }}>
-              Бүтээл үзэх →
+              style={{ flexShrink: 0, fontFamily: F, fontSize: 11, fontWeight: 700, letterSpacing: "0.04em", color: "#FFFFFF", background: T.accent, border: "none", borderRadius: 20, padding: "6px 14px", cursor: "pointer" }}>
+              Үзэх →
             </button>
           </div>
+          <div style={{ fontFamily: F, fontSize: 11.5, color: T.textDim, marginTop: 2 }}>{w.creator}</div>
         </div>
       </div>
     </div>
@@ -193,7 +191,7 @@ export default function Home({ nav, refresh }) {
           <button type="button" aria-label="Хайх" className="toono-pressable" onClick={() => nav("explore")} style={{ width: 34, height: 34, borderRadius: 10, background: T.s2, border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: T.textH }}><IcSearch /></button>
           <button type="button" aria-label="Сагс" className="toono-pressable" onClick={() => nav("cart")} style={{ position: "relative", width: 34, height: 34, borderRadius: 10, background: T.s2, border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: T.textH }}>
             <IcCart />
-            {GS.cart.length > 0 && <div style={{ position: "absolute", top: -2, right: -2, width: 14, height: 14, borderRadius: 7, background: T.red, display: "flex", alignItems: "center", justifyContent: "center", border: "1.5px solid #fff" }}><span style={{ fontFamily: F, fontSize: 8, fontWeight: 700, color: "#fff" }}>{GS.cart.length}</span></div>}
+            {GS.cart.length > 0 && <div style={{ position: "absolute", top: -2, right: -2, width: 14, height: 14, borderRadius: 7, background: T.red, display: "flex", alignItems: "center", justifyContent: "center", border: "1.5px solid #fff" }}><span style={{ fontFamily: F, fontSize: 9, fontWeight: 700, color: "#fff" }}>{GS.cart.length}</span></div>}
           </button>
           <button type="button" aria-label="Мэдэгдэл" className="toono-pressable" onClick={() => nav("notifications")} style={{ position: "relative", width: 34, height: 34, borderRadius: 10, background: T.s2, border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: T.textH }}>
             <IcBell />

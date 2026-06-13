@@ -34,7 +34,7 @@ export default function CartScreen({ nav, refresh, goBack }) {
             <div style={{ display: "flex", gap: 0 }}>
               <div style={{ width: 90, background: T.s2, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, position: "relative", overflow: "hidden" }}>
                 {item.images?.[0] ? <img src={item.images[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <Toono size={36} color={T.textSub} />}
-                {item.digital && <div style={{ position: "absolute", bottom: 6, left: "50%", transform: "translateX(-50%)", background: "rgba(136,80,212,0.9)", borderRadius: 6, padding: "2px 6px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 8, fontWeight: 700, color: "#fff" }}>
+                {item.digital && <div style={{ position: "absolute", bottom: 6, left: "50%", transform: "translateX(-50%)", background: "rgba(136,80,212,0.9)", borderRadius: 6, padding: "2px 6px", fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 9, fontWeight: 700, color: "#fff" }}>
                   <svg width="9" height="10" viewBox="0 0 9 10" fill="none"><path d="M4.5 1V7M1.5 4.5L4.5 7.5L7.5 4.5" stroke="white" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /><path d="M1 9H8" stroke="white" strokeWidth="1.2" strokeLinecap="round" /></svg> Дижитал
                 </div>}
               </div>

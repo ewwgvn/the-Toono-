@@ -367,7 +367,7 @@ export default function App() {
               : <>
                 <div key={active ? `${item.id}-active` : item.id} className={active ? "nav-icon-active" : undefined} style={{ position: "relative", width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <span style={{ color: active ? T.accent : T.textDim, transition: "color .15s" }}><item.Ic /></span>
-                  {item.badge > 0 && <div style={{ position: "absolute", top: -3, right: -6, minWidth: 14, height: 14, borderRadius: 7, background: T.red, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 3px", border: "1.5px solid #fff" }}><span style={{ fontFamily: F, fontSize: 8, fontWeight: 700, color: "#fff" }}>{item.badge}</span></div>}
+                  {item.badge > 0 && <div style={{ position: "absolute", top: -3, right: -6, minWidth: 14, height: 14, borderRadius: 7, background: T.red, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 3px", border: "1.5px solid #fff" }}><span style={{ fontFamily: F, fontSize: 9, fontWeight: 700, color: "#fff" }}>{item.badge}</span></div>}
                 </div>
                 <span style={{ fontFamily: F, fontSize: 9.5, fontWeight: active ? 700 : 400, color: active ? T.accent : T.textDim, lineHeight: 1, transition: "all .15s", letterSpacing: active ? "0.01em" : "0" }}>{item.label}</span>
                 {active && <span className="toono-nav-pip" style={{ transition: "opacity .2s" }} />}
