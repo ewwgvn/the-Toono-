@@ -120,20 +120,20 @@ export default function Portfolio({ nav, goBack }) {
       </div>
 
       {/* Headline */}
-      <div style={{ paddingBottom: 14, marginBottom: 14, borderBottom: `2px solid ${T.textH}` }}>
-        <div style={{ fontFamily: F, fontSize: 10, fontWeight: 700, letterSpacing: "0.22em", color: T.accent, marginBottom: 6, textTransform: "uppercase" }}>00 / Миний бүтээлийн архив</div>
-        <div style={{ fontFamily: F, fontSize: "clamp(38px,12vw,60px)", fontWeight: 900, color: T.textH, lineHeight: 0.95, letterSpacing: "-0.03em", textTransform: "uppercase", transform: "scaleX(0.94)", transformOrigin: "left" }}>Архив</div>
+      <div style={{ marginBottom: 16 }}>
+        <div style={{ fontFamily: F, fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", color: T.accent, marginBottom: 4, textTransform: "uppercase" }}>Миний бүтээлийн архив</div>
+        <div style={{ fontFamily: F, fontSize: "clamp(26px,7vw,34px)", fontWeight: 800, color: T.textH, lineHeight: 1.1, letterSpacing: "-0.02em" }}>Архив</div>
       </div>
 
       {/* Ticker */}
-      <div style={{ overflow: "hidden", background: T.textH, marginLeft: -20, marginRight: -20, marginBottom: 14 }}>
-        <div className="archive-ticker-track" style={{ fontFamily: F, fontSize: 11, fontWeight: 700, color: "#FFFFFF", letterSpacing: "0.14em", textTransform: "uppercase", padding: "7px 0" }}>
+      <div style={{ overflow: "hidden", background: T.accentSub, borderRadius: 12, marginBottom: 14 }}>
+        <div className="archive-ticker-track" style={{ fontFamily: F, fontSize: 11, fontWeight: 700, color: T.accent, letterSpacing: "0.08em", padding: "8px 0" }}>
           {`Нийт ${stats.total} бүтээл — ${stats.published} нийтлэгдсэн — ${stats.sales} борлуулалт — ${stats.views.toLocaleString()} үзэлт　·　`.repeat(2)}
         </div>
       </div>
 
       {/* Stats summary */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", border: `1px solid ${T.border}`, marginBottom: 14 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", border: `1px solid ${T.border}`, borderRadius: 14, overflow: "hidden", background: T.s1, marginBottom: 14 }}>
         {[
           { v: stats.total, l: "Нийт", color: T.textH },
           { v: stats.published, l: "Нийтлэгдсэн", color: T.green },
@@ -146,7 +146,7 @@ export default function Portfolio({ nav, goBack }) {
       </div>
 
       {/* Search */}
-      <div style={{ background: T.s1, border: `1px solid ${T.border}`, padding: "10px 14px", display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+      <div style={{ background: T.s1, border: `1px solid ${T.border}`, borderRadius: 14, padding: "10px 14px", display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
         <IcSearch />
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Бүтээл, таг хайх..." style={{ background: "none", border: "none", outline: "none", fontFamily: F, fontSize: 14, color: T.textH, flex: 1 }} />
         {search && <button type="button" onClick={() => setSearch("")} style={{ background: "none", border: "none", cursor: "pointer", color: T.textSub, display: "flex" }}><IcX /></button>}
@@ -155,22 +155,22 @@ export default function Portfolio({ nav, goBack }) {
 
     {/* Filter toolbar */}
     <div style={{ padding: "0 20px 10px", flexShrink: 0 }}>
-      <div style={{ display: "flex", gap: 0, overflowX: "auto", scrollbarWidth: "none", marginBottom: 12, border: `1px solid ${T.textH}` }}>
+      <div style={{ display: "flex", gap: 8, overflowX: "auto", scrollbarWidth: "none", marginBottom: 12 }}>
         {[
           ["all", "Бүгд", allWorks.length],
           ["published", "Нийтлэгдсэн"],
           ["draft", "Ноорог"],
           ["archived", "Архив"],
           ["digital", "Дижитал"],
-        ].map((f, i) => <button type="button" key={f[0]} onClick={() => setFilter(f[0])} style={{ flexShrink: 0, padding: "8px 13px", cursor: "pointer", fontFamily: F, fontSize: 11, fontWeight: 700, letterSpacing: "0.04em", textTransform: "uppercase", background: filter === f[0] ? T.textH : "transparent", border: "none", borderLeft: i > 0 ? `1px solid ${T.textH}` : "none", color: filter === f[0] ? "#fff" : T.textH, transition: "all .15s" }}>
-          <span style={{ opacity: 0.5, marginRight: 5 }}>{String(i + 1).padStart(2, "0")}</span>{f[1]}{f[2] !== undefined ? ` (${f[2]})` : ""}
+        ].map((f) => <button type="button" key={f[0]} onClick={() => setFilter(f[0])} style={{ flexShrink: 0, padding: "8px 16px", borderRadius: 20, cursor: "pointer", fontFamily: F, fontSize: 12, fontWeight: 600, background: filter === f[0] ? T.accent : T.s2, border: "none", color: filter === f[0] ? "#fff" : T.textSub, transition: "all .15s" }}>
+          {f[1]}{f[2] !== undefined ? ` (${f[2]})` : ""}
         </button>)}
       </div>
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ fontFamily: F, fontSize: 11, color: T.textSub, textTransform: "uppercase", letterSpacing: "0.08em" }}>{filtered.length} бүтээл</div>
         <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-          <select value={sort} onChange={e => setSort(e.target.value)} style={{ background: "none", border: `1px solid ${T.border}`, borderRadius: 0, padding: "5px 10px", fontFamily: F, fontSize: 11, fontWeight: 600, color: T.textH, outline: "none", cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+          <select value={sort} onChange={e => setSort(e.target.value)} style={{ background: "none", border: `1px solid ${T.border}`, borderRadius: 10, padding: "5px 10px", fontFamily: F, fontSize: 11, fontWeight: 600, color: T.textH, outline: "none", cursor: "pointer" }}>
             <option value="newest">Шинэ</option>
             <option value="oldest">Хуучин</option>
             <option value="popular">Алдартай</option>
@@ -180,7 +180,7 @@ export default function Portfolio({ nav, goBack }) {
             ["grid", <svg key="g" width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.3" /><rect x="9" y="1" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.3" /><rect x="1" y="9" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.3" /><rect x="9" y="9" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.3" /></svg>],
             ["list", <svg key="l" width="14" height="14" viewBox="0 0 16 16" fill="none"><line x1="1" y1="4" x2="15" y2="4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /><line x1="1" y1="8" x2="15" y2="8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /><line x1="1" y1="12" x2="15" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>],
             ["timeline", <svg key="t" width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="3" cy="4" r="2" stroke="currentColor" strokeWidth="1.3" /><circle cx="3" cy="12" r="2" stroke="currentColor" strokeWidth="1.3" /><line x1="3" y1="6" x2="3" y2="10" stroke="currentColor" strokeWidth="1.3" /><line x1="6" y1="4" x2="15" y2="4" stroke="currentColor" strokeWidth="1.3" /><line x1="6" y1="12" x2="15" y2="12" stroke="currentColor" strokeWidth="1.3" /></svg>],
-          ].map(([v, icon]) => <button type="button" key={v} onClick={() => setView(v)} style={{ width: 38, height: 38, background: "none", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}><span style={{ width: 30, height: 30, background: view === v ? T.textH : "transparent", border: `1px solid ${view === v ? T.textH : T.border}`, display: "flex", alignItems: "center", justifyContent: "center", color: view === v ? "#fff" : T.textSub }}>{icon}</span></button>)}
+          ].map(([v, icon]) => <button type="button" key={v} onClick={() => setView(v)} style={{ width: 38, height: 38, background: "none", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}><span style={{ width: 30, height: 30, borderRadius: 8, background: view === v ? T.accent : "transparent", border: `1px solid ${view === v ? T.accent : T.border}`, display: "flex", alignItems: "center", justifyContent: "center", color: view === v ? "#fff" : T.textSub }}>{icon}</span></button>)}
         </div>
       </div>
     </div>
@@ -190,7 +190,7 @@ export default function Portfolio({ nav, goBack }) {
       {filtered.length === 0 && <Empty icon={<IcFolderEmpty />} title="Бүтээл олдсонгүй" sub="Хайлтаа өөрчилж үзнэ үү" />}
 
       {/* GRID VIEW — archive index grid */}
-      {view === "grid" && filtered.length > 0 && <div className="archive-grid" style={{ "--archive-border": T.border, marginLeft: -20, marginRight: -20, marginBottom: -1 }}>
+      {view === "grid" && filtered.length > 0 && <div className="archive-grid" style={{ "--archive-border": T.border, borderRadius: 16, overflow: "hidden", marginBottom: 14 }}>
         {filtered.map((w, i) => {
           const isSel = selected.has(w.id);
           const sc = statusCfg[w.digital ? "digital" : w.status] || statusCfg.published;
@@ -204,8 +204,8 @@ export default function Portfolio({ nav, goBack }) {
               {w.images?.[0]
                 ? <img src={w.images[0]} alt={w.title} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
                 : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}><Toono size={36} color={T.borderMid} /></div>}
-              <div style={{ position: "absolute", top: 0, left: 0, fontFamily: F, fontSize: 10, fontWeight: 700, color: "#fff", background: "rgba(17,17,17,0.6)", padding: "3px 7px", letterSpacing: "0.04em" }}>{String(i + 1).padStart(2, "0")}</div>
-              {showBadge && <div style={{ position: "absolute", top: 0, right: 0, background: "rgba(255,255,255,0.92)", padding: "3px 8px" }}>
+              <div style={{ position: "absolute", top: 8, left: 8, fontFamily: F, fontSize: 10, fontWeight: 700, color: "#fff", background: "rgba(38,129,218,0.78)", borderRadius: 6, padding: "3px 7px", letterSpacing: "0.04em" }}>{String(i + 1).padStart(2, "0")}</div>
+              {showBadge && <div style={{ position: "absolute", top: 8, right: 8, background: "rgba(255,255,255,0.92)", borderRadius: 6, padding: "3px 8px" }}>
                 <span style={{ fontFamily: F, fontSize: 9, fontWeight: 700, color: sc.color, textTransform: "uppercase", letterSpacing: "0.04em" }}>{sc.label}</span>
               </div>}
               {bulkMode && <div style={{ position: "absolute", bottom: 6, right: 6, width: 20, height: 20, borderRadius: "50%", background: isSel ? T.accent : "rgba(255,255,255,0.9)", border: `2px solid ${isSel ? T.accent : T.textDim}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -215,7 +215,7 @@ export default function Portfolio({ nav, goBack }) {
             <div style={{ padding: "10px 10px 12px" }}>
               <div style={{ fontFamily: F, fontSize: 13, fontWeight: 700, color: T.textH, lineHeight: 1.3, letterSpacing: "-.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 6 }}>{w.title}</div>
               {tags.length > 0 && <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
-                {tags.map((t, ti) => <span key={ti} style={{ fontFamily: F, fontSize: 9, fontWeight: 600, color: T.textSub, border: `1px solid ${T.border}`, padding: "2px 6px", textTransform: "uppercase", letterSpacing: "0.05em" }}>{t}</span>)}
+                {tags.map((t, ti) => <span key={ti} style={{ fontFamily: F, fontSize: 9, fontWeight: 600, color: T.accent, background: T.accentSub, borderRadius: 8, padding: "2px 7px" }}>{t}</span>)}
               </div>}
             </div>
           </div>;
@@ -237,7 +237,7 @@ export default function Portfolio({ nav, goBack }) {
             {bulkMode && <div style={{ width: 20, height: 20, borderRadius: "50%", background: isSel ? T.accent : T.s2, border: `2px solid ${isSel ? T.accent : T.border}`, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
               {isSel && <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#fff" }} />}
             </div>}
-            <div style={{ width: 52, height: 52, borderRadius: 0, background: T.s2, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
+            <div style={{ width: 52, height: 52, borderRadius: 10, background: T.s2, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
               {w.images?.[0] ? <img src={w.images[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <Toono size={28} color={w.accent || `${T.textDim}`} />}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
@@ -271,10 +271,10 @@ export default function Portfolio({ nav, goBack }) {
       {/* TIMELINE VIEW */}
       {view === "timeline" && <div style={{ paddingTop: 8 }}>
         {Object.keys(byYear).sort((a, b) => +b - +a).map(year => <div key={year} style={{ marginBottom: 24 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14, paddingBottom: 8, borderBottom: `2px solid ${T.textH}` }}>
-            <div style={{ fontFamily: F, fontSize: "clamp(24px,7vw,34px)", fontWeight: 900, color: T.textH, letterSpacing: "-0.02em", transform: "scaleX(0.96)", transformOrigin: "left" }}>{year}</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14, paddingBottom: 8, borderBottom: `1px solid ${T.s2}` }}>
+            <div style={{ fontFamily: F, fontSize: "clamp(20px,5.5vw,26px)", fontWeight: 800, color: T.textH, letterSpacing: "-0.02em" }}>{year}</div>
             <div style={{ flex: 1 }} />
-            <div style={{ fontFamily: F, fontSize: 10, color: T.textSub, textTransform: "uppercase", letterSpacing: "0.08em" }}>{byYear[+year].length}ш</div>
+            <div style={{ fontFamily: F, fontSize: 11, color: T.textSub, letterSpacing: "0.04em" }}>{byYear[+year].length}ш</div>
           </div>
           <div style={{ paddingLeft: 16, borderLeft: `2px solid ${T.border}` }}>
             {byYear[+year].map((w) => {
@@ -283,7 +283,7 @@ export default function Portfolio({ nav, goBack }) {
                 <div style={{ position: "absolute", left: -22, top: 16, width: 12, height: 12, borderRadius: "50%", background: w.accent || `${T.textH}`, border: `2px solid ${T.bg}` }} />
                 <Crd style={{ padding: "14px 16px" }}>
                   <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-                    <div style={{ width: 52, height: 52, borderRadius: 0, background: T.s2, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
+                    <div style={{ width: 52, height: 52, borderRadius: 10, background: T.s2, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
                       {w.images?.[0] ? <img src={w.images[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <Toono size={28} color={w.accent || `${T.textDim}`} />}
                     </div>
                     <div style={{ flex: 1 }}>
