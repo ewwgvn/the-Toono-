@@ -5,12 +5,50 @@ import { T } from "@/theme/colors";
 import { DB, isSupabaseReady, fetchPublicData } from "@/lib/supabase";
 import { getAllWorks, getCreators, fmtP } from "@/lib/utils";
 import Toono from "@/components/atoms/Toono";
-import { IcCart, IcBell, IcSearch, IcHeart } from "@/components/icons";
+import {
+  IcCart, IcBell, IcSearch, IcHeart,
+  IcFieldFashion, IcFieldHome, IcFieldJewelry, IcFieldDirection,
+  IcFieldGraphic, IcFieldTextile, IcFieldArt, IcField3D, IcFieldPhoto,
+} from "@/components/icons";
+import WorkCard from "@/components/shared/WorkCard";
 
 const F = "'Helvetica Neue', Arial, sans-serif";
 const CATS = ["Fashion Design","Interior Design","Jewelry Design","Industrial Design","Graphic Design","Textile Design","Fine Art","3D Design","Photography"];
 
-// ── 히어로 배너 (슬라이더) ────────────────────────────────────────────────────
+// 카테고리 ↔ 아이콘 매핑 (Field 아이콘 9종 = CATS 9종, 1:1)
+const CAT_ICONS = {
+  "Fashion Design": IcFieldFashion,
+  "Interior Design": IcFieldHome,
+  "Jewelry Design": IcFieldJewelry,
+  "Industrial Design": IcFieldDirection,
+  "Graphic Design": IcFieldGraphic,
+  "Textile Design": IcFieldTextile,
+  "Fine Art": IcFieldArt,
+  "3D Design": IcField3D,
+  "Photography": IcFieldPhoto,
+};
+
+// ── 토오노 살대 모티프 — 게르 천창에서 빛이 들어오는 원형 구조 ─────────────────────
+function ToonoRing() {
+  const r1 = 78, r2 = 56, cx = 100, cy = 100;
+  const spokes = Array.from({ length: 8 }, (_, i) => {
+    const a = (i * Math.PI * 2) / 8;
+    return {
+      x1: cx + Math.cos(a) * r2, y1: cy + Math.sin(a) * r2,
+      x2: cx + Math.cos(a) * r1, y2: cy + Math.sin(a) * r1,
+    };
+  });
+  return (
+    <svg className="toono-hero-ring" viewBox="0 0 200 200" aria-hidden="true"
+      style={{ position: "absolute", top: -88, left: "50%", transform: "translateX(-50%)", width: 230, height: 230, pointerEvents: "none" }}>
+      <circle cx={cx} cy={cy} r={r1} stroke="rgba(255,255,255,0.22)" strokeWidth="1.5" fill="none" />
+      <circle cx={cx} cy={cy} r={r2} stroke="rgba(255,255,255,0.16)" strokeWidth="1" fill="none" />
+      {spokes.map((s, i) => <line key={i} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2} stroke="rgba(255,255,255,0.18)" strokeWidth="1" />)}
+    </svg>
+  );
+}
+
+// ── 히어로 배너 — "тооно нээгдэх мөч" (토오노가 열리는 순간) ────────────────────
 const HERO_LABELS = [
   { label: "ШИНЭ ЦУГЛУУЛГА",  sub: "Шинэ бүтээлүүдийг нээж олоорой" },
   { label: "ОНЦЛОХ БҮТЭЭЛ",   sub: "Бүтээлчийн шилдэг ажлууд" },
@@ -24,59 +62,64 @@ function HeroBanner({ works, nav }) {
 
   return (
     <div style={{ position: "relative", width: "100%", overflow: "hidden", cursor: "pointer" }} onClick={() => nav("work", { workId: w.id })}>
-      <div style={{ width: "100%", aspectRatio: "16/9", maxHeight: 480, background: "#111", position: "relative", overflow: "hidden" }}>
-        <img src={w.images[0]} alt={w.title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", opacity: 0.75 }} />
-        {/* 그라데이션 오버레이 */}
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0) 100%)" }} />
+      <div style={{ width: "100%", aspectRatio: "4/5", maxHeight: 560, background: "#0B1320", position: "relative", overflow: "hidden" }}>
+        <img src={w.images[0]} alt={w.title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+        {/* 천창에서 쏟아지는 빛 — 라디얼 글로우 */}
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(circle at 50% 0%, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0) 48%)" }} />
+        {/* 토오노 살대 모티프 */}
+        <ToonoRing />
+        {/* 하단 그라데이션 — 텍스트 가독성 */}
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(8,16,28,0.85) 0%, rgba(8,16,28,0.18) 45%, rgba(8,16,28,0) 70%)" }} />
         {/* 텍스트 */}
-        <div style={{ position: "absolute", left: 20, bottom: 20, right: 60 }}>
-          <div style={{ fontFamily: F, fontSize: 10, fontWeight: 600, letterSpacing: "0.12em", color: "rgba(255,255,255,0.7)", marginBottom: 6, textTransform: "uppercase" }}>{lbl.label}</div>
-          <div style={{ fontFamily: F, fontSize: 24, fontWeight: 800, color: "#FFFFFF", lineHeight: 1.15, marginBottom: 6, letterSpacing: "-.01em" }}>{w.title}</div>
-          <div style={{ fontFamily: F, fontSize: 12, color: "rgba(255,255,255,0.65)" }}>{lbl.sub}</div>
-        </div>
-        {/* 슬라이더 도트 */}
-        {works.length > 1 && (
-          <div style={{ position: "absolute", bottom: 16, right: 16, display: "flex", gap: 5 }} onClick={e => e.stopPropagation()}>
-            {works.map((_, i) => (
-              <button key={i} type="button" onClick={() => setIdx(i)} style={{ width: i === idx ? 20 : 6, height: 6, borderRadius: 3, background: i === idx ? "#fff" : "rgba(255,255,255,0.4)", border: "none", cursor: "pointer", padding: 0, transition: "all .2s" }} />
-            ))}
+        <div style={{ position: "absolute", left: 20, right: 20, bottom: 22 }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: F, fontSize: 10, fontWeight: 700, letterSpacing: "0.22em", color: "#fff", marginBottom: 12, textTransform: "uppercase", background: "rgba(255,255,255,0.14)", backdropFilter: "blur(6px)", padding: "5px 11px", borderRadius: 20 }}>
+            <span style={{ width: 5, height: 5, borderRadius: "50%", background: T.accent, display: "inline-block", flexShrink: 0 }} />
+            {lbl.label}
           </div>
-        )}
+          <div style={{ fontFamily: F, fontSize: 28, fontWeight: 800, color: "#FFFFFF", lineHeight: 1.18, marginBottom: 6, letterSpacing: "-.01em" }}>{w.title}</div>
+          <div style={{ fontFamily: F, fontSize: 13, color: "rgba(255,255,255,0.7)", marginBottom: 18 }}>{lbl.sub}</div>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <button type="button" onClick={(e) => { e.stopPropagation(); nav("work", { workId: w.id }); }} className="toono-pressable"
+              style={{ fontFamily: F, fontSize: 12, fontWeight: 700, letterSpacing: "0.04em", color: "#111", background: "#FFFFFF", border: "none", borderRadius: 22, padding: "10px 20px", cursor: "pointer" }}>
+              Бүтээл үзэх →
+            </button>
+            {/* 슬라이더 도트 */}
+            {works.length > 1 && (
+              <div style={{ display: "flex", gap: 5 }} onClick={e => e.stopPropagation()}>
+                {works.map((_, i) => (
+                  <button key={i} type="button" onClick={() => setIdx(i)} style={{ width: i === idx ? 20 : 6, height: 6, borderRadius: 3, background: i === idx ? "#fff" : "rgba(255,255,255,0.4)", border: "none", cursor: "pointer", padding: 0, transition: "all .2s" }} />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
-// ── 상품 카드 ──────────────────────────────────────────────────────────────────
-const WorkCard = memo(function WorkCard({ w, liked, onLike, nav }) {
-  const thumb = w.images?.[0] || null;
-  const likeCount = (w.likes_count || w.likes || 0);
+// ── 카테고리 아이콘 스크롤러 ────────────────────────────────────────────────────
+function CategoryRow({ selCat, setSelCat }) {
+  const items = [{ key: "all", label: "Бүгд", Icon: null }, ...CATS.map(c => ({ key: c, label: c.split(" ")[0], Icon: CAT_ICONS[c] }))];
   return (
-    <div onClick={() => nav("work", { workId: w.id })} className="toono-card-tap" style={{ cursor: "pointer" }}>
-      {/* 이미지 — 자연 비율 */}
-      <div style={{ background: T.s2, borderRadius: 10, overflow: "hidden", marginBottom: 10, position: "relative" }}>
-        {thumb
-          ? <img src={thumb} alt={w.title} loading="lazy" style={{ width: "100%", aspectRatio: "3/4", objectFit: "cover", display: "block" }} />
-          : <div style={{ width: "100%", aspectRatio: "3/4", display: "flex", alignItems: "center", justifyContent: "center" }}><Toono size={36} color={T.borderMid} /></div>}
-        {/* 좋아요 버튼 */}
-        <button
-          type="button"
-          aria-label={liked ? "Таалагдсаныг болиулах" : "Таалагдлаа"}
-          className="toono-pressable"
-          onClick={e => { e.stopPropagation(); onLike(w.id); }}
-          style={{ position: "absolute", bottom: 10, right: 10, display: "flex", alignItems: "center", gap: 4, background: "rgba(255,255,255,0.92)", borderRadius: 20, border: "none", padding: "5px 9px", cursor: "pointer", color: liked ? T.red : T.textSub }}
-        >
-          <IcHeart filled={liked} />
-          {likeCount > 0 && <span style={{ fontFamily: F, fontSize: 11, fontWeight: 600, color: liked ? T.red : T.textSub }}>{likeCount}</span>}
-        </button>
+    <div style={{ padding: "18px 0", borderBottom: `1px solid ${T.s2}` }}>
+      <div style={{ display: "flex", gap: 14, overflowX: "auto", scrollbarWidth: "none", padding: "0 16px" }}>
+        {items.map(({ key, label, Icon }) => {
+          const active = selCat === key;
+          return (
+            <button key={key} type="button" onClick={() => setSelCat(key)} className="cat-chip toono-pressable"
+              style={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 7, width: 60, background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+              <div className="cat-chip-circle" style={{ width: 50, height: 50, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: active ? T.accent : T.s2, color: active ? "#FFFFFF" : T.textH, border: active ? "none" : `1px solid ${T.borderLight}` }}>
+                {Icon ? <Icon /> : <Toono size={20} color={active ? "#FFFFFF" : T.textH} />}
+              </div>
+              <span style={{ fontFamily: F, fontSize: 11, fontWeight: active ? 700 : 500, color: active ? T.textH : T.textSub, whiteSpace: "nowrap" }}>{label}</span>
+            </button>
+          );
+        })}
       </div>
-      {/* 텍스트 정보 */}
-      <div style={{ fontFamily: F, fontSize: 11, color: T.textDim, marginBottom: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.creator}</div>
-      <div style={{ fontFamily: F, fontSize: 13, fontWeight: 500, color: T.textH, marginBottom: 5, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</div>
-      <div style={{ fontFamily: F, fontSize: 14, fontWeight: 700, color: T.textH }}>{fmtP(w)}</div>
     </div>
   );
-});
+}
 
 // ── 크리에이터 칩 ──────────────────────────────────────────────────────────────
 const CreatorChip = memo(function CreatorChip({ c, nav }) {
@@ -147,9 +190,14 @@ export default function Home({ nav, refresh }) {
     saveGS(); setTick(t => t + 1); refresh();
     if (GS.user.id) DB.toggleLike(GS.user.id, id);
   };
+  const tSave = (id) => {
+    GS.saved.has(id) ? GS.saved.delete(id) : GS.saved.add(id);
+    saveGS(); setTick(t => t + 1); refresh();
+    if (GS.user.id) DB.toggleSave(GS.user.id, id);
+  };
 
   const sorted = [...allW].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-  const filtered = selCat === "all" ? sorted : allW.filter(w => w.cat === selCat);
+  const filtered = selCat === "all" ? sorted : sorted.filter(w => w.cat === selCat);
   const popular = [...allW].sort((a, b) => (b.likes_count || b.likes || 0) - (a.likes_count || a.likes || 0)).slice(0, 6);
   const topCreators = creators.filter(c => c.id !== GS.user.id).slice(0, 12);
   const recentlyViewed = (GS.recentlyViewed || []).map(id => allW.find(w => w.id === id)).filter(Boolean).slice(0, 6);
@@ -180,21 +228,13 @@ export default function Home({ nav, refresh }) {
       <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none" }}>
         {loading ? <Skeleton /> : <>
 
-          {/* ── 카테고리 필터 ── */}
-          <div style={{ padding: "10px 0 0", borderBottom: `1px solid ${T.s2}` }}>
-            <div style={{ display: "flex", gap: 6, overflowX: "auto", scrollbarWidth: "none", padding: "0 16px 10px" }}>
-              {[["all", "Бүгд"], ...CATS.map(c => [c, c.split(" ")[0]])].map(([k, l]) => (
-                <button key={k} type="button" onClick={() => setSelCat(k)} style={{ flexShrink: 0, padding: "7px 14px", borderRadius: 20, fontFamily: F, fontSize: 12, fontWeight: selCat === k ? 700 : 400, background: selCat === k ? T.accent : "transparent", border: selCat === k ? "none" : `1px solid ${T.border}`, color: selCat === k ? "#FFFFFF" : T.textSub, cursor: "pointer", transition: "all .15s", whiteSpace: "nowrap" }}>
-                  {k === "all" ? "Бүгд" : l}
-                </button>
-              ))}
-            </div>
-          </div>
-
           {/* ── 히어로 배너 ── */}
           {heroWorks.length > 0 && selCat === "all" && (
             <HeroBanner works={heroWorks} nav={nav} />
           )}
+
+          {/* ── 카테고리 아이콘 ── */}
+          <CategoryRow selCat={selCat} setSelCat={setSelCat} />
 
           {/* ── 크리에이터 ── */}
           {topCreators.length > 0 && selCat === "all" && (
@@ -236,9 +276,29 @@ export default function Home({ nav, refresh }) {
             </div>
           )}
 
-          {/* ── 최근 본 ── */}
+          {/* ── 전체 작품 (벤토 그리드) ── */}
+          <div style={{ padding: "28px 16px 0" }}>
+            <SectionLabel
+              label={selCat === "all" ? "ALL WORKS" : selCat.toUpperCase()}
+              title={selCat === "all" ? "Бүх бүтээл" : selCat}
+              action={`${filtered.length}ш`}
+            />
+            {filtered.length === 0 ? (
+              <div style={{ padding: "60px 0", textAlign: "center" }}>
+                <div style={{ fontFamily: F, fontSize: 13, color: T.textDim }}>Энэ ангилалд бүтээл байхгүй байна</div>
+              </div>
+            ) : (
+              <div className="bento-grid" style={{ paddingTop: 4, paddingBottom: 8 }}>
+                {filtered.map((w, i) => (
+                  <WorkCard key={w.id} work={w} onClick={() => nav("work", { workId: w.id })} onToggleLike={tLike} onToggleSave={tSave} liked={GS.liked.has(w.id)} saved={GS.saved.has(w.id)} featured={i % 7 === 3} index={i} />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* ── 최근 본 (하단) ── */}
           {recentlyViewed.length > 0 && selCat === "all" && (
-            <div style={{ padding: "24px 16px 0", borderBottom: `1px solid ${T.s2}`, paddingBottom: 20 }}>
+            <div style={{ padding: "28px 16px 0" }}>
               <SectionLabel label="RECENTLY VIEWED" title="Сүүлд үзсэн" />
               <div style={{ display: "flex", gap: 10, overflowX: "auto", scrollbarWidth: "none", marginLeft: -16, marginRight: -16, paddingLeft: 16, paddingRight: 16 }}>
                 {recentlyViewed.map(w => (
@@ -255,26 +315,6 @@ export default function Home({ nav, refresh }) {
               </div>
             </div>
           )}
-
-          {/* ── 메인 작품 그리드 ── */}
-          <div style={{ padding: "28px 16px 0" }}>
-            <SectionLabel
-              label={selCat === "all" ? "ALL WORKS" : selCat.toUpperCase()}
-              title={selCat === "all" ? "Бүх бүтээл" : selCat}
-              action={`${filtered.length}ш`}
-            />
-            {filtered.length === 0 ? (
-              <div style={{ padding: "60px 0", textAlign: "center" }}>
-                <div style={{ fontFamily: F, fontSize: 13, color: T.textDim }}>Энэ ангилалд бүтээл байхгүй байна</div>
-              </div>
-            ) : (
-              <div className="toono-grid-2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-                {filtered.map(w => (
-                  <WorkCard key={w.id} w={w} liked={GS.liked.has(w.id)} onLike={tLike} nav={nav} />
-                ))}
-              </div>
-            )}
-          </div>
 
           <div style={{ height: 100 }} />
         </>}

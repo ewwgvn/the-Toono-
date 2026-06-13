@@ -296,5 +296,13 @@ input[type="checkbox"], input[type="radio"] { -webkit-appearance: auto !importan
 
 /* ── Reduced motion (screen/nav motion) ── */
 @media (prefers-reduced-motion: reduce) {
-  .screen-fade, .screen-forward, .screen-back, .nav-icon-active, .toono-nav-pip { animation: none !important; }
+  .screen-fade, .screen-forward, .screen-back, .nav-icon-active, .toono-nav-pip, .toono-hero-ring { animation: none !important; }
 }
+
+/* ── Home hero — "тооно нээгдэх мөч" (the toono skylight opening) ── */
+@keyframes toonoRingSpin { to { transform: translateX(-50%) rotate(360deg); } }
+.toono-hero-ring { animation: toonoRingSpin 140s linear infinite; }
+
+/* ── Category icon scroller ── */
+.cat-chip-circle { transition: background-color .15s ease, color .15s ease, transform .15s ease; }
+.cat-chip:active .cat-chip-circle { transform: scale(0.92); }
