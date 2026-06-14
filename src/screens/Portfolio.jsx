@@ -94,8 +94,9 @@ export default function Portfolio({ nav, goBack }) {
   const DigitalBadge = () => <span style={{fontFamily:"'Helvetica Neue', Arial, sans-serif",fontSize:9,color:T.textSub,background:"rgba(136,80,212,0.14)",padding:"2px 6px",borderRadius:5,fontWeight:700}}>⬇ Дижитал</span>;
 
   return <div style={{ height: "100%", display: "flex", flexDirection: "column", background: T.bg }}>
+    <div style={{ flex: 1, minHeight: 0, overflowY: "auto", scrollbarWidth: "none" }}>
     {/* Header */}
-    <div style={{ padding: "16px 20px 0", flexShrink: 0 }}>
+    <div style={{ padding: "16px 20px 0" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
         <button type="button" onClick={() => goBack ? goBack() : nav("me")} style={{ background: "none", border: "none", color: T.textH, cursor: "pointer", display: "flex" }}><IcBack /></button>
         <div style={{ display: "flex", gap: 8 }}>
@@ -155,7 +156,7 @@ export default function Portfolio({ nav, goBack }) {
     </div>
 
     {/* Filter toolbar */}
-    <div style={{ padding: "0 20px 10px", flexShrink: 0 }}>
+    <div style={{ padding: "0 20px 10px" }}>
       <div style={{ display: "flex", gap: 8, overflowX: "auto", scrollbarWidth: "none", marginBottom: 12 }}>
         {[
           ["all", "Бүгд", allWorks.length],
@@ -187,7 +188,7 @@ export default function Portfolio({ nav, goBack }) {
     </div>
 
     {/* Content */}
-    <div style={{ flex: 1, minHeight: 0, overflowY: "auto", scrollbarWidth: "none", padding: "0 20px" }}>
+    <div style={{ padding: "0 20px" }}>
       {filtered.length === 0 && <Empty icon={<IcFolderEmpty />} title="Бүтээл олдсонгүй" sub="Хайлтаа өөрчилж үзнэ үү" />}
 
       {/* GRID VIEW — archive index grid */}
@@ -312,6 +313,7 @@ export default function Portfolio({ nav, goBack }) {
       </div>}
 
       <div style={{ height: 30 }} />
+    </div>
     </div>
 
     {/* Work detail modal */}
