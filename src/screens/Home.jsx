@@ -28,50 +28,65 @@ const CAT_ICONS = {
   "Photography": IcFieldPhoto,
 };
 
-function Masthead({ nav, heroWork }) {
-  const img = heroWork?.images?.[0];
+// 센터 헤드라인 + 사진 아치 + CTA + 3단 특징 — AI 랜딩페이지 스타일 히어로
+const HERO_ARC = [
+  { left: "1%",  top: "32%", w: 76, h: 98,  rot: -9, radius: 16 },
+  { left: "14%", top: "0%",  w: 92, h: 118, rot: -7, radius: 22 },
+  { left: "40%", top: "-8%", w: 98, h: 124, rot: 4,  radius: 24 },
+  { left: "67%", top: "-2%", w: 88, h: 112, rot: 9,  radius: 18 },
+  { left: "84%", top: "30%", w: 80, h: 102, rot: -6, radius: 20 },
+  { left: "1%",  top: "64%", w: 72, h: 92,  rot: 7,  radius: 16 },
+  { left: "85%", top: "62%", w: 76, h: 96,  rot: -8, radius: 16 },
+];
+
+const HERO_FEATURES = [
+  { title: "Жинхэнэ бүтээл", desc: "Бүтээлчдийн гараар хийсэн өвөрмөц ажлууд" },
+  { title: "Шууд холболт", desc: "Бүтээлчтэй шууд холбогдож захиалаарай" },
+  { title: "Олон төрөл", desc: `${CATS.length} дизайны салбараас сонголт` },
+];
+
+function Masthead({ nav, works }) {
+  const imgs = works.filter(w => w.images?.[0]).slice(0, HERO_ARC.length);
+
   return (
-    <div style={{
-      position: "relative", margin: "12px 12px 18px", borderRadius: 22, overflow: "hidden",
-      minHeight: "clamp(420px,78vh,640px)",
-      background: img ? "#0B1E3A" : `linear-gradient(135deg, ${T.accent}, ${T.accentHover})`,
-    }}>
-      {img && (
-        <img src={img} alt="" loading="eager" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+    <div style={{ width: "100%", background: T.bg, flexShrink: 0, paddingBottom: 24 }}>
+      {/* 사진 아치 */}
+      {imgs.length > 0 && (
+        <div style={{ position: "relative", width: "100%", height: "clamp(220px,62vw,300px)", overflow: "hidden" }}>
+          {imgs.map((w, i) => {
+            const c = HERO_ARC[i % HERO_ARC.length];
+            return (
+              <div key={w.id} {...a11yClick(() => nav("work", { workId: w.id }))} className="toono-card-tap"
+                style={{ position: "absolute", left: c.left, top: c.top, width: c.w, height: c.h, borderRadius: c.radius, overflow: "hidden", transform: `rotate(${c.rot}deg)`, boxShadow: "0 10px 28px rgba(17,17,17,0.10)", cursor: "pointer", background: T.s2 }}>
+                <img src={w.images[0]} alt={w.title} loading="eager" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+              </div>
+            );
+          })}
+        </div>
       )}
-      {/* Legibility overlay — deep Uliger blue gradient */}
-      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(11,30,58,0.10) 0%, rgba(11,30,58,0.34) 55%, rgba(8,22,48,0.84) 100%)" }} />
 
-      {/* Year / brand tag */}
-      <div style={{ position: "absolute", top: 18, left: 18, fontFamily: F, fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", color: "rgba(255,255,255,0.85)", textTransform: "uppercase" }}>
-        2026 · Uliger World
-      </div>
-
-      {/* Scroll cue */}
-      <div style={{ position: "absolute", top: 18, right: 18, display: "flex", alignItems: "center", gap: 6, fontFamily: F, fontSize: 10, fontWeight: 700, letterSpacing: "0.16em", color: "rgba(255,255,255,0.7)", textTransform: "uppercase" }}>
-        Доош гүйлгэх
-        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 2V14M8 14L3 9M8 14L13 9" stroke="rgba(255,255,255,0.7)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
-      </div>
-
-      {/* Headline */}
-      <div style={{ position: "absolute", left: 18, right: 18, top: "30%" }}>
-        <div style={{ fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "italic", fontWeight: 600, fontSize: "clamp(32px,11vw,62px)", color: T.accentGlow, lineHeight: 1, marginBottom: 2 }}>
-          Монгол,
+      {/* 헤드라인 + CTA */}
+      <div style={{ textAlign: "center", padding: imgs.length > 0 ? "12px 28px 26px" : "48px 28px 26px" }}>
+        <div style={{ fontFamily: F, fontWeight: 800, fontSize: "clamp(28px,8.5vw,42px)", color: T.textH, lineHeight: 1.15, letterSpacing: "-0.02em", marginBottom: 12 }}>
+          Монгол бүтээлчдийн<br />дижитал зах
         </div>
-        <div style={{ fontFamily: F, fontWeight: 800, fontSize: "clamp(28px,9.5vw,54px)", color: "#FFFFFF", lineHeight: 1.08, letterSpacing: "-0.02em" }}>
-          бүтээлчдийн<br />дижитал зах
-        </div>
-      </div>
-
-      {/* Tagline + CTA */}
-      <div style={{ position: "absolute", left: 18, right: 18, bottom: 18, display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 16 }}>
-        <div style={{ fontFamily: F, fontSize: 12, lineHeight: 1.5, color: "rgba(255,255,255,0.8)", maxWidth: 220 }}>
+        <div style={{ fontFamily: F, fontSize: 13, lineHeight: 1.6, color: T.textSub, maxWidth: 280, margin: "0 auto 20px" }}>
           Урлаг, дизайн, гар урлалын шинэ бүтээлүүдийг нэг дороос үзээрэй.
         </div>
         <button type="button" onClick={() => nav("explore")} className="toono-pressable"
-          style={{ flexShrink: 0, fontFamily: F, fontSize: 13, fontWeight: 700, color: T.accent, background: "#FFFFFF", border: "none", borderRadius: 22, padding: "10px 20px", cursor: "pointer" }}>
-          Үзэх →
+          style={{ fontFamily: F, fontSize: 14, fontWeight: 700, color: "#FFFFFF", background: T.accent, border: "none", borderRadius: 30, padding: "14px 30px", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 8 }}>
+          Эхлэх <span aria-hidden="true">→</span>
         </button>
+      </div>
+
+      {/* 3단 특징 */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10, padding: "20px 20px 0", borderTop: `1px solid ${T.s2}` }}>
+        {HERO_FEATURES.map((f, i) => (
+          <div key={i} style={{ textAlign: "center" }}>
+            <div style={{ fontFamily: F, fontSize: 12, fontWeight: 700, color: T.textH, marginBottom: 4 }}>{f.title}</div>
+            <div style={{ fontFamily: F, fontSize: 10.5, lineHeight: 1.5, color: T.textSub }}>{f.desc}</div>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -241,8 +256,8 @@ export default function Home({ nav, refresh }) {
   const popular = [...allW].sort((a, b) => (b.likes_count || b.likes || 0) - (a.likes_count || a.likes || 0)).slice(0, 6);
   const topCreators = creators.filter(c => c.id !== GS.user.id).slice(0, 12);
   const recentlyViewed = (GS.recentlyViewed || []).map(id => allW.find(w => w.id === id)).filter(Boolean).slice(0, 6);
-  // 히어로 배너용 — 최신 작품 중 이미지 있는 것 3개
-  const heroWorks = sorted.filter(w => w.images?.[0]).slice(0, 3);
+  // 히어로 배너용 — 최신 작품 중 이미지 있는 것 (사진 아치에 최대 7개 사용)
+  const heroWorks = sorted.filter(w => w.images?.[0]).slice(0, HERO_ARC.length);
 
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", background: T.bg }}>
@@ -269,7 +284,7 @@ export default function Home({ nav, refresh }) {
         {loading ? <Skeleton /> : <>
 
           {/* ── 마스트헤드 + 모자이크 월 ── */}
-          {selCat === "all" && <Masthead nav={nav} heroWork={heroWorks[0]} />}
+          {selCat === "all" && <Masthead nav={nav} works={heroWorks} />}
           {heroWorks.length > 0 && selCat === "all" && (
             <MosaicWall works={heroWorks.length >= 3 ? sorted.filter(w => w.images?.[0]) : heroWorks} nav={nav} />
           )}
