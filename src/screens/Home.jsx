@@ -30,13 +30,13 @@ const CAT_ICONS = {
 
 // 센터 헤드라인 + 사진 아치 + CTA + 3단 특징 — AI 랜딩페이지 스타일 히어로
 const HERO_ARC = [
-  { left: "1%",  top: "32%", w: 76, h: 98,  rot: -9, radius: 16 },
-  { left: "14%", top: "0%",  w: 92, h: 118, rot: -7, radius: 22 },
-  { left: "40%", top: "-8%", w: 98, h: 124, rot: 4,  radius: 24 },
-  { left: "67%", top: "-2%", w: 88, h: 112, rot: 9,  radius: 18 },
-  { left: "84%", top: "30%", w: 80, h: 102, rot: -6, radius: 20 },
-  { left: "1%",  top: "64%", w: 72, h: 92,  rot: 7,  radius: 16 },
-  { left: "85%", top: "62%", w: 76, h: 96,  rot: -8, radius: 16 },
+  { left: "0%",  top: "38%", w: 99,  h: 127, rot: -9, radius: 18 },
+  { left: "12%", top: "4%",  w: 120, h: 153, rot: -7, radius: 24 },
+  { left: "39%", top: "-4%", w: 128, h: 161, rot: 4,  radius: 26 },
+  { left: "66%", top: "2%",  w: 114, h: 146, rot: 9,  radius: 20 },
+  { left: "85%", top: "36%", w: 104, h: 133, rot: -6, radius: 22 },
+  { left: "0%",  top: "68%", w: 94,  h: 120, rot: 7,  radius: 18 },
+  { left: "86%", top: "66%", w: 99,  h: 125, rot: -8, radius: 18 },
 ];
 
 const HERO_FEATURES = [
@@ -52,12 +52,12 @@ function Masthead({ nav, works }) {
     <div style={{ width: "100%", background: T.bg, flexShrink: 0, paddingBottom: 24 }}>
       {/* 사진 아치 */}
       {imgs.length > 0 && (
-        <div style={{ position: "relative", width: "100%", height: "clamp(220px,62vw,300px)", overflow: "hidden" }}>
+        <div style={{ position: "relative", width: "100%", height: "clamp(300px,86vw,420px)", overflow: "hidden" }}>
           {imgs.map((w, i) => {
             const c = HERO_ARC[i % HERO_ARC.length];
             return (
-              <div key={w.id} {...a11yClick(() => nav("work", { workId: w.id }))} className="toono-card-tap"
-                style={{ position: "absolute", left: c.left, top: c.top, width: c.w, height: c.h, borderRadius: c.radius, overflow: "hidden", transform: `rotate(${c.rot}deg)`, boxShadow: "0 10px 28px rgba(17,17,17,0.10)", cursor: "pointer", background: T.s2 }}>
+              <div key={w.id} {...a11yClick(() => nav("work", { workId: w.id }))} className="toono-card-tap hero-arc-card"
+                style={{ position: "absolute", left: c.left, top: c.top, width: c.w, height: c.h, borderRadius: c.radius, overflow: "hidden", "--hero-rot": `${c.rot}deg`, boxShadow: "0 10px 28px rgba(17,17,17,0.10)", cursor: "pointer", background: T.s2 }}>
                 <img src={w.images[0]} alt={w.title} loading="eager" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
               </div>
             );

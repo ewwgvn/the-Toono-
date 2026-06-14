@@ -323,4 +323,23 @@ input[type="checkbox"], input[type="radio"] { -webkit-appearance: auto !importan
   .archive-ticker-track { animation: none; }
   .toono-mosaic-item img, .archive-cell img { transition: none !important; }
 }
+
+/* ── Hero photo arc drift (Home Masthead) — 옆으로 천천히 흔들리는 모션 ── */
+@keyframes heroDrift {
+  0%   { transform: translateX(0)     rotate(var(--hero-rot)); }
+  25%  { transform: translateX(7px)   rotate(calc(var(--hero-rot) + 2deg)); }
+  50%  { transform: translateX(0)     rotate(var(--hero-rot)); }
+  75%  { transform: translateX(-7px)  rotate(calc(var(--hero-rot) - 2deg)); }
+  100% { transform: translateX(0)     rotate(var(--hero-rot)); }
+}
+.hero-arc-card { animation: heroDrift 9s ease-in-out infinite; will-change: transform; }
+.hero-arc-card:nth-child(2) { animation-duration: 11s; animation-delay: -2s; }
+.hero-arc-card:nth-child(3) { animation-duration: 13s; animation-delay: -4.5s; }
+.hero-arc-card:nth-child(4) { animation-duration: 10s; animation-delay: -1.5s; }
+.hero-arc-card:nth-child(5) { animation-duration: 12s; animation-delay: -6s; }
+.hero-arc-card:nth-child(6) { animation-duration: 14s; animation-delay: -3s; }
+.hero-arc-card:nth-child(7) { animation-duration: 10.5s; animation-delay: -7s; }
+@media (prefers-reduced-motion: reduce) {
+  .hero-arc-card { animation: none; }
+}
 .cat-chip:active .cat-chip-circle { transform: scale(0.92); }
