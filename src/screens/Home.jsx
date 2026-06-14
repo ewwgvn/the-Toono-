@@ -52,7 +52,7 @@ function Masthead({ nav, works }) {
     <div style={{ width: "100%", background: T.bg, flexShrink: 0, paddingBottom: 24 }}>
       {/* 사진 아치 */}
       {imgs.length > 0 && (
-        <div style={{ position: "relative", width: "100%", height: "clamp(300px,86vw,420px)", overflow: "hidden" }}>
+        <div style={{ position: "relative", width: "100%", maxWidth: 680, margin: "0 auto", height: "clamp(280px,70vw,380px)", overflow: "hidden" }}>
           {imgs.map((w, i) => {
             const c = HERO_ARC[i % HERO_ARC.length];
             return (
