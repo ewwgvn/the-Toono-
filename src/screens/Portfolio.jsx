@@ -14,6 +14,20 @@ import { toast } from "@/components/layout/Toast";
 
 const F = "'Helvetica Neue', Arial, sans-serif";
 
+// 비대칭 벤토 그리드 셀 패턴 (4컬럼 기준, col/row span)
+const BENTO_PATTERN = [
+  { col: 2, row: 2 },
+  { col: 2, row: 1 },
+  { col: 1, row: 1 },
+  { col: 1, row: 1 },
+  { col: 1, row: 2 },
+  { col: 1, row: 1 },
+  { col: 2, row: 1 },
+  { col: 1, row: 1 },
+  { col: 1, row: 1 },
+  { col: 2, row: 2 },
+];
+
 export default function Portfolio({ nav, goBack }) {
   const [view, setView] = useState("grid");
   const [filter, setFilter] = useState("all");
@@ -191,40 +205,47 @@ export default function Portfolio({ nav, goBack }) {
     <div style={{ padding: "0 20px" }}>
       {filtered.length === 0 && <Empty icon={<IcFolderEmpty />} title="Бүтээл олдсонгүй" sub="Хайлтаа өөрчилж үзнэ үү" />}
 
-      {/* GRID VIEW — archive index grid */}
-      {view === "grid" && filtered.length > 0 && <div className="archive-grid" style={{ "--archive-border": T.border, borderRadius: 16, overflow: "hidden", marginBottom: 14 }}>
+      {/* GRID VIEW — OYO EXPO 스타일 벤토 그리드: 비대칭 이미지 셀 + 창작자 이름 헤드라인 */}
+      {view === "grid" && filtered.length > 0 && <div className="archive-bento" style={{ marginBottom: 14 }}>
+        {/* 헤드라인 셀 — 창작자 이름 (블루) */}
+        <div style={{ gridColumn: "span 4", gridRow: "span 2", display: "flex", flexDirection: "column", justifyContent: "center", padding: "16px 18px", background: T.s2, borderRadius: 16 }}>
+          <div style={{ fontFamily: F, fontSize: 10, fontWeight: 700, letterSpacing: "0.2em", color: T.accent, textTransform: "uppercase", marginBottom: 6 }}>Бүтээлчийн архив</div>
+          <div style={{ fontFamily: F, fontSize: "clamp(28px,9vw,42px)", fontWeight: 900, color: T.accent, lineHeight: 1.08, letterSpacing: "-0.02em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{GS.user.name || "Нэргүй бүтээлч"}</div>
+          <div style={{ fontFamily: F, fontSize: 11, color: T.textSub, marginTop: 8, maxWidth: 240 }}>{stats.total} бүтээл · {stats.published} нийтлэгдсэн · {stats.views.toLocaleString()} үзэлт</div>
+        </div>
+
         {filtered.map((w, i) => {
           const isSel = selected.has(w.id);
           const sc = statusCfg[w.digital ? "digital" : w.status] || statusCfg.published;
           const showBadge = w.status !== "published" || w.digital;
-          const tags = [w.cat || w.medium, w.year].filter(Boolean);
+          const span = BENTO_PATTERN[i % BENTO_PATTERN.length];
+          const showCaption = span.col >= 2 || span.row >= 2;
           return <div key={w.id}
             {...a11yClick(() => bulkMode ? toggleSelect(w.id) : setActiveWork(w))}
             className="archive-cell toono-card-tap"
-            style={{ cursor: "pointer", background: isSel ? T.accentSub : "transparent" }}>
-            <div className="archive-cell-img" style={{ position: "relative", width: "100%", aspectRatio: "1/1", overflow: "hidden", background: T.s2 }}>
-              {w.images?.[0]
-                ? <img src={w.images[0]} alt={w.title} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-                : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}><Toono size={36} color={T.borderMid} /></div>}
-              <div style={{ position: "absolute", top: 8, left: 8, fontFamily: F, fontSize: 10, fontWeight: 700, color: "#fff", background: "rgba(38,129,218,0.78)", borderRadius: 6, padding: "3px 7px", letterSpacing: "0.04em" }}>{String(i + 1).padStart(2, "0")}</div>
-              {showBadge && <div style={{ position: "absolute", top: 8, right: 8, background: "rgba(255,255,255,0.92)", borderRadius: 6, padding: "3px 8px" }}>
-                <span style={{ fontFamily: F, fontSize: 9, fontWeight: 700, color: sc.color, textTransform: "uppercase", letterSpacing: "0.04em" }}>{sc.label}</span>
-              </div>}
-              {bulkMode && <div style={{ position: "absolute", bottom: 6, right: 6, width: 20, height: 20, borderRadius: "50%", background: isSel ? T.accent : "rgba(255,255,255,0.9)", border: `2px solid ${isSel ? T.accent : T.textDim}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                {isSel && <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#fff" }} />}
-              </div>}
-            </div>
-            <div style={{ padding: "10px 10px 12px" }}>
-              <div style={{ fontFamily: F, fontSize: 13, fontWeight: 700, color: T.textH, lineHeight: 1.3, letterSpacing: "-.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 6 }}>{w.title}</div>
-              {tags.length > 0 && <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
-                {tags.map((t, ti) => <span key={ti} style={{ fontFamily: F, fontSize: 9, fontWeight: 600, color: T.accent, background: T.accentSub, borderRadius: 8, padding: "2px 7px" }}>{t}</span>)}
-              </div>}
-            </div>
+            style={{ position: "relative", gridColumn: `span ${span.col}`, gridRow: `span ${span.row}`, borderRadius: 14, overflow: "hidden", cursor: "pointer", background: isSel ? T.accentSub : T.s2 }}>
+            {w.images?.[0]
+              ? <img src={w.images[0]} alt={w.title} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+              : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}><Toono size={28} color={T.borderMid} /></div>}
+            <div style={{ position: "absolute", top: 6, left: 6, fontFamily: F, fontSize: 9, fontWeight: 700, color: "#fff", background: "rgba(38,129,218,0.78)", borderRadius: 5, padding: "2px 6px", letterSpacing: "0.04em" }}>{String(i + 1).padStart(2, "0")}</div>
+            {showBadge && <div style={{ position: "absolute", top: 6, right: 6, background: "rgba(255,255,255,0.92)", borderRadius: 5, padding: "2px 7px" }}>
+              <span style={{ fontFamily: F, fontSize: 8, fontWeight: 700, color: sc.color, textTransform: "uppercase", letterSpacing: "0.04em" }}>{sc.label}</span>
+            </div>}
+            {showCaption && <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "20px 10px 9px", background: "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.55) 100%)" }}>
+              <div style={{ fontFamily: F, fontSize: 12, fontWeight: 700, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</div>
+              {(w.cat || w.year) && <div style={{ fontFamily: F, fontSize: 9, color: "rgba(255,255,255,0.78)", marginTop: 2 }}>{[w.cat, w.year].filter(Boolean).join(" · ")}</div>}
+            </div>}
+            {bulkMode && <div style={{ position: "absolute", bottom: 6, right: 6, width: 18, height: 18, borderRadius: "50%", background: isSel ? T.accent : "rgba(255,255,255,0.9)", border: `2px solid ${isSel ? T.accent : T.textDim}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              {isSel && <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#fff" }} />}
+            </div>}
           </div>;
         })}
-        <button type="button" onClick={() => nav("upload")} className="archive-cell" style={{ background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, minHeight: 160 }}>
-          <div style={{ width: 32, height: 32, border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center", color: T.accent, fontSize: 18 }}>+</div>
-          <span style={{ fontFamily: F, fontSize: 10, color: T.textSub, textTransform: "uppercase", letterSpacing: "0.06em" }}>Бүтээл нэмэх</span>
+
+        {/* 작품 추가 — 악센트 블록 */}
+        <button type="button" onClick={() => nav("upload")}
+          style={{ gridColumn: "span 2", gridRow: "span 1", background: T.accent, border: "none", borderRadius: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 16px" }}>
+          <span style={{ fontFamily: F, fontSize: 12, fontWeight: 700, color: "#fff", textTransform: "uppercase", letterSpacing: "0.06em" }}>Бүтээл нэмэх</span>
+          <span aria-hidden="true" style={{ fontFamily: F, fontSize: 16, fontWeight: 700, color: "#fff" }}>→</span>
         </button>
       </div>}
 
